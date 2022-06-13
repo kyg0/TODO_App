@@ -5,17 +5,18 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] DateTimeTests_Constructor.DefaultConstructor_withMock
 [       OK ] DateTimeTests_Constructor.DefaultConstructor_withMock (0 ms)
 [ RUN      ] DateTimeTests_Constructor.Constructor_WithFormat
-[       OK ] DateTimeTests_Constructor.Constructor_WithFormat (4 ms)
+[       OK ] DateTimeTests_Constructor.Constructor_WithFormat (1 ms)
 [ RUN      ] DateTimeTests_Constructor.Constructor_WithFormat_InvalidFormat
-[       OK ] DateTimeTests_Constructor.Constructor_WithFormat_InvalidFormat (3 ms)
+unknown file: error: C++ exception with description "invalid stoi argument" thrown in the test body.
+[  FAILED  ] DateTimeTests_Constructor.Constructor_WithFormat_InvalidFormat (2 ms)
 [ RUN      ] DateTimeTests_Constructor.Constructor_WithFormat_WrongValues
-[       OK ] DateTimeTests_Constructor.Constructor_WithFormat_WrongValues (20 ms)
+[       OK ] DateTimeTests_Constructor.Constructor_WithFormat_WrongValues (14 ms)
 [ RUN      ] DateTimeTests_Constructor.CorrectValues1
 [       OK ] DateTimeTests_Constructor.CorrectValues1 (0 ms)
 [ RUN      ] DateTimeTests_Constructor.CorrectValues_BoundaryValuesForFebruary
 [       OK ] DateTimeTests_Constructor.CorrectValues_BoundaryValuesForFebruary (0 ms)
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForDays_30DaysMonth
-[       OK ] DateTimeTests_Constructor.InvalidValues_ForDays_30DaysMonth (3 ms)
+[       OK ] DateTimeTests_Constructor.InvalidValues_ForDays_30DaysMonth (2 ms)
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForDays_AnyMonth
 [       OK ] DateTimeTests_Constructor.InvalidValues_ForDays_AnyMonth (1 ms)
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForMonth
@@ -25,12 +26,12 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForFebruary
 [       OK ] DateTimeTests_Constructor.InvalidValues_ForFebruary (1 ms)
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForHours
-[       OK ] DateTimeTests_Constructor.InvalidValues_ForHours (1 ms)
+[       OK ] DateTimeTests_Constructor.InvalidValues_ForHours (0 ms)
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForMinutes
 [       OK ] DateTimeTests_Constructor.InvalidValues_ForMinutes (0 ms)
 [ RUN      ] DateTimeTests_Constructor.InvalidValues_ForSeconds
-[       OK ] DateTimeTests_Constructor.InvalidValues_ForSeconds (1 ms)
-[----------] 14 tests from DateTimeTests_Constructor (43 ms total)
+[       OK ] DateTimeTests_Constructor.InvalidValues_ForSeconds (0 ms)
+[----------] 14 tests from DateTimeTests_Constructor (28 ms total)
 
 [----------] 15 tests from DateTimeTests_Setter
 [ RUN      ] DateTimeTests_Setter.CorrectValues_ForDays
@@ -48,11 +49,11 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] DateTimeTests_Setter.InvalidValues_ForDays
 [       OK ] DateTimeTests_Setter.InvalidValues_ForDays (0 ms)
 [ RUN      ] DateTimeTests_Setter.InvalidValues_ForDays_30DaysMonth
-[       OK ] DateTimeTests_Setter.InvalidValues_ForDays_30DaysMonth (12 ms)
+[       OK ] DateTimeTests_Setter.InvalidValues_ForDays_30DaysMonth (9 ms)
 [ RUN      ] DateTimeTests_Setter.InvalidValues_ForDays_AnyMonth
-[       OK ] DateTimeTests_Setter.InvalidValues_ForDays_AnyMonth (5 ms)
+[       OK ] DateTimeTests_Setter.InvalidValues_ForDays_AnyMonth (3 ms)
 [ RUN      ] DateTimeTests_Setter.InvalidValues_ForDays_February
-[       OK ] DateTimeTests_Setter.InvalidValues_ForDays_February (6 ms)
+[       OK ] DateTimeTests_Setter.InvalidValues_ForDays_February (4 ms)
 [ RUN      ] DateTimeTests_Setter.InvalidValues_ForMonth
 [       OK ] DateTimeTests_Setter.InvalidValues_ForMonth (2 ms)
 [ RUN      ] DateTimeTests_Setter.InvalidValues_ForYear
@@ -62,8 +63,8 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] DateTimeTests_Setter.InvalidValuew_ForMinutes
 [       OK ] DateTimeTests_Setter.InvalidValuew_ForMinutes (1 ms)
 [ RUN      ] DateTimeTests_Setter.InvalidValuew_ForSeconds
-[       OK ] DateTimeTests_Setter.InvalidValuew_ForSeconds (2 ms)
-[----------] 15 tests from DateTimeTests_Setter (46 ms total)
+[       OK ] DateTimeTests_Setter.InvalidValuew_ForSeconds (1 ms)
+[----------] 15 tests from DateTimeTests_Setter (30 ms total)
 
 [----------] 3 tests from DateTime_ComparisonTest
 [ RUN      ] DateTime_ComparisonTest.ComparationOperator
@@ -103,12 +104,12 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] ReminderEntryTests_Constructor.InvalidValues_ForLongTitleAndDescription
 [       OK ] ReminderEntryTests_Constructor.InvalidValues_ForLongTitleAndDescription (0 ms)
 [ RUN      ] ReminderEntryTests_Constructor.InvalidValues_ForExecDate
-[       OK ] ReminderEntryTests_Constructor.InvalidValues_ForExecDate (0 ms)
-[----------] 7 tests from ReminderEntryTests_Constructor (2 ms total)
+[       OK ] ReminderEntryTests_Constructor.InvalidValues_ForExecDate (1 ms)
+[----------] 7 tests from ReminderEntryTests_Constructor (3 ms total)
 
 [----------] 5 tests from ReminderEntryTests_Setter
 [ RUN      ] ReminderEntryTests_Setter.InvalidValues_ForExecDate
-[       OK ] ReminderEntryTests_Setter.InvalidValues_ForExecDate (0 ms)
+[       OK ] ReminderEntryTests_Setter.InvalidValues_ForExecDate (1 ms)
 [ RUN      ] ReminderEntryTests_Setter.CorrectValues_ForExecDate
 [       OK ] ReminderEntryTests_Setter.CorrectValues_ForExecDate (0 ms)
 [ RUN      ] ReminderEntryTests_Setter.CorrectValues_ForTitleAndDescription_Boundary
@@ -117,7 +118,7 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [       OK ] ReminderEntryTests_Setter.InvalidValues_ForTitleAndDescription (0 ms)
 [ RUN      ] ReminderEntryTests_Setter.CorrectValues_ForStatus
 [       OK ] ReminderEntryTests_Setter.CorrectValues_ForStatus (0 ms)
-[----------] 5 tests from ReminderEntryTests_Setter (2 ms total)
+[----------] 5 tests from ReminderEntryTests_Setter (3 ms total)
 
 [----------] 1 test from ReminderEntryTests_Copy
 [ RUN      ] ReminderEntryTests_Copy.CopyAssignment
@@ -150,41 +151,41 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] ReminderSet_Tests.DeleteEntry_ValidIndex
 [       OK ] ReminderSet_Tests.DeleteEntry_ValidIndex (0 ms)
 [ RUN      ] ReminderSet_Tests.DeleteEntry_InvalidIndex
-[       OK ] ReminderSet_Tests.DeleteEntry_InvalidIndex (3278 ms)
+[       OK ] ReminderSet_Tests.DeleteEntry_InvalidIndex (1 ms)
 [ RUN      ] ReminderSet_Tests.EditEntry_WithConcreteObject
 [       OK ] ReminderSet_Tests.EditEntry_WithConcreteObject (4 ms)
 [ RUN      ] ReminderSet_Tests.EditEntry_WithNullObject
-[       OK ] ReminderSet_Tests.EditEntry_WithNullObject (1 ms)
+[       OK ] ReminderSet_Tests.EditEntry_WithNullObject (2 ms)
 [ RUN      ] ReminderSet_Tests.EditEntry_WithValidIndex
-[       OK ] ReminderSet_Tests.EditEntry_WithValidIndex (2 ms)
+[       OK ] ReminderSet_Tests.EditEntry_WithValidIndex (3 ms)
 [ RUN      ] ReminderSet_Tests.EditEntry_WithInvalidIndex
-[       OK ] ReminderSet_Tests.EditEntry_WithInvalidIndex (2 ms)
+[       OK ] ReminderSet_Tests.EditEntry_WithInvalidIndex (1 ms)
 [ RUN      ] ReminderSet_Tests.SortByDateCreated
-[       OK ] ReminderSet_Tests.SortByDateCreated (4 ms)
+[       OK ] ReminderSet_Tests.SortByDateCreated (5 ms)
 [ RUN      ] ReminderSet_Tests.SortByDateCreated_WithOneEntry
 [       OK ] ReminderSet_Tests.SortByDateCreated_WithOneEntry (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByDateCreated_WithZeroEntries
 [       OK ] ReminderSet_Tests.SortByDateCreated_WithZeroEntries (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByExecDate
-[       OK ] ReminderSet_Tests.SortByExecDate (3 ms)
+[       OK ] ReminderSet_Tests.SortByExecDate (4 ms)
 [ RUN      ] ReminderSet_Tests.SortByExecDate_WithOneEntry
 [       OK ] ReminderSet_Tests.SortByExecDate_WithOneEntry (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByExecDate_WithZeroEntries
 [       OK ] ReminderSet_Tests.SortByExecDate_WithZeroEntries (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByStatus
-[       OK ] ReminderSet_Tests.SortByStatus (4 ms)
+[       OK ] ReminderSet_Tests.SortByStatus (7 ms)
 [ RUN      ] ReminderSet_Tests.SortByStatus_WithOneEntry
 [       OK ] ReminderSet_Tests.SortByStatus_WithOneEntry (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByStatus_WithZeroEntries
 [       OK ] ReminderSet_Tests.SortByStatus_WithZeroEntries (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByTitle
-[       OK ] ReminderSet_Tests.SortByTitle (3 ms)
+[       OK ] ReminderSet_Tests.SortByTitle (6 ms)
 [ RUN      ] ReminderSet_Tests.SortByTitle_WithOneEntry
 [       OK ] ReminderSet_Tests.SortByTitle_WithOneEntry (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByTitle_WithZeroEntries
 [       OK ] ReminderSet_Tests.SortByTitle_WithZeroEntries (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByDescription
-[       OK ] ReminderSet_Tests.SortByDescription (3 ms)
+[       OK ] ReminderSet_Tests.SortByDescription (4 ms)
 [ RUN      ] ReminderSet_Tests.SortByDescription_WithOneEntry
 [       OK ] ReminderSet_Tests.SortByDescription_WithOneEntry (0 ms)
 [ RUN      ] ReminderSet_Tests.SortByDescription_WithZeroEntries
@@ -198,7 +199,7 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [ RUN      ] ReminderSet_Tests.FilterByStatus_WithZeroEntries
 [       OK ] ReminderSet_Tests.FilterByStatus_WithZeroEntries (0 ms)
 [ RUN      ] ReminderSet_Tests.FilterByDateCreated
-[       OK ] ReminderSet_Tests.FilterByDateCreated (9 ms)
+[       OK ] ReminderSet_Tests.FilterByDateCreated (8 ms)
 [ RUN      ] ReminderSet_Tests.FilterByDateCreated_WithOneEntry_BeforeDate
 [       OK ] ReminderSet_Tests.FilterByDateCreated_WithOneEntry_BeforeDate (0 ms)
 [ RUN      ] ReminderSet_Tests.FilterByDateCreated_WithOneEntry_BeforeDate_2
@@ -221,8 +222,12 @@ Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11
 [       OK ] ReminderSet_Tests.FilterByExecDate_WithOneEntry_AfterDate_2 (0 ms)
 [ RUN      ] ReminderSet_Tests.FilterByExecDate_WithZeroEntries
 [       OK ] ReminderSet_Tests.FilterByExecDate_WithZeroEntries (0 ms)
-[----------] 39 tests from ReminderSet_Tests (3340 ms total)
+[----------] 39 tests from ReminderSet_Tests (75 ms total)
 
 [----------] Global test environment tear-down
-[==========] 96 tests from 10 test suites ran. (3441 ms total)
-[  PASSED  ] 96 tests.
+[==========] 96 tests from 10 test suites ran. (148 ms total)
+[  PASSED  ] 95 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] DateTimeTests_Constructor.Constructor_WithFormat_InvalidFormat
+
+ 1 FAILED TEST

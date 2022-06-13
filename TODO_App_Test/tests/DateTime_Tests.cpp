@@ -187,6 +187,16 @@ TEST(DateTimeTests_Constructor, Constructor_WithFormat_InvalidFormat) {
 	}
 
 	try {
+		std::string str = "09/09/2022 9:9:9";
+		DateTime dt(str);
+
+		FAIL() << "Expected: Wrong format";
+	}
+	catch (const char* err) {
+		EXPECT_STREQ(err, "Wrong format");
+	}
+
+	try {
 		std::string str = "29/09/2o22 13:00:00";
 		DateTime dt(str);
 		FAIL() << "Expected: Wrong format";

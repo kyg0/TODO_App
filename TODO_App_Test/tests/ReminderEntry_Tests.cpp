@@ -163,7 +163,7 @@ TEST(ReminderEntryTests_Constructor, CorrectValues_ForConstructorWithExecDate) {
 TEST(ReminderEntryTests_Constructor, CorrectValues_ForConstructorWithExecDate_Boundary) {
 	std::string titleBoundaryCase;
 	std::string descriptionBoundaryCase;
-	DateTime* execDate = new DateTime(std::string("20/05/2031 12:00:00"));
+	DateTime* execDate = new DateTime(std::string("01/01/2031 23:59:59"));
 	for (int i = 0; i < MAX_TITLE_LEN; i++) {
 		titleBoundaryCase += "a";
 	}
@@ -182,7 +182,7 @@ TEST(ReminderEntryTests_Constructor, CorrectValues_ForConstructorWithExecDate_Bo
 
 
 	std::string _path = "out/" + titleBoundaryCase + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) +
-		+"_" + helper.getPath(20,5,2031,12,0,0);
+		+"_" + helper.getPath(1,1,2031,23,59,59);
 	std::string _title = "Title: " + titleBoundaryCase;
 	std::string _description = "Description: " + descriptionBoundaryCase;
 	std::string _dateCreated = "Date created: " + dt->getFormat(true);
@@ -194,6 +194,55 @@ TEST(ReminderEntryTests_Constructor, CorrectValues_ForConstructorWithExecDate_Bo
 	EXPECT_CALL(*fwMock, writeInFile(_path, _output)).Times(1);
 
 	entry = new ReminderEntry(execDate, titleBoundaryCase, descriptionBoundaryCase,dtMock, fwMock);
+
+
+	EXPECT_TRUE(*entry->getDateCreated() == *dt);
+	EXPECT_TRUE(*entry->getExecutionDate() == *execDate);
+	EXPECT_EQ(entry->getTitle(), titleBoundaryCase);
+	EXPECT_EQ(entry->getDescription(), descriptionBoundaryCase);
+	EXPECT_EQ(entry->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	EXPECT_EQ(entry->getFilePath(), _path);
+
+	Mock::AllowLeak(dtMock);
+	Mock::VerifyAndClear(dtMock);
+	Mock::AllowLeak(fwMock);
+	Mock::VerifyAndClear(fwMock);
+}
+
+TEST(ReminderEntryTests_Constructor, CorrectValues_ForConstructorWithExecDate_Boundary_Feb) {
+	std::string titleBoundaryCase;
+	std::string descriptionBoundaryCase;
+	DateTime* execDate = new DateTime(std::string("29/02/2032 01:01:01"));
+	for (int i = 0; i < MAX_TITLE_LEN; i++) {
+		titleBoundaryCase += "a";
+	}
+	for (int i = 0; i < MAX_DESCRIPTION_LEN; i++) {
+		descriptionBoundaryCase += "a";
+	}
+	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
+	std::vector<int> date{ 20, 5 , 2030, 12, 30, 30 };
+
+	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
+	DateTime* dt = new DateTime(dtMock);
+
+	ReminderEntry* entry;
+	FileWorkerMock* fwMock = new FileWorkerMock();
+	HelperClass helper;
+
+
+	std::string _path = "out/" + titleBoundaryCase + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) +
+		+"_" + helper.getPath(29, 2, 2032, 1, 1, 1);
+	std::string _title = "Title: " + titleBoundaryCase;
+	std::string _description = "Description: " + descriptionBoundaryCase;
+	std::string _dateCreated = "Date created: " + dt->getFormat(true);
+	std::string _executionDate = "Execution date: " + execDate->getFormat(true);
+	std::string _status = "Status: NOT FINISHED";
+	std::string _output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _executionDate + "\n" + _status;
+
+
+	EXPECT_CALL(*fwMock, writeInFile(_path, _output)).Times(1);
+
+	entry = new ReminderEntry(execDate, titleBoundaryCase, descriptionBoundaryCase, dtMock, fwMock);
 
 
 	EXPECT_TRUE(*entry->getDateCreated() == *dt);
@@ -261,10 +310,46 @@ TEST(ReminderEntryTests_Constructor, InvalidValues_ForExecDate) {
 	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
 	std::vector<int> date{ 20, 5 , 2022, 12, 30, 30 };
 
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
+	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
 	
 	try {
 		DateTime* execDate = new DateTime(19, 5, 2022, 12, 30, 30);
+		ReminderEntry* entry;
+
+		entry = new ReminderEntry(execDate, "title", "description", dtMock);
+
+		FAIL() << "Expected: Invalid execution date.Must be in the future";
+	}
+	catch (const char* err) {
+		EXPECT_STREQ(err, ERR_MSG);
+	}
+
+	try {
+		DateTime* execDate = new DateTime(20, 5, 2022, 11, 30, 30);
+		ReminderEntry* entry;
+
+		entry = new ReminderEntry(execDate, "title", "description", dtMock);
+
+		FAIL() << "Expected: Invalid execution date.Must be in the future";
+	}
+	catch (const char* err) {
+		EXPECT_STREQ(err, ERR_MSG);
+	}
+
+	try {
+		DateTime* execDate = new DateTime(20, 5, 2022, 10, 29, 30);
+		ReminderEntry* entry;
+
+		entry = new ReminderEntry(execDate, "title", "description", dtMock);
+
+		FAIL() << "Expected: Invalid execution date.Must be in the future";
+	}
+	catch (const char* err) {
+		EXPECT_STREQ(err, ERR_MSG);
+	}
+
+	try {
+		DateTime* execDate = new DateTime(20, 5, 2022, 10, 30, 29);
 		ReminderEntry* entry;
 
 		entry = new ReminderEntry(execDate, "title", "description", dtMock);

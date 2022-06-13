@@ -708,6 +708,7 @@ TEST(ReminderSet_Tests, SortByDateCreated) {
 	std::vector<std::string> paths;
 	std::vector<std::string> outputs;
 	std::vector<std::vector<std::string>> outputInLines;
+	std::vector<std::pair<std::string, std::string>> paths_and_outputs;
 
 	for (int i = 1; i <= 10; i++) {
 		DateTime* execDate = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -2017,8 +2018,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 			helper.getPath(dtVector[0], dtVector[1], dtVector[2], dtVector[3], dtVector[4], dtVector[5]) + "_" +
 			helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
 
-		std::string _output;// = "Title: TITLE-" + std::to_string(i) + "\nDescription: This is description for " + std::to_string(i) + "\nDate created: " +
-			//dt.getFormat(true) + "\nExecution date: " + execDate->getFormat(true) + "\nStatus: ";
+		std::string _output;
 		std::string _title = "Title: TITLE-" + std::to_string(i);
 		std::string _description = "Description: This is description for " + std::to_string(i);
 		std::string _dateCreated = "Date created: " + dt->getFormat(true);

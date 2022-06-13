@@ -91,7 +91,7 @@ DateTime::DateTime(std::string& format)
 		throw "Wrong format";
 	}
 	std::string tmp;
-	std::regex reg_pattern("[0-9]{2}.[0-9]{2}.[0-9]{4}( [0-9]{2}.[0-9]{2}.[0-9]{2}| [0-9]{2}.[0-9]{2}|)");
+	std::regex reg_pattern("[0-9]{2}.[0-9]{2}.[0-9]{4}( [0-9]{2}.[0-9]{2}.[0-9]{2}| [0-9]{2}.[0-9]{2}|)$");
 	std::smatch match;
 	
 	if (!regex_search(format, match, reg_pattern)) {
