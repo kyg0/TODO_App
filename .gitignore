@@ -2,3 +2,5 @@
 packages
 x64
 TODO_App.sln
+TODO_App/TODO_App.*
+TODO_App_Test.*
