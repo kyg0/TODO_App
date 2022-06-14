@@ -478,7 +478,10 @@ void MainApp::execCommand_Help(std::string flag) {
 			std::cout << "  which will help you to know what reminder to delete" << std::endl;
 		}
 		else if (flag == "-edit") {
-			std::cout << "  Type 'edit n to edit reminder with the index n" << std::endl;
+			std::cout << "  Type 'edit n to edit reminder with the index n and you will be" << std::endl;
+			std::cout << "  presented with options to enter information and edit." << std::endl;
+			std::cout << "  TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
+			std::cout << "  which will help you to know what reminder to delete" << std::endl;
 		}
 		else if (flag == "delete" || flag == "new" || flag == "sort" || flag == "filter" || "get" || "edit") {
 			std::cout << std::endl << "  You can't use two commands at the same time" << std::endl;
