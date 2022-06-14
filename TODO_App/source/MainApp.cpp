@@ -65,11 +65,11 @@ void MainApp::execCommand(std::string command)
 				descending = false;
 				execCommand_Sort(cmd_split[2], descending);
 			}
-			else if (cmd_split[2] == "-des") {
+			else if (cmd_split[2] == "-1") {
 				descending = true;
 				execCommand_Sort(cmd_split[1], descending);
 			}
-			else if (cmd_split[2] == "-asc") {
+			else if (cmd_split[2] == "-0") {
 				descending = false;
 				execCommand_Sort(cmd_split[1], descending);
 			}
@@ -215,8 +215,8 @@ void MainApp::deriveAndExecCommand_Filter(std::vector<std::string> command) {
 				}
 			}
 		}
-		else if (command[i] == "-asc" || command[i] == "-des") {
-			if (command[i] == "-asc")
+		else if (command[i] == "-asc" || command[i] == "-des" || command[i] == "-0"  || command[i] == "-1") {
+			if (command[i] == "-asc" || command[i] == "-0")
 				descending = false;
 			else
 				descending = true;
@@ -428,11 +428,11 @@ void MainApp::printEnterCommandScreen() {
 void MainApp::execCommand_Help(std::string flag) {
 	if (flag == "") {
 		std::cout << "  Available commands: " << std::endl;
-		std::cout << "  get     -   Display all reminders" << std::endl;
-		std::cout << "  sort    -   Sort reminder" << std::endl;
-		std::cout << "  filter  -   Filter reminder" << std::endl;
+		std::cout << "  get     -   Display all existing reminders" << std::endl;
+		std::cout << "  sort    -   Sort reminders" << std::endl;
+		std::cout << "  filter  -   Filter reminders" << std::endl;
 		std::cout << "  new     -   Make new reminder" << std::endl;
-		std::cout << "  delete  -   Delete entry" << std::endl;
+		std::cout << "  delete  -   Delete reminder" << std::endl;
 		std::cout << "  edit    -   Edit reminder" << std::endl;
 		std::cout << std::endl << "To see detailed description of one command type \"help -[command]\" " << std::endl;
 	}
@@ -445,9 +445,10 @@ void MainApp::execCommand_Help(std::string flag) {
 			std::cout << std::endl << "  Displays sorted set of reminders" << std::endl << std::endl;
 			std::cout << "  Type 'sort' to sort reminder the reminder set" << std::endl;
 			std::cout << "  Use this command as following" << std::endl;
-			std::cout << "  'sort [1|0]" << std::endl;
-			std::cout << "      Argument a(b) means after(before) entered date and time" << std::endl;
-			std::cout << "      Last argument displays sorted set in descending(1) or ascending order(0)" << std::endl;
+			std::cout << "  'sort -[arg] -[ord]" << std::endl;
+			std::cout << "      [arg] is by what argument you wish to sort reminders by" << std::endl;
+			std::cout << "      Available arguments are: -[t|d|ed|dc]" << std::endl;
+			std::cout << "      Second argument displays sorted set in descending(1 or -des) or ascending order(0 or -asc)" << std::endl;
 			std::cout << "          Descending order is default value" << std::endl;
 		}
 		else if (flag == "-filter") {

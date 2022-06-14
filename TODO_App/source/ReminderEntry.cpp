@@ -139,7 +139,7 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 		this->description = description;
 
 
-	filePath = "out/" + title + "_" + getFileNameFormatFromDate(*dateCreated) + "_";
+	filePath = "out/" + this->title + "_" + getFileNameFormatFromDate(*dateCreated) + "_";
 
 	std::string execDatePath = getFileNameFormatFromDate(*executionDate);
 	
