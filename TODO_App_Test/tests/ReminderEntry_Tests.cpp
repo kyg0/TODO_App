@@ -283,6 +283,8 @@ TEST(ReminderEntryTests_Constructor, InvalidValues_ForLongTitleAndDescription) {
 
 	std::string _path = "out/" + longTitle.substr(0, MAX_TITLE_LEN) + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) +
 		+"_" + helper.getPath(0, 0, 0, 0, 0, 0);
+	std::string _wrongPath = "out/" + longTitle + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) +
+		+"_" + helper.getPath(0, 0, 0, 0, 0, 0);
 
 	std::string _title = "Title: " + longTitle.substr(0,MAX_TITLE_LEN);
 	std::string _description = "Description: " + longDescription.substr(0,MAX_DESCRIPTION_LEN);
@@ -290,6 +292,7 @@ TEST(ReminderEntryTests_Constructor, InvalidValues_ForLongTitleAndDescription) {
 	std::string _executionDate = "Execution date: 00/00/0000 00:00:00";
 	std::string _status = "Status: NOT FINISHED";
 	std::string _output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _executionDate + "\n" + _status;
+	std::string _wrongOutput = _title + "\nDescription: " + longDescription + "\n" + _dateCreated + "\n" + _executionDate + "\n" + _status;
 
 	EXPECT_CALL(*fwMock, writeInFile(_path, _output)).Times(1);
 
@@ -297,8 +300,13 @@ TEST(ReminderEntryTests_Constructor, InvalidValues_ForLongTitleAndDescription) {
 
 	EXPECT_NE(longTitle ,entry->getTitle());
 	EXPECT_NE(longDescription, entry->getDescription());
+	EXPECT_NE(_wrongPath, entry->getFilePath());
+	EXPECT_NE(_wrongOutput, entry->getFileOutput());
 	EXPECT_TRUE(entry->getTitle() == longTitle.substr(0, MAX_TITLE_LEN));
 	EXPECT_TRUE(entry->getDescription() == longDescription.substr(0, MAX_DESCRIPTION_LEN));
+	EXPECT_EQ(_output, entry->getFileOutput());
+	EXPECT_EQ(_path, entry->getFilePath());
+
 
 	Mock::AllowLeak(dtMock);
 	Mock::VerifyAndClear(dtMock);
