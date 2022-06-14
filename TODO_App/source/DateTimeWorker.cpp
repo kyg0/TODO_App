@@ -5,7 +5,7 @@ std::vector<int> DateTimeWorker::GetCurrentDateAndTime() {
 		std::tm* _localTime = std::localtime(&_current);
 
 		int day = _localTime->tm_mday;
-		int month = 1 + _localTime->tm_mon;
+		int month = 1 + _localTime->tm_mon; // Probably stupid question, but why is there offset for month, and not for day?
 		int year = 1900 + _localTime->tm_year;
 		int hours = _localTime->tm_hour;
 		int minutes = _localTime->tm_min;

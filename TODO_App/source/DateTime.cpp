@@ -1,10 +1,12 @@
-#include "../include/DateTime.h"
+#include "../include/DateTime.h" // Just remark: Usualy you can avoid specifying full path through 
+                                 // build system, but it is ok to leave it here as it is
 
 
 DateTime::DateTime(DateTimeWorkerInterface* worker)
 {
 	if (worker != nullptr) {
-		this->dtWorker = worker;
+		this->dtWorker = worker; // Q: What happens if worker is null? You intentionaly added this logic for optionally changing worker? If dtWorker is null, program will crash 
+                                 // IMPORTANT: it should be also covered with tests
 	}
 	std::vector<int> vec = dtWorker->GetCurrentDateAndTime();
 
@@ -87,7 +89,7 @@ DateTime::DateTime(int day, int month, int year, int hours, int minutes, int sec
 
 DateTime::DateTime(std::string& format)
 {
-	if (format.size() != 19 && format.size() != 16 && format.size() != 10) {
+	if (format.size() != 19 && format.size() != 16 && format.size() != 10) { // what are those magic numbers? My guess DD:MM:YYYY and such formats? Needs to be documented which formats you support. Also, better to use descriptive defines instead of magic numbers like 19, 16, 10
 		throw "Wrong format";
 	}
 	std::string tmp;
@@ -367,7 +369,8 @@ std::string DateTime::getCorrectFormat(int n)
 	return std::to_string(n);
 }
 
-bool DateTime::isDateValid(int dd, int mm, int yy) {
+bool DateTime::isDateValid(int dd, int mm, int yy) { // not sure about logic to throw exceptions during such checks.
+                                                     // At the end, we just want to check something.. We will talk more about it
 	bool leap = false;
 	if (yy % 400 == 0)
 		leap = true;
@@ -386,7 +389,7 @@ bool DateTime::isDateValid(int dd, int mm, int yy) {
 		throw "Wrong value for month";
 	}
 
-	if (yy < 2020 || yy >9999) {
+	if (yy < 2020 || yy >9999) { // minor: add space before 9999
 		throw "Wrong value for year";
 	}
 
