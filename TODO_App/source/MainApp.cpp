@@ -57,20 +57,20 @@ void MainApp::execCommand(std::string command)
 			execCommand_Sort(cmd_split[1]);
 		}
 		else if (cmd_split.size() == 3) {
-			if (cmd_split[1] == "-des") {
+			if (cmd_split[1] == "-des" || cmd_split[1] == "-1") {
 				descending = true;
 				execCommand_Sort(cmd_split[2], descending);
 			}
-			else if (cmd_split[1] == "-asc") {
+			else if (cmd_split[1] == "-asc" || cmd_split[1] == "-0") {
 				descending = false;
 				execCommand_Sort(cmd_split[2], descending);
 			}
-			else if (cmd_split[2] == "-1") {
-				descending = true;
+			else if (cmd_split[2] == "-asc" || cmd_split[2] == "-0") {
+				descending = false;
 				execCommand_Sort(cmd_split[1], descending);
 			}
-			else if (cmd_split[2] == "-0") {
-				descending = false;
+			else if (cmd_split[2] == "-des" || cmd_split[2] == "-1") {
+				descending = true;
 				execCommand_Sort(cmd_split[1], descending);
 			}
 			else {
@@ -80,7 +80,6 @@ void MainApp::execCommand(std::string command)
 	}
 
 	else if (cmd == "filter") {
-		//TODO exec_filter(entry::Att, DateTime, bool)
 		deriveAndExecCommand_Filter(cmd_split);
 	}
 	else if (cmd == "edit") {
@@ -150,9 +149,35 @@ void MainApp::deriveAndExecCommand_Filter(std::vector<std::string> command) {
 		std::cout << std::endl << "  Too many arguments" << std::endl;
 		return;
 	}
-	else if (command.size() < 4) {
+	else if (command.size() < 2) {
 		std::cout << std::endl << "  Too few arguments" << std::endl;
 		return;
+	}
+	else if (command.size() == 3 || command.size() == 2) {
+		bool finished = false;
+		bool isCorrectArg = false;
+		for (int i = 1; i < command.size(); i++) {
+			if (command[i] == "-s") {
+				isCorrectArg = true;
+			}
+			else if (command[i] == "-1" || command[i] == "-0") {
+				if (command[i] == "-1")
+					finished = true;
+				else
+					finished = false;
+			}
+		}
+		if (isCorrectArg) {
+			if (finished)
+				execCommand_Filter(EntryStatus::FINISHED);
+			else
+				execCommand_Filter(EntryStatus::NOT_FINISHED);
+			return;
+		}
+		else {
+			std::cout << "  Wrong use of command" << std::endl;
+			return;
+		}
 	}
 	for (int i = 1; i < command.size(); i++) {
 		if (command[i] == "-ed" || command[i] == "-dc") {
@@ -478,8 +503,8 @@ void MainApp::execCommand_Help(std::string flag) {
 			std::cout << "  which will help you to know what reminder to delete" << std::endl;
 		}
 		else if (flag == "-edit") {
-			std::cout << "  Type 'edit n to edit reminder with the index n and you will be" << std::endl;
-			std::cout << "  presented with options to enter information and edit." << std::endl;
+			std::cout << std::endl << "  Type 'edit n to edit reminder with the index n and you will be" << std::endl;
+			std::cout << "  presented with options to enter information and edit." << std::endl << std::endl;
 			std::cout << "  TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
 			std::cout << "  which will help you to know what reminder to delete" << std::endl;
 		}
