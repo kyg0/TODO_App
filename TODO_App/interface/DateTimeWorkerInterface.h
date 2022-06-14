@@ -1,6 +1,6 @@
 #pragma once
 #pragma warnings(disable:4996)
-#include <ctime>
+#include <ctime> // doesn't seem that you need all those includes here. Move unnecessary ones to .c file
 #include <string>
 #include <iostream>
 #include <vector>
