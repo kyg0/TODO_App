@@ -1,12 +1,11 @@
-#pragma once /// be careful with this. It is not always reliable or supported by all complilers. Usually #ifdef is used. It can stay like this, just a reminder
-#pragma warnings(disable:4996) // not a good idea to disable warnings in this phase of the project. They are present for the reason :)
+#pragma once
+#pragma warnings(disable:4996)
 //#define _CRT_SECURE_NO_WARNINGS
 #include <ctime>
 #include <string>
-#include <iostream> // is it needed to be included here, instead on top of the .c file
-#include <regex>  // is it needed to be included here, instead on top of the .c file
-
+#include <iostream>
 #include "DateTimeWorker.h"
+#include <regex>
 
 class DateTime
 {
@@ -19,11 +18,10 @@ private:
 	int seconds;
 
 public:
-	DateTimeWorkerInterface* dtWorker = new DateTimeWorker(); // Why this initialization is done here and not in constructor? And why is it public?
+	DateTimeWorkerInterface* dtWorker = new DateTimeWorker();
 
 	DateTime(DateTimeWorkerInterface* worker = nullptr);
-	DateTime(int, int, int); // You should also add descriptive argument names in all those definitions, instead of just types, so that it is clear what each argument represents.
-                             // It has great significance for later maintenace. Otherwise, it needs to be documented thorougly somewhere else
+	DateTime(int, int, int);
 	DateTime(int, int, int, int, int);
 	DateTime(int, int, int, int, int, int);
 	DateTime(std::string&);

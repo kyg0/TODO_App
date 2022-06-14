@@ -316,7 +316,7 @@ std::string ReminderEntry::getFileNameFormatFromDate(DateTime& dt)
 	return date;
 }
 
-std::string ReminderEntry::getCorrectFormatForDate(int n) // Suggestion: rename function to addLeadingZeroToDate
+std::string ReminderEntry::getCorrectFormatForDate(int n)
 {
 	if (n >= 10) {
 		return std::to_string(n);

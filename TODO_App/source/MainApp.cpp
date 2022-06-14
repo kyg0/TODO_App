@@ -1,5 +1,3 @@
-// Implementation seems to get complex :) But that is how it is. Good work there
-
 #include "../include/MainApp.h"
 
 MainApp::MainApp()

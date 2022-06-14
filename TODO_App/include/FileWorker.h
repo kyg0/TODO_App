@@ -11,6 +11,6 @@ public:
 	std::vector<std::string> readFromFileInLines(std::string);
 	bool deleteFile(std::string);
 	std::vector<std::string> getAllFromDirectory(std::string);
-	bool exists(std::string); // rename function to fileExists
+	bool exists(std::string);
 };
 

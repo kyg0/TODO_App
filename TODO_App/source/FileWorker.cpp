@@ -48,13 +48,14 @@ std::vector<std::string> FileWorker::readFromFileInLines(std::string path)
 }
 
 bool FileWorker::deleteFile(std::string path) {
-	if (std::remove(path.c_str()) == 0) { // nice!
+	if (std::remove(path.c_str()) == 0) {
 		return true;
 	}
 	else
 	{
 		return false;
 	}
+	
 }
 
 std::vector<std::string> FileWorker::getAllFromDirectory(std::string path)
@@ -71,8 +72,7 @@ std::vector<std::string> FileWorker::getAllFromDirectory(std::string path)
 bool FileWorker::exists(std::string path) {
 	std::ifstream file(path);
 
-	if (file.is_open()) // add { } brackets even if you have only return statement. Easier to read
-                        // and you will be consistent
+	if (file.is_open())
 		return true;
 	return false;
 }

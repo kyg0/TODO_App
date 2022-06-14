@@ -4,8 +4,6 @@
 
 using namespace ::testing;
 
-// Check if framework supports test suits (test set up and tear ups, to remove dependencies between tests)
-
 TEST(DateTimeTests_Constructor, DefaultConstructor_withMock) {
 	DateTimeWorkerMock* mock = new DateTimeWorkerMock();
 
@@ -20,12 +18,6 @@ TEST(DateTimeTests_Constructor, DefaultConstructor_withMock) {
 	Mock::VerifyAndClear(mock);
 }
 
-// It should be split into smaller parts. Each of those should be a separate test that covers some test case.
-// A lot better that have one massive test. Also in that way easier to isolate tests and remove possibility that
-// previous checks will affect following steps.
-// Yes, at the end it will give you a lot of tests, but making it atomic, it will help you to easier locate problem later on
-//
-// In general, I like the range of tests that you provided. I can see that you have invested effort for thinking about corner cases. Good work!
 TEST(DateTimeTests_Constructor, Constructor_WithFormat) {
 	std::string str1 = "01/01/2022 01:01:01";
 	DateTime dt1(str1);
@@ -343,7 +335,7 @@ TEST(DateTimeTests_Constructor, Constructor_WithFormat_WrongValues) {
 		EXPECT_STREQ(err, "Wrong value for days");
 	}
 
-	try { // Same as the one above?
+	try {
 		std::string str = "31/11/2022 12:00:00";
 		DateTime dt(str);
 

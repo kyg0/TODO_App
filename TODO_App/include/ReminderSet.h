@@ -1,5 +1,5 @@
 #pragma once
-#include "ReminderEntry.h" // Move this user-defined include bellow system includes
+#include "ReminderEntry.h"
 #include <map>
 #include <vector>
 #include <filesystem>
@@ -16,7 +16,7 @@ class ReminderSet
 private:
 	std::map<int, ReminderEntry*> entries;
 public:
-	FileWorkerInterface* fileWorker = new FileWorker(); // Q: Why initialize it here instead of in constructor?
+	FileWorkerInterface* fileWorker = new FileWorker();
 	DateTimeWorkerInterface* dtWorker = new DateTimeWorker();
 
 	ReminderSet(FileWorkerInterface* fw = nullptr, DateTimeWorkerInterface* dtw = nullptr);
