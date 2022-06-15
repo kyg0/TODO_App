@@ -22,6 +22,7 @@ private:
 
 	void execCommand(std::string command); //
 	void execCommand_Help(std::string flag = std::string());
+	void execCommand_Get(std::string);
 	void execCommand_Get();
 	void execCommand_New(std::vector<std::string>);
 	void execCommand_Delete(int);

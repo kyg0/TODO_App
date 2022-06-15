@@ -35,11 +35,16 @@ void MainApp::execCommand(std::string command)
 		execCommand_New(cmd_split);
 	}
 	else if (cmd == "get") {
-		if (cmd_split.size() > 1) {
+		if (cmd_split.size() > 2) {
 			std::cout << std::endl << "  Too many arguments" << std::endl;
 			return;
 		}
-		execCommand_Get();
+		else if (cmd_split.size() == 1) {
+			execCommand_Get();
+		}
+		else if (cmd_split.size() == 2) {
+
+		}
 	}
 	else if (cmd == "delete") {
 		if (cmd_split.size() > 2) {
@@ -521,6 +526,18 @@ void MainApp::execCommand_Help(std::string flag) {
 
 void MainApp::execCommand_Get() {
 	printSet(this->set->getAll());
+}
+
+void MainApp::execCommand_Get(std::string index) {
+	int n = std::stoi(index);
+
+	std::map<int, ReminderEntry*>::const_iterator elem = set->getAll().find(n);
+	if (elem == set->getAll().end()) {
+		std::cout << "  Reminder with index < " << n << " > doesnt exist" << std::endl;
+	}
+	else {
+		//TODO
+	}
 }
 
 void MainApp::execCommand_Delete(int index) {
