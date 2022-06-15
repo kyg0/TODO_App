@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <iostream>
 
-
+// Minor thing: just move 3 defines here, bellow all includes. Really liked that you used defines!
 
 enum EntryStatus {
 	NOT_FINISHED = false,
