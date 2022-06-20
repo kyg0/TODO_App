@@ -1,17 +1,22 @@
 #include "../include/ReminderEntry.h"
 
-
 ReminderEntry::ReminderEntry(DateTimeWorkerInterface* dtw, FileWorkerInterface* fw)
 {
 	if (fw != nullptr) {
-		//std::cout << "ReminderEntry() => " << fw << std::endl;
 		fileWorker = std::move(fw);
 	}
-	dateCreated = new DateTime(dtw);
-	executionDate = NULL;
+
+	try {
+		dateCreated = new DateTime(dtw);
+		executionDate = NULL;
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+
 	title = "";
 	description = "";
-	filePath = "out/_" + getFileNameFormatFromDate(*dateCreated) + "_00000000_000000";
+	filePath = "out/_" + getFileNameFormatFromDate(*dateCreated) + "_" + NULL_DATETIME_FORMAT_FILENAME;
 
 	writeInFile();
 }
@@ -22,8 +27,13 @@ ReminderEntry::ReminderEntry(std::string title, std::string description, DateTim
 		fileWorker = std::move(fw);
 	}
 
-	dateCreated = new DateTime(dtw);
-	executionDate = NULL;
+	try {
+		dateCreated = new DateTime(dtw);
+		executionDate = NULL;
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
 
 	if (title.length() > MAX_TITLE_LEN) {
 		this->title = title.substr(0, MAX_TITLE_LEN);
@@ -42,57 +52,64 @@ ReminderEntry::ReminderEntry(std::string title, std::string description, DateTim
 
 	filePath = "out/" + this->title + "_" + getFileNameFormatFromDate(*dateCreated) + "_";
 
-	std::string execDatePath = "00000000_000000";
+	std::string execDatePath = NULL_DATETIME_FORMAT_FILENAME;
 	
 	filePath += execDatePath;
 	writeInFile();
 }
 
-ReminderEntry::ReminderEntry(std::vector<std::string> reading, DateTimeWorkerInterface* dtw, FileWorkerInterface* fw){
+ReminderEntry::ReminderEntry(std::vector<std::string> readingFromFile, DateTimeWorkerInterface* dtw, FileWorkerInterface* fw){
 	if (fw != nullptr) {
 			fileWorker = std::move(fw);
 	}
 
-	if (reading.size() != 5) {
-		throw "Wrong format";
+	const int numOfLines = 5;
+
+
+	if (readingFromFile.size() != numOfLines) {
+		throw ERR_MSG_FOR_FORMAT;
 	}
 	
-	if (reading[0].substr(0, 7) != "Title: ") {
-		throw "Wrong format";
+	if (readingFromFile[0].substr(0, 7) != "Title: ") {
+		throw ERR_MSG_FOR_FORMAT;
 	}
-	if (reading[1].substr(0, 13) != "Description: ") {
-		throw "Wrong format";
+	if (readingFromFile[1].substr(0, 13) != "Description: ") {
+		throw ERR_MSG_FOR_FORMAT;
 	}
-	if (reading[2].substr(0, 14) != "Date created: ") {
-		throw "Wrong format";
+	if (readingFromFile[2].substr(0, 14) != "Date created: ") {
+		throw ERR_MSG_FOR_FORMAT;
 	}
-	if (reading[3].substr(0, 16) != "Execution date: ") {
-		throw "Wrong format";
+	if (readingFromFile[3].substr(0, 16) != "Execution date: ") {
+		throw ERR_MSG_FOR_FORMAT;
 	}
-	if (reading[4].substr(0, 8) != "Status: ") {
-		throw "Wrong format";
+	if (readingFromFile[4].substr(0, 8) != "Status: ") {
+		throw ERR_MSG_FOR_FORMAT;
 	}
 
 
-	this->title = reading[0].substr(7, reading[0].size() - 7);
-	this->description = reading[1].substr(13, reading[1].size() - 13);
-	std::string dt = reading[2].substr(14, reading[2].size() - 14);
-	this->dateCreated = new DateTime(dt);
+	this->title = readingFromFile[0].substr(7, readingFromFile[0].size() - 7).substr(0, MAX_TITLE_LEN);
+	this->description = readingFromFile[1].substr(13, readingFromFile[1].size() - 13).substr(MAX_DESCRIPTION_LEN);
 	
-	std::string tmp = reading[3].substr(16, reading[3].size() - 16);
-	if (tmp == "00/00/0000 00:00:00")
-		this->executionDate = nullptr;
-	else {
-		try {
+	
+	try {
+		std::string dt = readingFromFile[2].substr(14, readingFromFile[2].size() - 14);
+		this->dateCreated = new DateTime(dt);
+
+		std::string tmp = readingFromFile[3].substr(16, readingFromFile[3].size() - 16);
+		if (tmp == NULL_DATETIME_FORMAT_OUTPUT)
+			this->executionDate = nullptr;
+		else {
 			this->executionDate = new DateTime(tmp);
 		}
-		catch (const char* err) {
-			throw err;
-			//std::cout << err << std::endl;
-		}
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (std::exception err) {
+		throw err;
 	}
 
-	tmp = reading[4].substr(8, reading[4].size() - 8);
+	std::string tmp = readingFromFile[4].substr(8, readingFromFile[4].size() - 8);
 	if (tmp == "NOT FINISHED") {
 		this->status = EntryStatus::NOT_FINISHED;
 	}
@@ -115,6 +132,7 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 	dateCreated = new DateTime(dtw);
 
 	try {
+		dateCreated = new DateTime(dtw);
 		checkExecDateValidity(*execDate);
 
 		this->executionDate = new DateTime(
@@ -122,7 +140,10 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 			execDate->getHours(), execDate->getMinutes(), execDate->getSeconds()
 		);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidExecutionDate err) {
 		throw err;
 	}
 
@@ -148,14 +169,11 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 }
 
 ReminderEntry::ReminderEntry(const ReminderEntry& other, FileWorkerInterface* fw) {
-	//std::cout << "Copy constructor called : ";
-	
 	if (this->filePath == "") {
 		if (fw != nullptr) {
 			this->fileWorker = std::move(fw);
 		}
 		*this = other;
-		//std::cout << "path : " << this->filePath << std::endl;
 	}
 	else {
 		if (deleteEntry(this->filePath)) {
@@ -239,7 +257,10 @@ void ReminderEntry::setExecutionDate(DateTime& execDate)
 	try {
 		checkExecDateValidity(execDate);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidExecutionDate err) {
 		throw err;
 	}
 
@@ -297,34 +318,30 @@ void ReminderEntry::setStatus(EntryStatus status)
 void ReminderEntry::checkExecDateValidity(DateTime& execDate)
 {
 	if (execDate > *dateCreated) {
-		throw ERR_MSG;
+		throw InvalidExecutionDate(ERR_MSG_INVALID_EXEC_DATE);
 	}
-	
 }
 
 std::string ReminderEntry::getFileNameFormatFromDate(DateTime& dt)
 {
-	//std::string date = std::to_string(dt.getDay()) + "_" + std::to_string(dt.getMonth()) + "_" + std::to_string(dt.getYear()) 
 	std::string date;
 	if (&dt == NULL) {
-		date = "00000000_000000";
+		date = NULL_DATETIME_FORMAT_FILENAME;
 	}
 	else {
-		date = getCorrectFormatForDate(dt.getDay()) + getCorrectFormatForDate(dt.getMonth()) + getCorrectFormatForDate(dt.getYear()) + "_" +
-			getCorrectFormatForDate(dt.getHours()) + getCorrectFormatForDate(dt.getMinutes()) + getCorrectFormatForDate(dt.getSeconds());
+		date = addLeadingZeroToDate(dt.getDay()) + addLeadingZeroToDate(dt.getMonth()) + addLeadingZeroToDate(dt.getYear()) + "_" +
+			addLeadingZeroToDate(dt.getHours()) + addLeadingZeroToDate(dt.getMinutes()) + addLeadingZeroToDate(dt.getSeconds());
 	}
 	return date;
 }
 
-std::string ReminderEntry::getCorrectFormatForDate(int n)
-{
+std::string ReminderEntry::addLeadingZeroToDate(int n) {
 	if (n >= 10) {
 		return std::to_string(n);
 	}
 	else {
 		return "0" + std::to_string(n);
 	}
-	//return std::string();
 }
 
 std::string ReminderEntry::getFileOutput()
@@ -334,7 +351,7 @@ std::string ReminderEntry::getFileOutput()
 		execDate_tmp = executionDate->getFormat(true);
 	}
 	else {
-		execDate_tmp = "00/00/0000 00:00:00";
+		execDate_tmp = NULL_DATETIME_FORMAT_OUTPUT;
 	}
 
 	std::string fileOutput = "Title: " + title + "\nDescription: " + description + "\nDate created: " + dateCreated->getFormat(true) + "\nExecution date: " 
@@ -356,7 +373,7 @@ void ReminderEntry::setFilePath()
 
 	std::string execDatePath;
 	if (executionDate == NULL) {
-		execDatePath = "00000000_000000";
+		execDatePath = NULL_DATETIME_FORMAT_FILENAME;
 	}
 	else {
 		execDatePath = getFileNameFormatFromDate(*dateCreated);
@@ -385,16 +402,12 @@ void ReminderEntry::editEntry(ReminderEntry* edit)
 	DateTime* _dateCreated = edit->dateCreated;
 	DateTime* _execDate = edit->executionDate;
 	EntryStatus _status = edit->status;
-	
-	//std::cout << "Stari path: " << filePath << std::endl;
-	//std::cout << "Novi path: " << edit->getFilePath() << std::endl;
 
 	if (!deleteEntry(filePath)) {
-		std::cout << "Something went wrong" << std::endl;
-		return;
+		throw std::exception(ERR_DEFAULT_MSG);
 	}
-	std::string newFilePath = edit->getFilePath();
 
+	std::string newFilePath = edit->getFilePath();
 	filePath = newFilePath;
 
 	this->title = _title;
@@ -405,13 +418,11 @@ void ReminderEntry::editEntry(ReminderEntry* edit)
 	std::string newFileOutput = getFileOutput();
 
 	fileWorker->writeInFile(filePath, newFileOutput);
-	//writeInFile();
 }
 
 bool ReminderEntry::deleteEntry(std::string filePath)
 {
 	if (fileWorker->deleteFile(filePath)) {
-
 		return true;
 	}
 	else

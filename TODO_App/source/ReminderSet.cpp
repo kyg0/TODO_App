@@ -10,54 +10,59 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 	}
 
 	int i = 1;
-
 	std::string path = "out/";
-
 	std::vector<std::string> fileReading;
-	
 	std::vector<std::string> files = fileWorker->getAllFromDirectory(path);
 
-	for (auto& filePath : files) {
-		
+	try {
 
-		if (fileWorker->exists(filePath)) {
-			fileReading = fileWorker->readFromFileInLines(filePath);
-
-			//TODO
-			entries.insert(std::pair<int, ReminderEntry*>(i, new ReminderEntry(fileReading, dtWorker, fileWorker)));
-
-			i++;
+		for (auto& filePath : files) {
+			if (fileWorker->fileExists(filePath)) {
+				fileReading = fileWorker->readFromFileInLines(filePath);
+				entries.insert(std::pair<int, ReminderEntry*>(i, new ReminderEntry(fileReading, dtWorker, fileWorker)));
+				i++;
+			}
 		}
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidIndexException err) {
+		throw err;
 	}
 	
 }
 
 ReminderEntry* ReminderSet::readFromFile(std::string path)
 {
-	//ReminderEntry* e = new ReminderEntry();
 	std::string reading = fileWorker->readFromFile(path);
-
-	//TODO
 	return new ReminderEntry(std::vector<std::string>(), fileWorker);
 }
 
-ReminderSet::~ReminderSet() {
-	//std::cout << "DESTRUKTOR ~ReminderSet()" << std::endl;
-}
+ReminderSet::~ReminderSet() 
+{}
 
 void ReminderSet::makeNewEntry(ReminderEntry* newEntry)
 {
 	if (newEntry == nullptr) {
-		return;
+		throw NullObjectException(ERR_MSG_NULL_NEW_OBJ);
 	}
-	for (int i = 1;; i++) {
-		if (!entries.count(i)) {
-			if (!fileWorker->exists(newEntry->getFilePath())) {
-				fileWorker->writeInFile(newEntry->getFilePath(), newEntry->getFileOutput());
+	try {
+		for (int i = 1;; i++) {
+			if (!entries.count(i)) {
+				if (!fileWorker->fileExists(newEntry->getFilePath())) {
+					fileWorker->writeInFile(newEntry->getFilePath(), newEntry->getFileOutput());
+				}
+				entries.insert(std::pair<int, ReminderEntry*>(i, newEntry));
+				break;
 			}
-			entries.insert(std::pair<int, ReminderEntry*>(i, newEntry));
-			break;
 		}
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidExecutionDate err) {
+		throw err;
 	}
 
 }
@@ -73,19 +78,18 @@ void ReminderSet::deleteEntry(int index)
 		entries.erase(entry);
 	}
 	else {
-		throw "Invalid index";
+		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
 }
 
-void ReminderSet::deleteEntry(ReminderEntry* entry)
+void ReminderSet::deleteEntry(ReminderEntry* entryToDelete)
 {
-	if (entry == nullptr) {
-		return;
+	if (entryToDelete == nullptr) {
+		NullObjectException(ERR_MSG_NULL_OBJ);
 	}
 	std::map<int, ReminderEntry*>::iterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
-		if (*entry == *it->second) {
-			//it->second->setFileWorker(fileWorker);
+		if (*entryToDelete == *it->second) {
 			it->second->fileWorker = fileWorker;
 			it->second->deleteEntry(it->second->getFilePath());
 			entries.erase(it);
@@ -96,8 +100,11 @@ void ReminderSet::deleteEntry(ReminderEntry* entry)
 
 void ReminderSet::editEntry(ReminderEntry* old, ReminderEntry* edit)
 {
-	if (old == nullptr || edit == nullptr) {
-		return;
+	if (old == nullptr){
+		throw NullObjectException(ERR_MSG_NULL_OBJ);
+	}
+	if (edit == nullptr) {
+		throw NullObjectException(ERR_MSG_NULL_NEW_OBJ);
 	}
 	
 	std::map<int, ReminderEntry*>::iterator it;
@@ -111,10 +118,10 @@ void ReminderSet::editEntry(ReminderEntry* old, ReminderEntry* edit)
 void ReminderSet::editEntry(int index, ReminderEntry* edit)
 {
 	if (edit == nullptr) {
-		throw "New object is null";
+		throw NullObjectException(ERR_MSG_NULL_OBJ);
 	}
 	if (!entries.count(index)) {
-		throw "Invalid index";
+		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
 	std::map<int, ReminderEntry*>::iterator it;
 	it = entries.find(index);
@@ -126,13 +133,13 @@ std::map<int, ReminderEntry*> ReminderSet::getAll()
 	return entries;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::filterByDateCreated(FilterMode filter,DateTime* filterDate, bool descending)
+std::map<int, ReminderEntry*> ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDate, bool descending)
 {
 	std::vector<ReminderEntry*> vector;
 	std::map<int, ReminderEntry*> filtered;
 	std::map<int, ReminderEntry*>::iterator it;
 
-	switch (filter) {
+	switch (filterMode) {
 	case FilterMode::BeforeDate:
 		for (it = entries.begin(); it != entries.end(); it++) {
 			if (( * it->second->getDateCreated() > *filterDate) || (*it->second->getDateCreated() == *filterDate)) {
@@ -181,12 +188,12 @@ std::map<int, ReminderEntry*> ReminderSet::filterByDateCreated(FilterMode filter
 	return filtered;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::filterByExecDate(FilterMode filter, DateTime* filterDate, bool descending){
+std::map<int, ReminderEntry*> ReminderSet::filterByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending){
 	std::vector<ReminderEntry*> vector;
 	std::map<int, ReminderEntry*> filtered;
 	std::map<int, ReminderEntry*>::iterator it;
 
-	switch (filter) {
+	switch (filterMode) {
 	case FilterMode::BeforeDate:
 		for (it = entries.begin(); it != entries.end(); it++) {
 			if ((*it->second->getExecutionDate() > *filterDate) || (*it->second->getExecutionDate() == *filterDate)) {

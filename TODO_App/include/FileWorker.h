@@ -1,16 +1,15 @@
 #pragma once
 #include "../interface/FileWorkerInterface.h"
-#define ERROR_MSG "Failed to open file"
 
 class FileWorker :
     public FileWorkerInterface
 {
 public:
-	void writeInFile(std::string, std::string);
-	std::string readFromFile(std::string);
-	std::vector<std::string> readFromFileInLines(std::string);
-	bool deleteFile(std::string);
-	std::vector<std::string> getAllFromDirectory(std::string);
-	bool exists(std::string);
+	void writeInFile(std::string path, std::string output);
+	std::string readFromFile(std::string path);
+	std::vector<std::string> readFromFileInLines(std::string path);
+	bool deleteFile(std::string path);
+	std::vector<std::string> getAllFromDirectory(std::string dir_path);
+	bool fileExists(std::string path);
 };
 

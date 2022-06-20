@@ -1,15 +1,22 @@
 #pragma once
-#define ERR_MSG "Invalid execution date.Must be in the future"
-#define MAX_TITLE_LEN 30
-#define MAX_DESCRIPTION_LEN 1000
 #include <fstream>
-#include "../include/FileWorker.h"
-#include "DateTime.h"
-#include "DateTimeWorker.h";
 #include <filesystem>
 #include <iostream>
 
+#include "../include/FileWorker.h"
+#include "DateTime.h"
+#include "DateTimeWorker.h"
+#include "../exception/InvalidExecutionDate.h"
 
+
+#define ERR_DEFAULT_MSG "Something went wrong"
+
+
+#define NULL_DATETIME_FORMAT_FILENAME "00000000_000000"
+#define NULL_DATETIME_FORMAT_OUTPUT "00/00/0000 00:00:00"
+
+#define MAX_TITLE_LEN 30
+#define MAX_DESCRIPTION_LEN 1000
 
 enum EntryStatus {
 	NOT_FINISHED = false,
@@ -28,16 +35,15 @@ private:
 	std::string filePath;
 
 public:
-	//FileWorkerInterface* fileWorker = new FileWorker();
 	FileWorkerInterface* fileWorker = new FileWorker();
 
 	ReminderEntry(DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
-	ReminderEntry(std::string, std::string, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
-	ReminderEntry(DateTime*, std::string title, std::string description, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
-	ReminderEntry(std::vector<std::string>, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr); // first argument is file output
+	ReminderEntry(std::string title, std::string description, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
+	ReminderEntry(DateTime* execDate, std::string title, std::string description, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
+	ReminderEntry(std::vector<std::string> readingFromFile, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr); // first argument is file output
 	ReminderEntry(const ReminderEntry&, FileWorkerInterface* fw = nullptr);
-	ReminderEntry& operator=(const ReminderEntry&);
-	bool operator==(ReminderEntry&);
+	ReminderEntry& operator=(const ReminderEntry& other);
+	bool operator==(ReminderEntry& other);
 
 	~ReminderEntry();
 	
@@ -48,19 +54,19 @@ public:
 	EntryStatus getEntryStatus();
 	std::string getFilePath();
 
-	void setExecutionDate(DateTime&);
-	void setTitle(std::string);
-	void setDescription(std::string);
-	void setStatus(EntryStatus);
+	void setExecutionDate(DateTime& execDate);
+	void setTitle(std::string title);
+	void setDescription(std::string description);
+	void setStatus(EntryStatus status);
 	void changeEntryStatus();
 
-	void editEntry(ReminderEntry*);
-	bool deleteEntry(std::string);
+	void editEntry(ReminderEntry* edit);
+	bool deleteEntry(std::string filePath);
 private:
 	void writeInFile();
-	void checkExecDateValidity(DateTime&);
-	std::string getFileNameFormatFromDate(DateTime&);
-	std::string getCorrectFormatForDate(int);
+	void checkExecDateValidity(DateTime& dt);
+	std::string getFileNameFormatFromDate(DateTime& dt);
+	std::string addLeadingZeroToDate(int n);
 public:
 	std::string getFileOutput();
 

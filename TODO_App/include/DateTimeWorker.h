@@ -1,7 +1,6 @@
 #pragma once
 #include "../interface/DateTimeWorkerInterface.h"
 
-
 class DateTimeWorker : public DateTimeWorkerInterface
 {
 public:

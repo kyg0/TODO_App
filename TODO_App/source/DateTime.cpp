@@ -1,35 +1,34 @@
-#include "../include/DateTime.h"
+#include "../include/DateTime.h" // Just remark: Usualy you can avoid specifying full path through 
+                                 // build system, but it is ok to leave it here as it is
 
 
 DateTime::DateTime(DateTimeWorkerInterface* worker)
 {
 	if (worker != nullptr) {
-		this->dtWorker = worker;
+		this->dtWorker = worker; // Q: What happens if worker is null? You intentionaly added this logic for optionally changing worker? If dtWorker is null, program will crash 
+								 // IMPORTANT: it should be also covered with tests
 	}
-	std::vector<int> vec = dtWorker->GetCurrentDateAndTime();
 
-	this->day = vec[0];
-	this->month = vec[1];
-	this->year = vec[2];
-	this->hours = vec[3];
-	this->minutes = vec[4];
-	this->seconds = vec[5];
+	try {
+		std::vector<int> vec = dtWorker->GetCurrentDateAndTime();
+		InitDate(vec[0], vec[1], vec[2]);
+		InitTime(vec[3], vec[4], vec[5]);
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (std::exception err) {
+		throw err;
+	}
 }
 
 DateTime::DateTime(int day, int month, int year)
 {
 	try {
-		isDateValid(day, month, year);
-		this->day = day;
-		this->month = month;
-		this->year = year;
-
-
-		this->minutes = 0;
-		this->hours = 0;
-		this->seconds = 0;
+		InitDate(day, month, year);
+		InitTime(DEFAULT_TIME_VALUE, DEFAULT_TIME_VALUE, DEFAULT_TIME_VALUE);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
 }
@@ -37,65 +36,38 @@ DateTime::DateTime(int day, int month, int year)
 DateTime::DateTime(int day, int month, int year, int hours, int minutes) 
 {
 	try {
-		isDateValid(day, month, year);
+		InitDate(day, month, year);
+		InitTime(hours, minutes, DEFAULT_TIME_VALUE);
 	}
-	catch(const char* err) {
+	catch(DateTimeException err) {
 		throw err;
 	}
-
-	if (hours < 0 || hours > 23) {
-		throw "Hours can have value between 0 and 23";
-	}
-	if (minutes < 0 || minutes >59) {
-		throw "Minutes can have value between 0 and 59";
-	}
-
-	this->day = day;
-	this->month = month;
-	this->year = year;
-	this->hours = hours;
-	this->minutes = minutes;
-	this->seconds = 0;
 }
 
 DateTime::DateTime(int day, int month, int year, int hours, int minutes, int seconds) 
 {
 	try {
-		isDateValid(day, month, year);
+		InitDate(day, month, year);
+		InitTime(hours, minutes, seconds);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
-
-	if (hours < 0 || hours > 23) {
-		throw "Hours can have value between 0 and 23";
-	}
-	if (minutes < 0 || minutes >59) {
-		throw "Minutes can have value between 0 and 59";
-	}
-	if (seconds < 0 || seconds > 59) {
-		throw "Seconds can have value between 0 and 59";
-	}
-
-	this->day = day;
-	this->month = month;
-	this->year = year;
-	this->hours = hours;
-	this->minutes = minutes;
-	this->seconds = seconds;
 }
 
-DateTime::DateTime(std::string& format)
+DateTime::DateTime(std::string& dt_format)
 {
-	if (format.size() != 19 && format.size() != 16 && format.size() != 10) {
-		throw "Wrong format";
+	if (dt_format.size() != FULL_DATE_TIME_FORMAT_SIZE 
+		&& dt_format.size() != DATE_TIME_FORMAT_SIZE_NOSEC 
+		&& dt_format.size() != DATE_FORMAT_SIZE) {
+		throw DateTimeException(ERR_MSG_FOR_FORMAT);
 	}
 	std::string tmp;
 	std::regex reg_pattern("[0-9]{2}.[0-9]{2}.[0-9]{4}( [0-9]{2}.[0-9]{2}.[0-9]{2}| [0-9]{2}.[0-9]{2}|)$");
 	std::smatch match;
 	
-	if (!regex_search(format, match, reg_pattern)) {
-		throw "Wrong format";
+	if (!regex_search(dt_format, match, reg_pattern)) {
+		throw DateTimeException(ERR_MSG_FOR_FORMAT);
 	}
 	std::string _day;
 	std::string _month;
@@ -104,57 +76,39 @@ DateTime::DateTime(std::string& format)
 	std::string _minute;
 	std::string _second;
 
-	if (format.size() == 19) {
-		_day = format.substr(0, 2);
-		_month = format.substr(3, 2);
-		_year = format.substr(6, 4);
-		_hour = format.substr(11, 2);
-		_minute = format.substr(14, 2);
-		_second = format.substr(17, 2);
+	if (dt_format.size() == FULL_DATE_TIME_FORMAT_SIZE) {
+		_day = dt_format.substr(0, 2);
+		_month = dt_format.substr(3, 2);
+		_year = dt_format.substr(6, 4);
+		_hour = dt_format.substr(11, 2);
+		_minute = dt_format.substr(14, 2);
+		_second = dt_format.substr(17, 2);
 	}
-	else if (format.size() == 16) {
-		_day = format.substr(0, 2);
-		_month = format.substr(3, 2);
-		_year = format.substr(6, 4);
-		_hour= format.substr(11, 2);
-		_minute = format.substr(14, 2);
-		_second = "0";
+	else if (dt_format.size() == DATE_TIME_FORMAT_SIZE_NOSEC) {
+		_day = dt_format.substr(0, 2);
+		_month = dt_format.substr(3, 2);
+		_year = dt_format.substr(6, 4);
+		_hour= dt_format.substr(11, 2);
+		_minute = dt_format.substr(14, 2);
+		_second = std::to_string(DEFAULT_TIME_VALUE);
 	}
 	else{
-		_day = format.substr(0, 2);
-		_month = format.substr(3, 2);
-		_year = format.substr(6, 4);
-		_hour = "0";
-		_minute = "0";
-		_second = "0";
+		_day = dt_format.substr(0, 2);
+		_month = dt_format.substr(3, 2);
+		_year = dt_format.substr(6, 4);
+		_hour = std::to_string(DEFAULT_TIME_VALUE);
+		_minute = std::to_string(DEFAULT_TIME_VALUE);
+		_second = std::to_string(DEFAULT_TIME_VALUE);
 	}
 	
 
 	try {
-		isDateValid(std::stoi(_day), std::stoi(_month), std::stoi(_year));
+		InitDate(std::stoi(_day), std::stoi(_month), std::stoi(_year));
+		InitTime(std::stoi(_hour), std::stoi(_minute), std::stoi(_second));
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
-
-	
-	if (std::stoi(_hour) < 0 || std::stoi(_hour) > 23) {
-		throw "Wrong value for hours";
-	}
-	if (std::stoi(_minute) < 0 || std::stoi(_minute) > 59) {
-		throw "Wrong value for minutes";
-	}
-	if (std::stoi(_second) < 0 || std::stoi(_second) > 59) {
-		throw "Wrong value for seconds";
-	}
-	
-
-	this->day = std::stoi(_day);
-	this->month = std::stoi(_month);
-	this->year = std::stoi(_year);
-	this->hours = std::stoi(_hour);
-	this->minutes = std::stoi(_minute);
-	this->seconds = std::stoi(_second);
 }
 
 DateTime::DateTime(const DateTime& other)
@@ -164,7 +118,6 @@ DateTime::DateTime(const DateTime& other)
 
 DateTime::DateTime(DateTime&& other) {
 	std::swap(*this, other);
-
 }
 
 DateTime::~DateTime()
@@ -265,54 +218,48 @@ bool DateTime::operator==(DateTime& other)
 void DateTime::setDay(int day)
 {
 	try {
-		isDateValid(day, month, year);
+		InitDate(day, this->month, this->year);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
-
-	this->day = day;
 }
 
 void DateTime::setMonth(int month) {
 	try {
-		isDateValid(day, month, year);
+		InitDate(this->day, month, this->year);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
-
-	this->month = month;
 }
 
 void DateTime::setYear(int year) {
 	try {
-		isDateValid(day, month, year);
+		InitDate(this->day, this->month, year);
 	}
-	catch (const char* err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
-
-	this->year = year;
 }
 
 void DateTime::setHours(int hours) {
-	if (hours < 0 || hours > 23)
-		throw "Wrong value for hours";
+	if (hours < MIN_HOURS_VALUE || hours > MAX_HOURS_VALUE)
+		throw DateTimeException(ERR_MSG_FOR_HOURS);
 
 	this->hours = hours;
 }
 
 void DateTime::setMinutes(int minutes) {
-	if (minutes < 0 || minutes > 59)
-		throw "Wrong value for minutes";
+	if (minutes < MIN_MINUTES_VALUE || minutes > MAX_MINUTES_VALUE)
+		throw DateTimeException(ERR_MSG_FOR_MINUTES);
 	
 	this->minutes = minutes;
 }
 
 void DateTime::setSeconds(int seconds) {
-	if (seconds < 0 || seconds > 59)
-		throw "Wrong value for seconds";
+	if (seconds < MIN_SECONDS_VALUE || seconds > MAX_SECONDS_VALUE)
+		throw DateTimeException(ERR_MSG_FOR_SECONDS);
 	
 	this->seconds = seconds;
 }
@@ -367,55 +314,71 @@ std::string DateTime::getCorrectFormat(int n)
 	return std::to_string(n);
 }
 
-bool DateTime::isDateValid(int dd, int mm, int yy) {
+void DateTime::InitDate(int day, int month, int year) {
 	bool leap = false;
-	if (yy % 400 == 0)
+	if (year % 400 == 0) {
 		leap = true;
-	else if (yy % 100 == 0)
+	}
+	else if (year % 100 == 0) {
 		leap = false;
-	else if (yy % 4 == 0)
+	}
+	else if (year % 4 == 0) {
 		leap = true;
-	else
+	}
+	else {
 		leap = false;
-
-	if (dd < 1 || dd > 31) {
-		throw "Wrong value for days";
 	}
 
-	if (mm < 1 || mm > 12) {
-		throw "Wrong value for month";
+	if (day < MIN_DAY_VALUE || day > MAX_DAY_VALUE_31DAY_MONTH) {
+		throw DateTimeException(ERR_MSG_FOR_DAYS);
 	}
 
-	if (yy < 2020 || yy >9999) {
-		throw "Wrong value for year";
+	if (month < MIN_MONTH_VALUE || month > MAX_MONTH_VALUE) {
+		throw DateTimeException(ERR_MSG_FOR_MONTH);
+	}
+
+	if (year < MIN_YEAR_VALUE || year > MAX_YEAR_VALUE) {
+		throw DateTimeException(ERR_MSG_FOR_YEAR);
 	}
 
 	if (leap) {
-		if (mm == 2 && dd > 29) {
-			throw "Wrong value for days";
+		if (month == Month::FEBRUARY && day > MAX_DAY_VALUE_FEBRUATY_LEAP) {
+			throw DateTimeException(ERR_MSG_FOR_DAYS);
 		}
-		
 	}
 	else {
-		if (mm == 2 && dd > 28) {
-			throw "Wrong value for days";
+		if (month == Month::FEBRUARY && day > MAX_DAY_VALUE_FEBRUARY_NOLEAP) {
+			throw DateTimeException(ERR_MSG_FOR_DAYS);
 		}
 	}
 
-	if ((mm == 4 || mm == 6 || mm == 9 || mm == 11) && dd>30) {
-		switch (mm) {
-		case 4:
-			throw "Wrong value for days";
-		case 6:
-			throw "Wrong value for days";
-		case 9:
-			throw "Wrong value for days";
-		case 11:
-			throw "Wrong value for days";
-		}
+	if ((month == Month::APRIL || month == Month::JUNE || month == Month::SEPTEMBER || month == Month::NOVEMBER) && day > MAX_DAY_VALUE_30DAY_MONTH) {
+		throw DateTimeException(ERR_MSG_FOR_DAYS);
 	}
 
-	return true;
+	this->day = day;
+	this->month = month;
+	this->year = year;
 }
+
+void DateTime::InitTime(int hours, int minutes, int seconds) {
+	if (hours < 0 || hours > 23) {
+		throw DateTimeException(ERR_MSG_FOR_HOURS);
+	}
+
+	if (minutes < 0 || minutes > 59) {
+		throw DateTimeException(ERR_MSG_FOR_MINUTES);
+	}
+
+	if (seconds < 0 || seconds > 59) {
+		throw DateTimeException(ERR_MSG_FOR_SECONDS);
+	}
+
+	this->hours = hours;
+	this->minutes = minutes;
+	this->seconds = seconds;
+}
+
+
 
 
