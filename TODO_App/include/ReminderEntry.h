@@ -1,12 +1,10 @@
 #pragma once
-#include <fstream>
-#include <filesystem>
-#include <iostream>
 
 #include "../include/FileWorker.h"
 #include "DateTime.h"
 #include "DateTimeWorker.h"
 #include "../exception/InvalidExecutionDate.h"
+#include "../exception/NullObjectException.h"
 
 
 #define ERR_DEFAULT_MSG "Something went wrong"
@@ -40,8 +38,8 @@ public:
 	ReminderEntry(DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
 	ReminderEntry(std::string title, std::string description, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
 	ReminderEntry(DateTime* execDate, std::string title, std::string description, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
-	ReminderEntry(std::vector<std::string> readingFromFile, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr); // first argument is file output
-	ReminderEntry(const ReminderEntry&, FileWorkerInterface* fw = nullptr);
+	ReminderEntry(std::vector<std::string> readingFromFile, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
+	ReminderEntry(const ReminderEntry& other, FileWorkerInterface* fw = nullptr);
 	ReminderEntry& operator=(const ReminderEntry& other);
 	bool operator==(ReminderEntry& other);
 

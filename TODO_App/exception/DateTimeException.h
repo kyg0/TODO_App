@@ -1,5 +1,4 @@
 #pragma once
-#include <exception>
 #include <string>
 
 #define ERR_MSG_FOR_DAYS "Wrong value for days"

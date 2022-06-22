@@ -172,68 +172,6 @@ public:
 	}
 };
 
-class DateTime_Comparison : Test {
-	int compare(DateTime& a, DateTime& b) {
-		if (a > b) {
-			return 1;
-		}
-		else if (b > a) {
-			return -1;
-		}
-		else if (a == b) {
-			return 0;
-		}
-		else {
-			throw std::exception("Something went wrong");
-		}
-	}
-
-	int compare(DateTime* a, DateTime* b) {
-		if (*a > *b) {
-			return 1;
-		}
-		else if (*b > *a) {
-			return -1;
-		}
-		else if (*a == *b) {
-			return 0;
-		}
-		else {
-			throw std::exception("Something went wrong");
-		}
-	}
-
-	int compare(DateTime& a, DateTime* b) {
-		if (a > *b) {
-			return 1;
-		}
-		else if (*b > a) {
-			return -1;
-		}
-		else if (a == *b) {
-			return 0;
-		}
-		else {
-			throw std::exception("Something went wrong");
-		}
-	}
-
-	int compare(DateTime* a, DateTime& b) {
-		if (*a > b) {
-			return 1;
-		}
-		else if (b > *a) {
-			return -1;
-		}
-		else if (*a == b) {
-			return 0;
-		}
-		else {
-			throw std::exception("Something went wrong");
-		}
-	}
-};
-
 TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	SetUp("01/01/2022 01:01:01");
 	EXPECT_EQ(dt->getDay(), 1);

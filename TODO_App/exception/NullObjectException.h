@@ -3,6 +3,8 @@
 
 #define ERR_MSG_NULL_NEW_OBJ "New object is null"
 #define ERR_MSG_NULL_OBJ "Object is null"
+#define ERR_MSG_WRONG_FORMAT "Wrong format";
+#define ERR_MSG_DEFAULT "Something went wrong"
 
 class NullObjectException : public std::exception {
 	std::string err_msg;

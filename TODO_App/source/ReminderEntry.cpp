@@ -22,7 +22,6 @@ ReminderEntry::ReminderEntry(DateTimeWorkerInterface* dtw, FileWorkerInterface* 
 }
 
 ReminderEntry::ReminderEntry(std::string title, std::string description, DateTimeWorkerInterface* dtw, FileWorkerInterface* fw) {
-
 	if (fw != nullptr) {
 		fileWorker = std::move(fw);
 	}
@@ -67,28 +66,29 @@ ReminderEntry::ReminderEntry(std::vector<std::string> readingFromFile, DateTimeW
 
 
 	if (readingFromFile.size() != numOfLines) {
-		throw ERR_MSG_FOR_FORMAT;
+		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 	
 	if (readingFromFile[0].substr(0, 7) != "Title: ") {
-		throw ERR_MSG_FOR_FORMAT;
+		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 	if (readingFromFile[1].substr(0, 13) != "Description: ") {
-		throw ERR_MSG_FOR_FORMAT;
+		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 	if (readingFromFile[2].substr(0, 14) != "Date created: ") {
-		throw ERR_MSG_FOR_FORMAT;
+		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 	if (readingFromFile[3].substr(0, 16) != "Execution date: ") {
-		throw ERR_MSG_FOR_FORMAT;
+		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 	if (readingFromFile[4].substr(0, 8) != "Status: ") {
-		throw ERR_MSG_FOR_FORMAT;
+		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 
-
+	
 	this->title = readingFromFile[0].substr(7, readingFromFile[0].size() - 7).substr(0, MAX_TITLE_LEN);
-	this->description = readingFromFile[1].substr(13, readingFromFile[1].size() - 13).substr(MAX_DESCRIPTION_LEN);
+	this->description = readingFromFile[1].substr(13, readingFromFile[1].size() - 13).substr(0,MAX_DESCRIPTION_LEN);
+	
 	
 	
 	try {
