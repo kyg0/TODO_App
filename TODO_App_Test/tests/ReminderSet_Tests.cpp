@@ -60,7 +60,7 @@ TEST(ReminderSet_Tests, ConstructorWithMock) {
 		_output.erase(_output.size() - 1, 1);
 
 
-		EXPECT_CALL(*mock, exists(filePath)).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(filePath)).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(filePath)).WillOnce(Return(fileReading));
 		//EXPECT_CALL(*mock, writeInFile(filePath, _output)).Times(1);
 	}
@@ -163,9 +163,9 @@ TEST(ReminderSet_Tests, MakeNewEntryCase) {
 	FileWorkerMock* setMock = new FileWorkerMock();
 	
 	EXPECT_CALL(*setMock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
-	EXPECT_CALL(*setMock, exists(path1)).WillOnce(Return(true));
-	EXPECT_CALL(*setMock, exists(path2)).WillOnce(Return(true));
-	EXPECT_CALL(*setMock, exists(path3)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(path1)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(path2)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(path3)).WillOnce(Return(true));
 
 	ReminderSet set(setMock);
 	EXPECT_EQ(0, set.getAll().size());
@@ -241,7 +241,7 @@ TEST(ReminderSet_Tests, DeleteEntry_ValidIndex) {
 	filePaths.push_back(e->getFilePath());
 
 	EXPECT_CALL(*fwMock, getAllFromDirectory("out/")).WillOnce(Return(filePaths));
-	EXPECT_CALL(*fwMock, exists(e->getFilePath())).WillOnce(Return(true));
+	EXPECT_CALL(*fwMock, fileExists(e->getFilePath())).WillOnce(Return(true));
 	EXPECT_CALL(*fwMock, readFromFileInLines(e->getFilePath())).WillOnce(Return(outputInLines));
 	EXPECT_CALL(*fwMock, deleteFile(filePaths[0])).WillOnce(Return(true));
 
@@ -304,9 +304,9 @@ TEST(ReminderSet_Tests, DeleteEntry_InvalidIndex) {
 
 	FileWorkerMock* setMock = new FileWorkerMock();
 	EXPECT_CALL(*setMock, getAllFromDirectory("out/")).WillOnce(Return(filePaths));
-	EXPECT_CALL(*setMock, exists(_path1)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(_path1)).WillOnce(Return(true));
 	EXPECT_CALL(*setMock, readFromFileInLines(_path1)).WillOnce(Return(_outputs1));
-	EXPECT_CALL(*setMock, exists(_path2)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(_path2)).WillOnce(Return(true));
 	EXPECT_CALL(*setMock, readFromFileInLines(_path2)).WillOnce(Return(_outputs2));
 
 
@@ -398,7 +398,7 @@ TEST(ReminderSet_Tests, EditEntry_WithConcreteObject) {
 	
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 	for (int i = 0; i < 4; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 	
@@ -485,7 +485,7 @@ TEST(ReminderSet_Tests, EditEntry_WithNullObject){
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 4; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -588,7 +588,7 @@ TEST(ReminderSet_Tests, EditEntry_WithValidIndex) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 4; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -670,9 +670,9 @@ TEST(ReminderSet_Tests, EditEntry_WithInvalidIndex) {
 
 	FileWorkerMock* setMock = new FileWorkerMock();
 	EXPECT_CALL(*setMock, getAllFromDirectory("out/")).WillOnce(Return(filePaths));
-	EXPECT_CALL(*setMock, exists(_path1)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(_path1)).WillOnce(Return(true));
 	EXPECT_CALL(*setMock, readFromFileInLines(_path1)).WillOnce(Return(_outputs1));
-	EXPECT_CALL(*setMock, exists(_path2)).WillOnce(Return(true));
+	EXPECT_CALL(*setMock, fileExists(_path2)).WillOnce(Return(true));
 	EXPECT_CALL(*setMock, readFromFileInLines(_path2)).WillOnce(Return(_outputs2));
 
 
@@ -746,7 +746,7 @@ TEST(ReminderSet_Tests, SortByDateCreated) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -851,7 +851,7 @@ TEST(ReminderSet_Tests, SortByDateCreated_WithOneEntry) {
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -950,7 +950,7 @@ TEST(ReminderSet_Tests, SortByExecDate) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -1052,7 +1052,7 @@ TEST(ReminderSet_Tests, SortByExecDate_WithOneEntry) {
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -1150,7 +1150,7 @@ TEST(ReminderSet_Tests, SortByStatus) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -1275,7 +1275,7 @@ TEST(ReminderSet_Tests, SortByStatus_WithOneEntry) {
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -1373,7 +1373,7 @@ TEST(ReminderSet_Tests, SortByTitle){
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 9; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -1479,7 +1479,7 @@ TEST(ReminderSet_Tests, SortByTitle_WithOneEntry) {
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -1580,7 +1580,7 @@ TEST(ReminderSet_Tests, SortByDescription){
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 
 	for (int i = 0; i < 9; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -1685,7 +1685,7 @@ TEST(ReminderSet_Tests, SortByDescription_WithOneEntry){
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -1782,7 +1782,7 @@ TEST(ReminderSet_Tests, FilterByStatus) {
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -1874,7 +1874,7 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry) {
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -1939,7 +1939,7 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry2) {
 	outputInLines.push_back(lines);
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(_path)).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
@@ -2050,7 +2050,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -2183,7 +2183,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2251,7 +2251,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate_2) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2320,7 +2320,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2386,7 +2386,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate_2) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2509,7 +2509,7 @@ TEST(ReminderSet_Tests, FilterByExecDate) {
 
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
 	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, exists(paths[i])).WillOnce(Return(true));
+		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
 		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
 	}
 
@@ -2641,7 +2641,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2710,7 +2710,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate_2) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2779,7 +2779,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
@@ -2848,7 +2848,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate_2) {
 
 	std::vector<std::string> paths{ _path };
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, exists(paths[0])).WillOnce(Return(true));
+	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
