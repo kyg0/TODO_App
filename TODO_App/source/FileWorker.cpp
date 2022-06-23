@@ -13,7 +13,7 @@ std::string FileWorker::readFromFile(std::string path)
 	std::ifstream inFile(path);
 	if (!inFile) {
 		std::cout << ERR_MSG_FILE_FAILED_TO_OPEN << std::endl;
-		return std::string();
+		throw FileException(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
 
 	std::string returnValue = "";
@@ -32,8 +32,7 @@ std::vector<std::string> FileWorker::readFromFileInLines(std::string path)
 {
 	std::ifstream inFile(path);
 	if (!inFile) {
-		std::cout << ERR_MSG_FILE_FAILED_TO_OPEN << std::endl;
-		return std::vector<std::string>();
+		throw FileException(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
 
 	std::vector<std::string> returnValue;

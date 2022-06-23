@@ -4,7 +4,7 @@
 #include "../mock/DateTimeWorkerMock.h"
 #include "../src/HelperClass.h"
 
-#define ERR_MSG_FW_NULL "Unable to perfom operation. FileWorker is null."
+
 
 using namespace ::testing;
 
@@ -15,42 +15,42 @@ public:
 	Adapter() {};
 	void InvokeWriteInFile(std::string path, std::string output) {
 		if (fw == nullptr) {
-			throw ERR_MSG_FW_NULL;
+			throw FileException(ERR_MSG_FW_NULL);
 		}
 		fw->writeInFile(path, output);
 	}
 
 	std::string InvokeReadFromFile(std::string path) {
 		if (fw == nullptr) {
-			throw ERR_MSG_FW_NULL;
+			throw FileException(ERR_MSG_FW_NULL);
 		}
 		return fw->readFromFile(path);
 	}
 
 	std::vector<std::string> InvokeReadFromFileInLines(std::string path) {
 		if (fw == nullptr) {
-			throw ERR_MSG_FW_NULL;
+			throw FileException(ERR_MSG_FW_NULL);
 		}
 		return fw->readFromFileInLines(path);
 	}
 
 	bool InvokeFileExists(std::string path) {
 		if (fw == nullptr) {
-			throw ERR_MSG_FW_NULL;
+			throw FileException(ERR_MSG_FW_NULL);
 		}
 		return fw->fileExists(path);
 	}
 
 	std::vector<std::string> InvokeGetAllFromDir(std::string path) {
 		if (fw == nullptr) {
-			throw ERR_MSG_FW_NULL;
+			throw FileException(ERR_MSG_FW_NULL);
 		}
 		return fw->getAllFromDirectory(path);
 	}
 
 	bool InvokeDeleteFile(std::string path) {
 		if (fw == nullptr) {
-			throw ERR_MSG_FW_NULL;
+			throw FileException(ERR_MSG_FW_NULL);
 		}
 		return fw->deleteFile(path);
 	}
@@ -65,59 +65,59 @@ TEST(FileWorkerTest, NullCheckForFileWorker) {
 	try {
 		adapter.InvokeDeleteFile(path);
 
-		FAIL() << "Expected: Unable to perfom operation. FileWorker is null";
+		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
 	}
-	catch (const char* err) {
-		EXPECT_EQ(std::string(err), ERR_MSG_FW_NULL);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
 	}
 
 
 	try {
 		adapter.InvokeGetAllFromDir(path);
 
-		FAIL() << "Expected: Unable to perfom operation. FileWorker is null";
+		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
 	}
-	catch (const char* err) {
-		EXPECT_EQ(std::string(err), ERR_MSG_FW_NULL);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
 	}
 
 
 	try {
 		adapter.InvokeReadFromFile(path);
 
-		FAIL() << "Expected: Unable to perfom operation. FileWorker is null";
+		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
 	}
-	catch (const char* err) {
-		EXPECT_EQ(std::string(err), ERR_MSG_FW_NULL);
-	}
-
-
-	try {
-		adapter.InvokeReadFromFileInLines(path);
-
-		FAIL() << "Expected: Unable to perfom operation. FileWorker is null";
-	}
-	catch (const char* err) {
-		EXPECT_EQ(std::string(err), ERR_MSG_FW_NULL);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
 	}
 
 
 	try {
 		adapter.InvokeReadFromFileInLines(path);
 
-		FAIL() << "Expected: Unable to perfom operation. FileWorker is null";
+		"Expected: " + std::string(ERR_MSG_FW_NULL);
 	}
-	catch (const char* err) {
-		EXPECT_EQ(std::string(err), ERR_MSG_FW_NULL);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+	}
+
+
+	try {
+		adapter.InvokeReadFromFileInLines(path);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
+	}
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
 	}
 
 	try {
 		adapter.InvokeWriteInFile(path, output);
 
-		FAIL() << "Expected: Unable to perfom operation. FileWorker is null";
+		"Expected: " + std::string(ERR_MSG_FW_NULL);
 	}
-	catch (const char* err) {
-		EXPECT_EQ(std::string(err), ERR_MSG_FW_NULL);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
 	}
 }
 
@@ -167,14 +167,14 @@ TEST(FileWorkerTest, InvalidWriteAndReadFromFile) {
 	std::string output = "This is some random text to write in file";
 	std::string reading;
 
-	EXPECT_CALL(*mock, readFromFile(path)).WillOnce(Throw(ERR_MSG_FILE_FAILED_TO_OPEN));
+	EXPECT_CALL(*mock, readFromFile(path)).WillOnce(Throw(FileException(ERR_MSG_FILE_FAILED_TO_OPEN)));
 	try {
 		reading = adapter.InvokeReadFromFile(path);
 
-		FAIL() << "Expected: Failed to open file";
+		FAIL() << "Expected: " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
-	catch (const char* err) {
-		EXPECT_STREQ(err, ERR_MSG_FILE_FAILED_TO_OPEN);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FILE_FAILED_TO_OPEN));
 	}
 
 	Mock::AllowLeak(mock);
@@ -221,14 +221,14 @@ TEST(FileWorkerTest, InvalidWriteAndReadInLines) {
 	std::string output = "This is some random text to write in file";
 	std::vector<std::string> reading;
 
-	EXPECT_CALL(*mock, readFromFileInLines(path)).WillOnce(Throw(ERR_MSG_FILE_FAILED_TO_OPEN));
+	EXPECT_CALL(*mock, readFromFileInLines(path)).WillOnce(Throw(FileException(ERR_MSG_FILE_FAILED_TO_OPEN)));
 	try {
 		reading = adapter.InvokeReadFromFileInLines(path);
 
-		FAIL() << "Expected: Failed to open file!";
+		FAIL() << "Expected: " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
-	catch (const char* err) {
-		EXPECT_STREQ(err, ERR_MSG_FILE_FAILED_TO_OPEN);
+	catch (FileException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_FILE_FAILED_TO_OPEN));
 	}
 
 	Mock::AllowLeak(mock);

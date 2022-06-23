@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <vector>
 
+#include "../exception/FileException.h"
+
 #define ERR_MSG_FILE_FAILED_TO_OPEN "File failed to open"
 
 namespace fs = std::filesystem;
