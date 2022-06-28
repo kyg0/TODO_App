@@ -342,6 +342,73 @@ public:
 	}
 };
 
+
+class ReminderEntryTest_Comparison : public Test {
+protected:
+	DateTimeWorkerMock* dtMock;
+	FileWorkerMock* fwMock;
+	HelperClass helper;
+	std::vector<int> date{ 15,6,2030, 12,30, 56 };
+public:
+	ReminderEntry& getReference() {
+		dtMock = new DateTimeWorkerMock();
+		fwMock = new FileWorkerMock();
+
+		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
+		DateTime* dt = new DateTime(dtMock);
+
+		std::string path = "out/_"
+			+ helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" 
+			+ NULL_DATETIME_FORMAT_FILENAME;
+		std::string output = "Title: \nDescription: \nDate created: " + dt->getFormat(true) + "\nExecution date: " + NULL_DATETIME_FORMAT_OUTPUT +
+			"\nStatus: NOT FINISHED";
+		EXPECT_CALL(*fwMock, writeInFile(path, output)).Times(1);
+		
+		ReminderEntry entry(dtMock, fwMock);
+
+		//std::cout << "REFERENCE: " << std::endl;
+		//std::cout << "Title: " << entry.getTitle() << std::endl;
+		//std::cout << "Description: " << entry.getDescription() << std::endl;
+		//std::cout << "Date created: " << entry.getDateCreated()->getFormat(true) << std::endl;
+		//std::cout << "Path: " << entry.getFilePath() << std::endl;
+
+		return entry;
+	}
+
+	ReminderEntry* getPointer() {
+		ReminderEntry* entry;
+		dtMock = new DateTimeWorkerMock();
+		fwMock = new FileWorkerMock();
+
+		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
+		DateTime* dt = new DateTime(dtMock);
+
+		std::string path = "out/_"
+			+ helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_"
+			+ NULL_DATETIME_FORMAT_FILENAME;
+		std::string output = "Title: \nDescription: \nDate created: " + dt->getFormat(true) + "\nExecution date: " + NULL_DATETIME_FORMAT_OUTPUT +
+			"\nStatus: NOT FINISHED";
+		EXPECT_CALL(*fwMock, writeInFile(path, output)).Times(1);
+		
+		entry = new ReminderEntry(dtMock, fwMock);
+
+		//std::cout << "POINTER: " << std::endl;
+		//std::cout << "Title: " << entry->getTitle() << std::endl;
+		//std::cout << "Description: " << entry->getDescription() << std::endl;
+		//std::cout << "Date created: " << entry->getDateCreated()->getFormat(true) << std::endl;
+		//std::cout << "Path: " << entry->getFilePath() << std::endl;
+
+		return entry;
+	}
+
+	void TearDown() {
+		Mock::AllowLeak(this->fwMock);
+		Mock::VerifyAndClear(this->fwMock);
+		Mock::AllowLeak(this->dtMock);
+		Mock::VerifyAndClear(this->dtMock);
+	}
+};
+
 TEST(ReminderEntryTestNoSuit_Constructor, Constructor_WithFileOutput) {
 	std::vector<std::string> fileReading;
 	fileReading.push_back("Title: title");
@@ -616,7 +683,6 @@ TEST_F(ReminderEntryTest_Setter, CorrectValues_BoundaryCase_TitleAndDescription)
 	TearDown();
 }
 
-//ovjde sam stao
 TEST_F(ReminderEntryTest_Setter, CorrectValues_ForStatus) {
 	SetUp();
 	testConstructor(nullptr, "", "");
@@ -738,7 +804,7 @@ TEST(ReminderEntryTests_Copy, CopyAssignment) {
 	Mock::VerifyAndClear(dtMock);
 }
 
-TEST(ReminderEntryTests_MoveAndCopy, CopyConstructor) {
+TEST(ReminderEntryTest_MoveAndCopy, CopyConstructor) {
 	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
 	std::vector<int> date{ 20, 5 , 2022, 12, 30, 30 };
 	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
