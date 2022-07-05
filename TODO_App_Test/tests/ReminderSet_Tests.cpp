@@ -37,6 +37,7 @@ protected:
 
 
 	void SetUp() {
+		
 		fwMock = new FileWorkerMock();
 		dtMock = new DateTimeWorkerMock();
 
@@ -114,8 +115,8 @@ protected:
 			outputInLines.push_back(std::get<2>(x));
 		}
 
-		std::map<int, ReminderEntry*> map = set->getAll();
-		std::map<int, ReminderEntry*>::iterator it;
+		SetMap map = set->getAll();
+		SetMap::iterator it;
 		
 		for (int i = 0; i < map.size(); i++) {
 			std::string _expectedTitle = outputInLines[i][0].substr(7, outputInLines[i][0].size() - 7);
@@ -144,9 +145,8 @@ protected:
 		}
 	}
 
-
 	void TearDown() {
-		std::cout << "TearDown()" << std::endl;
+		//std::cout << "TearDown()" << std::endl;
 		Mock::AllowLeak(fwMock);
 		Mock::VerifyAndClear(fwMock);
 		Mock::AllowLeak(dtMock);
@@ -154,8 +154,8 @@ protected:
 	}
 
 	void print() {
-		std::map<int, ReminderEntry*> mapa = set->getAll();
-		std::map<int, ReminderEntry*>::iterator it;
+		SetMap mapa = set->getAll();
+		SetMap::iterator it;
 
 		for (it = mapa.begin(); it != mapa.end(); it++) {
 			std::cout << "ENTRY _ " << it->first << std::endl;
@@ -175,13 +175,13 @@ protected:
 		std::vector<int> dateCreated = { date[0], date[1], date[2] + 1, date[3], date[4], date[5] };
 		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(dateCreated));
 		DateTime* tmpDateCreated = new DateTime(1, 1, 2031, 1, 1, 1);
-		DateTime* execDate = new DateTime(28,6,2031, 10,0);
+		DateTime* execDate = new DateTime(28, 6, 2031, 10, 0);
 
 
 
 		std::string expectedPath = "out/" + title + "_" + helper.getPath(dateCreated[0], dateCreated[1], dateCreated[2], dateCreated[3], dateCreated[4], dateCreated[5]) +
 			"_" + helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-	
+
 		std::string expectedOutput = _title + title + "\n" + _description + description + "\n" + _dateCreated + tmpDateCreated->getFormat(true) + "\n" +
 			_execDate + execDate->getFormat(true) + "\n" + _status + "NOT FINISHED";
 
@@ -192,15 +192,15 @@ protected:
 		paths_and_outputs.push_back(std::tuple<std::string, std::string, std::vector<std::string>>(expectedPath, expectedOutput, lines));
 
 		EXPECT_EQ(paths_and_outputs.size(), currentSize + 1);
-		
+
 		EXPECT_CALL(*fwMock, writeInFile(expectedPath, expectedOutput)).Times(1);
 		ReminderEntry* newEntry = new ReminderEntry(execDate, title, description, dtMock, fwMock);
 
 		EXPECT_CALL(*fwMock, fileExists(expectedPath)).WillOnce(Return(true));
 		set->makeNewEntry(newEntry);
 
-		std::map<int, ReminderEntry*> map = set->getAll();
-		std::map<int, ReminderEntry*>::iterator it = map.find(currentSize + 1);
+		SetMap map = set->getAll();
+		SetMap::iterator it = map.find(currentSize + 1);
 
 		EXPECT_EQ(it->second->getTitle(), title);
 		EXPECT_EQ(it->second->getDescription(), description);
@@ -208,7 +208,355 @@ protected:
 		EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 		EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 	}
+
+	void deleteEntryAndTest(int index) {
+		SetMap map = set->getAll();
+		SetMap::iterator it;
+		int currentSize = map.size();
+
+		if ((it = map.find(index)) != map.end()) {
+			std::string tmpPath = std::get<0>(paths_and_outputs[index - 1]);
+
+			EXPECT_CALL(*fwMock, deleteFile(tmpPath)).WillOnce(Return(true));
+			set->deleteEntry(index);
+
+			map = set->getAll();
+			EXPECT_EQ(map.size(), currentSize - 1);
+		}
+		else {
+			try {
+				set->deleteEntry(index);
+			}
+			catch (InvalidIndexException err) {
+				throw err;
+			}
+		}
+	}
+
+	void deleteEntryAndTest(ReminderEntry* toDelete) {
+		SetMap map = set->getAll();
+		SetMap::iterator it;
+		int currentSize = map.size();
+
+		if (toDelete == nullptr) {
+			try {
+				set->deleteEntry(toDelete);
+			}
+			catch (NullObjectException err) {
+				throw err;
+			}
+
+		}
+
+		bool loopedThroughSetWithoutFindingOne = true;
+
+		for (it = map.begin(); it != map.end(); it++) {
+			if (*it->second == *toDelete) {
+				EXPECT_CALL(*fwMock, deleteFile(toDelete->getFilePath())).WillOnce(Return(true));
+				set->deleteEntry(toDelete);
+
+				map = set->getAll();
+				EXPECT_EQ(map.size(), currentSize - 1);
+				for (it = map.begin(); it != map.end(); it++) {
+					if (*it->second == *toDelete) {
+						std::cout << "Element wasn't deleted" << std::endl;
+						EXPECT_TRUE(false);
+					}
+				}
+				loopedThroughSetWithoutFindingOne = false;
+				break;
+			}
+		}
+
+		if (loopedThroughSetWithoutFindingOne) {
+			try {
+				set->deleteEntry(toDelete);
+			}
+			catch (InvalidIndexException err) {
+				throw err;
+			}
+		}
+
+
+	}
+
+	void editEntryAndTest(int index, ReminderEntry* edit) {
+		SetMap map = set->getAll();
+		SetMap::iterator it;
+		if (edit == nullptr) {
+			try {
+				set->editEntry(index, edit);
+			}
+			catch (NullObjectException err) {
+				throw err;
+			}
+		}
+
+		if ((it = map.find(index)) == map.end()) {
+			try {
+				set->editEntry(index, edit);
+			}
+			catch (InvalidIndexException err) {
+				throw err;
+			}
+		}
+		
+		EXPECT_CALL(*fwMock, deleteFile(it->second->getFilePath())).WillOnce(Return(true));
+		set->editEntry(index, edit);	
+
+		it = map.find(index);
+
+		EXPECT_EQ(it->second->getTitle(), edit->getTitle());
+		EXPECT_EQ(it->second->getDescription(), edit->getDescription());
+		EXPECT_TRUE(*it->second->getExecutionDate() == *edit->getExecutionDate());
+		EXPECT_EQ(it->second->getEntryStatus(), edit->getEntryStatus());
+		EXPECT_EQ(it->second->getFilePath(), edit->getFilePath());
+
+	}
 };
+
+class ReminderSet_SortAndFilterTest : public Test {
+protected:
+	int setSize; // default size
+
+	ReminderSet* set;
+
+	FileWorkerMock* fwMock;
+	DateTimeWorkerMock* dtMock;
+	HelperClass helper;
+	std::vector<int> date{ 1, 1, 2030, 1, 1, 1 }; // We will iterate and increment each of number in date so we would get different dates for every entry in set
+														// We will also have DateTime for execDate and just like with previous one, we will iterate and increment it 
+														// so we would get different execution dates for each entry in set
+
+	//x<0> - path
+	//x<1> - output
+	//x<2> - output in lines
+	std::vector<std::tuple<std::string, std::string, std::vector<std::string>>> paths_and_outputs;
+
+	const std::string _title = "Title: ";
+	const std::string _description = "Description: ";
+	const std::string _dateCreated = "Date created: ";
+	const std::string _execDate = "Execution date: ";
+	const std::string _status = "Status: ";
+
+	void SetUp(int n = 10) {
+		this->setSize = n;
+
+
+		fwMock = new FileWorkerMock();
+		dtMock = new DateTimeWorkerMock();
+
+		for (int i = 1; i != setSize + 1; i++) {
+			std::vector<int> tmp_DateCreated{ (2 * i + date[0])%MAX_DAY_VALUE_FEBRUARY_NOLEAP , (i + date[1])%MAX_MONTH_VALUE, date[2],
+				(i + date[3])%MAX_HOURS_VALUE , (2 * i + date[4])%MAX_MINUTES_VALUE, (2 * (i + date[5]))%MAX_SECONDS_VALUE};
+			EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(tmp_DateCreated));
+			DateTime* dt = new DateTime(dtMock);
+
+			DateTime* tmp_ExecDate = new DateTime(tmp_DateCreated[0] + 1, tmp_DateCreated[1], tmp_DateCreated[2],
+				tmp_DateCreated[3] + 1, tmp_DateCreated[4] + 5, tmp_DateCreated[5] + 5);
+
+			std::string path = "out/title-" + std::to_string(i) + "_" +
+				helper.getPath(tmp_DateCreated[0], tmp_DateCreated[1], tmp_DateCreated[2],
+					tmp_DateCreated[3], tmp_DateCreated[4], tmp_DateCreated[5]) + "_" +
+				helper.getPath(tmp_ExecDate->getDay(), tmp_ExecDate->getMonth(), tmp_ExecDate->getYear(),
+					tmp_ExecDate->getHours(), tmp_ExecDate->getMinutes(), tmp_ExecDate->getSeconds());
+
+			std::string tmp_status = "NOT FINISHED";
+			if (i % 2 == 0) {
+				tmp_status = "FINISHED";
+			}
+			std::string titleLine = this->_title + "title-" + std::to_string(i);
+			std::string descriptionLine = this->_description + "description for <" + std::to_string(i) + ">";
+			std::string dcLine = this->_dateCreated + dt->getFormat(true);
+			std::string edLine = this->_execDate + tmp_ExecDate->getFormat(true);
+			std::string statusLine = this->_status + tmp_status;
+
+
+			std::string output = titleLine + "\n" + descriptionLine + "\n" + dcLine + "\n" + edLine + "\n" + statusLine;
+			std::vector<std::string> lines;
+			lines.push_back(titleLine); lines.push_back(descriptionLine);
+			lines.push_back(dcLine); lines.push_back(edLine); lines.push_back(statusLine);
+
+			paths_and_outputs.push_back(std::make_tuple(path, output, lines));
+
+			std::random_device rd;
+			std::mt19937 g(rd());
+			std::shuffle(paths_and_outputs.begin(), paths_and_outputs.end(), g);
+		}
+
+
+		std::vector<std::string> tmp_paths;
+		std::vector<std::string> tmp_outputs;
+		std::vector<std::vector<std::string>> tmp_outputInLines;
+		for (std::tuple<std::string, std::string, std::vector<std::string>> x : paths_and_outputs) {
+			tmp_paths.push_back(std::get<0>(x));
+			tmp_outputs.push_back(std::get<1>(x));
+
+			std::vector<std::string> lines;
+			for (std::string s : std::get<2>(x)) {
+				lines.push_back(s);
+			}
+			tmp_outputInLines.push_back(lines);
+		}
+
+		EXPECT_CALL(*fwMock, getAllFromDirectory("out/")).WillOnce(Return(tmp_paths));
+		for (int i = 0; i < setSize; i++) {
+			EXPECT_CALL(*fwMock, fileExists(tmp_paths[i])).WillOnce(Return(true));
+			EXPECT_CALL(*fwMock, readFromFileInLines(tmp_paths[i])).WillOnce(Return(tmp_outputInLines[i]));
+		}
+
+		set = new ReminderSet(fwMock);
+	}
+
+	void initialTest() {
+		std::vector<std::string> paths;
+		std::vector<std::string> outputs;
+		std::vector<std::vector<std::string>> outputInLines;
+
+		for (std::tuple<std::string, std::string, std::vector<std::string>> x : paths_and_outputs) {
+			paths.push_back(std::get<0>(x));
+			outputs.push_back(std::get<1>(x));
+			outputInLines.push_back(std::get<2>(x));
+		}
+
+		SetMap map = set->getAll();
+		SetMap::iterator it;
+
+		for (int i = 0; i < map.size(); i++) {
+			std::string _expectedTitle = outputInLines[i][0].substr(7, outputInLines[i][0].size() - 7);
+			std::string _expectedDescription = outputInLines[i][1].substr(13, outputInLines[i][1].size() - 13);
+			std::string _expectedDateCreated = outputInLines[i][2].substr(14, outputInLines[i][2].size() - 14);
+			std::string _expectedExecDate = outputInLines[i][3].substr(16, outputInLines[i][3].size() - 16);
+			std::string _status = outputInLines[i][4].substr(8, outputInLines[i][4].size() - 8);
+
+			it = map.find(i + 1);
+
+			EXPECT_EQ(it->second->getTitle(), _expectedTitle);
+			EXPECT_EQ(it->second->getDescription(), _expectedDescription);
+			EXPECT_EQ(it->second->getDateCreated()->getFormat(true), _expectedDateCreated);
+			if (it->second->getExecutionDate() != nullptr) {
+				EXPECT_EQ(it->second->getExecutionDate()->getFormat(true), _expectedExecDate);
+			}
+			else {
+				EXPECT_TRUE(it->second->getExecutionDate() == nullptr);
+			}
+			if (_status == "FINISHED") {
+				EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
+			}
+			else {
+				EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+			}
+		}
+	}
+
+	void sortAndTestByDateCreated(bool descending) {
+		std::vector<std::pair<int, DateTime*>> dateCreated_array;
+		SetMap map = set->getAll();
+		SetMap::iterator it;
+
+		if (setSize == 0) {
+			map = set->sortByDateCreated(descending);
+			EXPECT_TRUE(map.size() == 0);
+			return;
+		}
+
+		for (it = map.begin(); it != map.end(); it++) {
+			dateCreated_array.push_back(std::pair<int, DateTime*>(it->first, it->second->getDateCreated()));
+		}
+
+		int i, j;
+		int idToSwap; //its index of min if descending=true or index of max if descending=false
+
+		for (i = 0; i < dateCreated_array.size() - 1; i++) {
+			idToSwap = i;
+			for (j = i + 1; j < dateCreated_array.size(); j++) {
+				if (descending) {
+					if (*dateCreated_array[j].second < *dateCreated_array[idToSwap].second) {
+						idToSwap = j;
+					}
+				}
+				else {
+					if (*dateCreated_array[j].second > *dateCreated_array[idToSwap].second) {
+						idToSwap = j;
+					}
+				}
+			}
+
+			//std::vector<int, DateTime*>::swap(&dateCreated_array[idToSwap], &dateCreated_array[i]);
+			dateCreated_array[idToSwap].swap(dateCreated_array[i]);
+		}
+
+		for (int i = 1; i != dateCreated_array.size(); i++) {
+			dateCreated_array[i].first = i;
+		}
+
+		map = set->sortByDateCreated(descending);
+		for (int i = 1; i != map.size(); i++) {
+			EXPECT_TRUE(map.size() == setSize);
+			EXPECT_TRUE(*map[i]->getDateCreated() == *dateCreated_array[i-1].second);
+		}
+	}
+
+	void sortAndTestByExecDate(bool descending){
+		std::vector<std::pair<int, DateTime*>> execDate_array;
+		SetMap map = set->getAll();
+		SetMap::iterator it;
+
+		if (setSize == 0) {
+			map = set->sortByExecDate(descending);
+			EXPECT_TRUE(map.size() == 0);
+			return;
+		}
+
+		for (it = map.begin(); it != map.end(); it++) {
+			execDate_array.push_back(std::pair<int, DateTime*>(it->first, it->second->getExecutionDate()));
+		}
+
+		int i, j;
+		int idToSwap; //its index of min if descending=true or index of max if descending=false
+
+		for (i = 0; i < execDate_array.size() - 1; i++) {
+			idToSwap = i;
+			for (j = i + 1; j < execDate_array.size(); j++) {
+				if (descending) {
+					if (*execDate_array[j].second < *execDate_array[idToSwap].second) {
+						idToSwap = j;
+					}
+				}
+				else {
+					if (*execDate_array[j].second > *execDate_array[idToSwap].second) {
+						idToSwap = j;
+					}
+				}
+			}
+
+			execDate_array[idToSwap].swap(execDate_array[i]);
+		}
+
+		for (int i = 1; i != execDate_array.size(); i++) {
+			execDate_array[i].first = i;
+		}
+
+		map = set->sortByExecDate(descending);
+		for (int i = 1; i != map.size(); i++) {
+			EXPECT_TRUE(map.size() == setSize);
+			EXPECT_TRUE(*map[i]->getExecutionDate() == *execDate_array[i - 1].second);
+		}
+	}
+
+	void sortAndTestByStatus(bool finishedFirst) {
+
+	}
+
+	void print(SetMap map) {
+		SetMap::iterator it;
+
+		for (it = map.begin(); it != map.end(); it++) {
+			std::cout << it->first << " : " << it->second->getDateCreated()->getFormat(true) << std::endl;
+		}
+	}
+};
+
 
 TEST_F(ReminderSetTest_Constructor, ConstructorWithMock) {
 	testConstructor();
@@ -219,1040 +567,381 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase) {
 	makeNewEntryAndTest();
 }
 
-TEST(ReminderSet_Tests, DeleteEntry_ValidIndex) {
-	HelperClass helper;
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
+TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex) {
+	deleteEntryAndTest(1);
+	deleteEntryAndTest(5);
+	deleteEntryAndTest(10);
+}
+
+TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex) {
+	try {
+		deleteEntryAndTest(0);
+		
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+	}
+
+	try {
+		deleteEntryAndTest(11);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+	}
+
+	try {
+		deleteEntryAndTest(1);
+		deleteEntryAndTest(1); // should throw exception because of multiple tries of deleting the same
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, DeleteEntry_WithNullObject) {
+	testConstructor();
+
+	try {
+		deleteEntryAndTest(nullptr);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_NULL_OBJ);
+	}
+	catch (NullObjectException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_NULL_OBJ);
+	}
+}
+
+//Entry doesn't exist in set
+TEST_F(ReminderSet_MethodTest, DeleteEntry_WithInvalidObject) {
+	std::string newEntry_title = "Title: title";
+	std::string newEntry_description = "Description: description";
+	std::string newEntry_dateCreated = "Date created: 01/07/2022 11:20:00";
+	std::string newEntry_execDate = "Execution date: 00/00/0000 00:00:00";
+	std::string newEntry_status = "Status: NOT FINISHED";
+
+	std::string newEntry_path = "out/title_" + helper.getPath(1, 7, 2022, 11, 20, 0) + "_" + helper.getPath(0, 0, 0, 0, 0, 0);
+	std::string newEntry_output = newEntry_title + "\n" + newEntry_description + "\n" + newEntry_dateCreated + "\n" + newEntry_execDate + "\n" + newEntry_status;
+
+	std::vector<int> newEntry_date{1,7,2022,11,20,0};
+	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(newEntry_date));
+	EXPECT_CALL(*fwMock, writeInFile(newEntry_path, newEntry_output)).Times(1);
+	ReminderEntry* newEntry = new ReminderEntry("title", "description", dtMock, fwMock);
+
+	try {
+		deleteEntryAndTest(newEntry);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_OBJECT);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_OBJECT);
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject) {
+	testConstructor();
+
+	SetMap map = set->getAll();
+	SetMap::iterator it;
+
+	it = map.find(1);
+	deleteEntryAndTest(it->second);
+
+	it = map.find(10);
+	deleteEntryAndTest(it->second);
+
+	it = map.find(5);
+	deleteEntryAndTest(it->second);
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject){
+	testConstructor();
+
+	SetMap map = set->getAll();
+	int size = map.size();
+
+	for (int i = 1; i <= size; i++) {
+		try {
+			editEntryAndTest(i, nullptr);
+
+			FAIL() << "Expected: " + std::string(ERR_MSG_NULL_OBJ);
+		}
+		catch (NullObjectException err) {
+			EXPECT_EQ(err.what(), ERR_MSG_NULL_OBJ);
+		}
+	}
+}
+
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_1) {
 	DateTime* dt;
-	std::vector<int> date{ 25,5,2022,10,30,43 };
 	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
 	dt = new DateTime(dtMock);
+
+	DateTime* execDate = new DateTime(4,7,2100,12,0,0);
 	
-	FileWorkerMock* entryMock = new FileWorkerMock();
-	FileWorkerMock* fwMock = new FileWorkerMock();
+	std::string new_title = "Title: new title";
+	std::string new_description = "Description: new description";
+	std::string new_dc = "Date created: " + dt->getFormat(true);
+	std::string new_ed = "Execution date: " + execDate->getFormat(true);
+	std::string new_status = "Status: NOT FINISHED";
 
-	std::string _path = "out/title_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_"
-		+ helper.getPath(0, 0, 0, 0, 0, 0);
-	std::vector<std::string> outputInLines;
-	outputInLines.push_back("Title: title");
-	outputInLines.push_back("Description: description");
-	outputInLines.push_back("Date created: 25/05/2022 10:30:43");
-	outputInLines.push_back("Execution date: 00/00/0000 00:00:00");
-	outputInLines.push_back("Status: NOT FINISHED");
+	std::string newPath = "out/" + new_title + "_"+ helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" +
+		helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
+	std::string newOutput = new_title + "\n" + new_description + "\n" + new_dc + "\n" + new_ed + "\n" + new_status;
 
-	std::string _output = "Title: title\nDescription: description\nDate created: " + dt->getFormat(true) + "\nExecution date: 00/00/0000 00:00:00\nStatus: NOT FINISHED";
+	std::vector<std::string> reading;
+	reading.push_back(new_title); reading.push_back(new_description); reading.push_back(new_dc); reading.push_back(new_ed); reading.push_back(new_status);
 
-	EXPECT_CALL(*entryMock, writeInFile(_path, _output)).Times(1);
-
-	ReminderEntry* e = new ReminderEntry("title", "description", dtMock, entryMock);
-	Mock::AllowLeak(entryMock);
-	Mock::VerifyAndClear(entryMock);
-
-	std::vector<std::string> filePaths;
-	filePaths.push_back(e->getFilePath());
-
-	EXPECT_CALL(*fwMock, getAllFromDirectory("out/")).WillOnce(Return(filePaths));
-	EXPECT_CALL(*fwMock, fileExists(e->getFilePath())).WillOnce(Return(true));
-	EXPECT_CALL(*fwMock, readFromFileInLines(e->getFilePath())).WillOnce(Return(outputInLines));
-	EXPECT_CALL(*fwMock, deleteFile(filePaths[0])).WillOnce(Return(true));
-
-	ReminderSet set(fwMock);
-
-	EXPECT_EQ(set.getAll().size(), 1);
-	set.deleteEntry(1);
-
-	EXPECT_EQ(set.getAll().size(), 0);
-
-	Mock::AllowLeak(fwMock);
-	Mock::VerifyAndClear(fwMock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+	ReminderEntry* edit = new ReminderEntry(reading, dtMock, fwMock);
+	
+	editEntryAndTest(1, edit);
 }
 
-TEST(ReminderSet_Tests, DeleteEntry_InvalidIndex) {
-	HelperClass helper;
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 26,5,2022, 10,1,43 };
+TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_2) {
+	DateTime* dt;
 	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
+	dt = new DateTime(dtMock);
 
-	FileWorkerMock* entryMock1 = new FileWorkerMock();
-	FileWorkerMock* entryMock2 = new FileWorkerMock();
-	std::string _path1 = "out/entry1_" + helper.getPath(26, 5, 2022, 10, 1, 43) + "_" + helper.getPath(0, 0, 0, 0, 0, 0);
-	std::string _path2 = "out/entry2_" + helper.getPath(26, 5, 2022, 10, 1, 43) + "_" + helper.getPath(0, 0, 0, 0, 0, 0);
-	
-	std::vector<std::string> _outputs1;
-	_outputs1.push_back("Title: entry1");
-	_outputs1.push_back("Description: description 1");
-	_outputs1.push_back("Date created: " + dt->getFormat(true));
-	_outputs1.push_back("Execution date: 00/00/0000 00:00:00");
-	_outputs1.push_back("Status: NOT FINISHED");
-	std::string _output1 = _outputs1[0] + "\n" + _outputs1[1] + "\n" + _outputs1[2] + "\n" + _outputs1[3] + "\n" + _outputs1[4];
+	DateTime* execDate = new DateTime(4, 7, 2100, 12, 0, 0);
 
-	std::vector<std::string> _outputs2;
-	_outputs2.push_back("Title: entry2");
-	_outputs2.push_back("Description: description 2");
-	_outputs2.push_back("Date created: " + dt->getFormat(true));
-	_outputs2.push_back("Execution date: 00/00/0000 00:00:00");
-	_outputs2.push_back("Status: NOT FINISHED");
-	std::string _output2 = _outputs2[0] + "\n" + _outputs2[1] + "\n" + _outputs2[2] + "\n" + _outputs2[3] + "\n" + _outputs2[4];
-	
-	
-	EXPECT_CALL(*entryMock1, writeInFile(_path1, _output1)).Times(1);
-	ReminderEntry* e1 = new ReminderEntry("entry1", "description 1", dtMock, entryMock1);
-	Mock::AllowLeak(entryMock1);
-	Mock::VerifyAndClear(entryMock1);
+	std::string new_title = "Title: new title";
+	std::string new_description = "Description: new description";
+	std::string new_dc = "Date created: " + dt->getFormat(true);
+	std::string new_ed = "Execution date: " + execDate->getFormat(true);
+	std::string new_status = "Status: NOT FINISHED";
 
-	EXPECT_CALL(*entryMock2, writeInFile(_path2, _output2)).Times(1);
-	ReminderEntry* e2 = new ReminderEntry("entry2", "description 2", dtMock, entryMock2);
-	Mock::AllowLeak(entryMock2);
-	Mock::VerifyAndClear(entryMock2);
+	std::string newPath = "out/" + new_title + "_" + helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" +
+		helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
+	std::string newOutput = new_title + "\n" + new_description + "\n" + new_dc + "\n" + new_ed + "\n" + new_status;
+
+	std::vector<std::string> reading;
+	reading.push_back(new_title); reading.push_back(new_description); reading.push_back(new_dc); reading.push_back(new_ed); reading.push_back(new_status);
+
+	ReminderEntry* edit = new ReminderEntry(reading, dtMock, fwMock);
+
+	editEntryAndTest(10, edit);
+}
 
 
-	std::vector<std::string> filePaths;
-	filePaths.push_back(_path1);
-	filePaths.push_back(_path2);
+TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_3) {
+	DateTime* dt;
+	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
+	dt = new DateTime(dtMock);
 
-	FileWorkerMock* setMock = new FileWorkerMock();
-	EXPECT_CALL(*setMock, getAllFromDirectory("out/")).WillOnce(Return(filePaths));
-	EXPECT_CALL(*setMock, fileExists(_path1)).WillOnce(Return(true));
-	EXPECT_CALL(*setMock, readFromFileInLines(_path1)).WillOnce(Return(_outputs1));
-	EXPECT_CALL(*setMock, fileExists(_path2)).WillOnce(Return(true));
-	EXPECT_CALL(*setMock, readFromFileInLines(_path2)).WillOnce(Return(_outputs2));
+	DateTime* execDate = new DateTime(4, 7, 2100, 12, 0, 0);
+
+	std::string new_title = "Title: new title";
+	std::string new_description = "Description: new description";
+	std::string new_dc = "Date created: " + dt->getFormat(true);
+	std::string new_ed = "Execution date: " + execDate->getFormat(true);
+	std::string new_status = "Status: NOT FINISHED";
+
+	std::string newPath = "out/" + new_title + "_" + helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" +
+		helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
+	std::string newOutput = new_title + "\n" + new_description + "\n" + new_dc + "\n" + new_ed + "\n" + new_status;
+
+	std::vector<std::string> reading;
+	reading.push_back(new_title); reading.push_back(new_description); reading.push_back(new_dc); reading.push_back(new_ed); reading.push_back(new_status);
+
+	ReminderEntry* edit = new ReminderEntry(reading, dtMock, fwMock);
+
+	editEntryAndTest(5, edit);
+}
 
 
-	ReminderSet set(setMock);
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex) {
+	DateTime* dt;
+	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
+	dt = new DateTime(dtMock);
 
-	EXPECT_EQ(set.getAll().size(), 2);
+	DateTime* execDate = new DateTime(4, 7, 2100, 12, 0, 0);
+
+	std::string new_title = "Title: new title";
+	std::string new_description = "Description: new description";
+	std::string new_dc = "Date created: " + dt->getFormat(true);
+	std::string new_ed = "Execution date: " + execDate->getFormat(true);
+	std::string new_status = "Status: NOT FINISHED";
+
+	std::string newPath = "out/" + new_title + "_" + helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" +
+		helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
+	std::string newOutput = new_title + "\n" + new_description + "\n" + new_dc + "\n" + new_ed + "\n" + new_status;
+
+	std::vector<std::string> reading;
+	reading.push_back(new_title); reading.push_back(new_description); reading.push_back(new_dc); reading.push_back(new_ed); reading.push_back(new_status);
+
+	ReminderEntry* edit = new ReminderEntry(reading, dtMock, fwMock);
 
 	try {
-		set.deleteEntry(3);
+		editEntryAndTest(0, edit);
 
-		FAIL() << "Expected: Invalid index";
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
 	}
-	catch (const char* err) {
-		EXPECT_STREQ("Invalid index", err);
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
 	}
-
-	EXPECT_EQ(set.getAll().size(), 2);
-
-	Mock::AllowLeak(setMock);
-	Mock::VerifyAndClear(setMock);
-
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, EditEntry_WithConcreteObject) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 25,5,2022, 10,24,32 };
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-	std::vector<std::string> paths; //OLD PATHS
-	std::vector<std::string> outputs; //OLD OUTPUTS
-	std::vector<std::vector<std::string>> outputInLines;
-
-	std::vector<std::string> new_paths; // PATHS AFTER EDITING
-	std::vector<std::string> new_outputs; // OUTPUTS AFTER EDITING
-	std::vector<std::vector<std::string>> newOutputInLines;
-
-	for (int i = 1; i < 5; i++) {
-		DateTime* execDate = new DateTime(5 + i, 5 + i, 2030, 12 + i, 0);
-
-
-		std::string _path = "out/title_" + std::to_string(i) + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5])
-			+ "_" + helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _newPath = "out/title_" + std::to_string(i) + std::to_string(i) + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5])
-			+ "_" + helper.getPath(execDate->getDay(), execDate->getMonth(), 2030, execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _title = "Title: title_" + std::to_string(i);
-		std::string _description = "Description: description_" + std::to_string(i);
-		std::string _date_created = "Date created: " + dt->getFormat(true);
-		std::string _exec_date = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		if (i % 2 == 0)
-			_status += "FINISHED";
-		else
-			_status += "NOT FINISHED";
-
-		std::string _output = _title + "\n" + _description + "\n" + _date_created + "\n" + _exec_date + "\n" + _status;
-		std::vector<std::string> lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_date_created); lines.push_back(_exec_date); lines.push_back(_status);
-
-		DateTime tmp(5 + i, i + 5, 2030, 12 + i, 0);
-		std::string _newTitle = "Title: title_" + std::to_string(i) + std::to_string(i);
-		std::string _newDescription = "Description: description_" + std::to_string(i) + std::to_string(i);
-		std::string _newDateCreated = "Date created: " + dt->getFormat(true);
-		std::string _newExecDate = "Execution date: " + tmp.getFormat(true);
-		std::string _newStatus = "Status: ";
-		if (i % 2 == 0)
-			_newStatus += "FINISHED";
-		else
-			_newStatus += "NOT FINISHED";
-
-		std::string _newOutput = _newTitle + "\n" + _newDescription + "\n" + _newDateCreated + "\n" + _newExecDate + "\n" + _newStatus;
-		std::vector<std::string> new_lines;
-		new_lines.push_back(_newTitle); new_lines.push_back(_newDescription); new_lines.push_back(_newDateCreated);
-		new_lines.push_back(_newExecDate); new_lines.push_back(_newStatus);
-
-		paths.push_back(_path);
-		outputs.push_back(_output);
-		new_paths.push_back(_newPath);
-		new_outputs.push_back(_newOutput);
-		outputInLines.push_back(lines);
-		newOutputInLines.push_back(new_lines);
-	}
-	
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	for (int i = 0; i < 4; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-	
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it;
-	int i = 1;
-	
-	for (; i < 5; i++) {
-		EXPECT_CALL(*mock, deleteFile(paths[i-1])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, writeInFile(new_paths[i-1], new_outputs[i-1])).Times(1);
-	}
-	
-	i = 1;
-	for (; i < 5; i++) {
-		it = map.find(i);
-		set.editEntry(it->second, new ReminderEntry(newOutputInLines[i-1], dtMock, mock));
-	}
-	
-	map = set.getAll();
-	i = 1;
-	
-	for (; i<5; i++) {
-		it = map.find(i);
-
-		EXPECT_EQ("title_" + std::to_string(i) + std::to_string(i), it->second->getTitle());
-		EXPECT_EQ("description_" + std::to_string(i) + std::to_string(i), it->second->getDescription());
-		EXPECT_TRUE(*dt == *it->second->getDateCreated());
-		DateTime* tmp = new DateTime(5 + i, i + 5, 2030, 12 + i, 0);
-		EXPECT_TRUE(*tmp == *it->second->getExecutionDate());
-		if (i % 2 == 0)
-			EXPECT_TRUE(EntryStatus::FINISHED == it->second->getEntryStatus());
-		else
-			EXPECT_TRUE(EntryStatus::NOT_FINISHED == it->second->getEntryStatus());
-	}
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, EditEntry_WithNullObject){
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 25,5,2022, 10,24,32 };
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-	std::vector<std::string> paths; //OLD PATHS
-	std::vector<std::string> outputs; //OLD OUTPUTS
-	std::vector<std::vector<std::string>> outputInLines;
-
-	for (int i = 1; i < 5; i++) {
-		DateTime* execDate = new DateTime(5 + i, 5 + i, 2030, 12 + i, 0);
-
-
-		std::string _path = "out/title_" + std::to_string(i) + "_" + helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5])
-			+ "_" + helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-
-		std::string _title = "Title: title_" + std::to_string(i);
-		std::string _description = "Description: description_" + std::to_string(i);
-		std::string _date_created = "Date created: " + dt->getFormat(true);
-		std::string _exec_date = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		if (i % 2 == 0)
-			_status += "FINISHED";
-		else
-			_status += "NOT FINISHED";
-
-		std::string _output = _title + "\n" + _description + "\n" + _date_created + "\n" + _exec_date + "\n" + _status;
-		std::vector<std::string> lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_date_created); lines.push_back(_exec_date); lines.push_back(_status);
-
-		paths.push_back(_path);
-		outputs.push_back(_output);
-		outputInLines.push_back(lines);
-	}
-
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-
-	for (int i = 0; i < 4; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map1 = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it1;
-	int i = 1;
-
-	for (; i < 5; i++) {
-		it1 = map1.find(i);
-		set.editEntry(it1->second,nullptr);
-	}
-
-	std::map<int, ReminderEntry*> map2 = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it2;
-
-
-	i = 1;
-	EXPECT_TRUE(map1.size() == map2.size());
-	for (it1 = map1.begin(), it2 = map2.begin(); it1 != map1.end() && it2 != map2.end(); it1++, it2++) {
-		EXPECT_TRUE(*it1->second == *it2 ->second);
-	}
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, EditEntry_WithValidIndex) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 25,5,2022,12,50,13 };
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-	std::vector<std::string> paths; //OLD PATHS
-	std::vector<std::string> outputs; //OLD OUTPUTS
-	std::vector<std::vector<std::string>> outputInLines;
-
-	std::vector<std::string> new_paths; // PATHS AFTER EDITING
-	std::vector<std::string> new_outputs; // OUTPUTS AFTER EDITING
-	std::vector<std::vector<std::string>> newOutputInLines;
-
-	for (int i = 1; i < 5; i++) {
-		DateTime* execDate = new DateTime(5 + i, 5 + i, 2030, 12 + i, 0);
-
-		std::string _path = "out/title_" + std::to_string(i) + "_" +
-			helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-			helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _newPath = "out/title_" + std::to_string(i) + std::to_string(i) + "_" +
-			helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-			helper.getPath(execDate->getDay(), execDate->getMonth(), 2030, execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _title = "Title: title_" + std::to_string(i);
-		std::string _description = "Description: description_" + std::to_string(i);
-		std::string _dateCreated = "Date created: " + dt->getFormat(true);
-		std::string _execDate = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		if (i % 2 == 0) {
-			_status += "FINISHED";
-		}
-		else {
-			_status += "NOT FINISHED";
-		}
-		std::vector<std::string> lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-		lines.push_back(_execDate); lines.push_back(_status);
-		std::string _output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-
-		DateTime tmp(5 + i, i + 5, 2030, 12 + i, 0);
-		std::string _newTitle = "Title: title_" + std::to_string(i) + std::to_string(i);
-		std::string _newDescription = "Description: description_" + std::to_string(i) + std::to_string(i);
-		std::string _newDateCreated = "Date created: " + dt->getFormat(true);
-		std::string _newExecDate = "Execution date: " + tmp.getFormat(true);
-		std::string _newStatus = "Status: ";
-		if (i % 2 == 0) {
-			_newStatus += "FINISHED";
-		}
-		else {
-			_newStatus += "NOT FINISHED";
-		}
-		std::string _newOutput = _newTitle + "\n" + _newDescription + "\n" + _newDateCreated + "\n" + _newExecDate + "\n" + _status;
-		std::vector<std::string> _newLines;
-		_newLines.push_back(_newTitle); _newLines.push_back(_newDescription); _newLines.push_back(_newDateCreated);
-		_newLines.push_back(_newExecDate); _newLines.push_back(_newStatus);
-
-
-		paths.push_back(_path);
-		outputs.push_back(_output);
-		outputInLines.push_back(lines);
-		new_paths.push_back(_newPath);
-		new_outputs.push_back(_newOutput);
-		newOutputInLines.push_back(_newLines);
-	}
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-
-	for (int i = 0; i < 4; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it;
-
-	for (int i =1; i < 5; i++) {
-		EXPECT_CALL(*mock, deleteFile(paths[i-1])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, writeInFile(new_paths[i-1], new_outputs[i-1])).Times(2);
-		
-		it = map.find(i);
-		set.editEntry(i, new ReminderEntry(newOutputInLines[i-1], mock));
-
-
-		EXPECT_EQ(it->second->getTitle(), "title_" + std::to_string(i) + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "description_" + std::to_string(i) + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-		DateTime* tmp = new DateTime(5 + i, i + 5, 2030, 12 + i, 0);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(EntryStatus::FINISHED, it->second->getEntryStatus());
-		}
-		else {
-			EXPECT_EQ(EntryStatus::NOT_FINISHED, it->second->getEntryStatus());
-		}
-
-	}
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, EditEntry_WithInvalidIndex) {
-	HelperClass helper;
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 26,5,2022, 10,1,43 };
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* entryMock1 = new FileWorkerMock();
-	FileWorkerMock* entryMock2 = new FileWorkerMock();
-	std::string _path1 = "out/entry1_" + helper.getPath(26, 5, 2022, 10, 1, 43) + "_" + helper.getPath(0, 0, 0, 0, 0, 0);
-	std::string _path2 = "out/entry2_" + helper.getPath(26, 5, 2022, 10, 1, 43) + "_" + helper.getPath(0, 0, 0, 0, 0, 0);
-
-	std::vector<std::string> _outputs1;
-	_outputs1.push_back("Title: entry1");
-	_outputs1.push_back("Description: description 1");
-	_outputs1.push_back("Date created: " + dt->getFormat(true));
-	_outputs1.push_back("Execution date: 00/00/0000 00:00:00");
-	_outputs1.push_back("Status: NOT FINISHED");
-	std::string _output1 = _outputs1[0] + "\n" + _outputs1[1] + "\n" + _outputs1[2] + "\n" + _outputs1[3] + "\n" + _outputs1[4];
-
-	std::vector<std::string> _outputs2;
-	_outputs2.push_back("Title: entry2");
-	_outputs2.push_back("Description: description 2");
-	_outputs2.push_back("Date created: " + dt->getFormat(true));
-	_outputs2.push_back("Execution date: 00/00/0000 00:00:00");
-	_outputs2.push_back("Status: NOT FINISHED");
-	std::string _output2 = _outputs2[0] + "\n" + _outputs2[1] + "\n" + _outputs2[2] + "\n" + _outputs2[3] + "\n" + _outputs2[4];
-
-
-	EXPECT_CALL(*entryMock1, writeInFile(_path1, _output1)).Times(1);
-	ReminderEntry* e1 = new ReminderEntry("entry1", "description 1", dtMock, entryMock1);
-	Mock::AllowLeak(entryMock1);
-	Mock::VerifyAndClear(entryMock1);
-
-	EXPECT_CALL(*entryMock2, writeInFile(_path2, _output2)).Times(1);
-	ReminderEntry* e2 = new ReminderEntry("entry2", "description 2", dtMock, entryMock2);
-	Mock::AllowLeak(entryMock2);
-	Mock::VerifyAndClear(entryMock2);
-
-
-	std::vector<std::string> filePaths;
-	filePaths.push_back(_path1);
-	filePaths.push_back(_path2);
-
-	FileWorkerMock* setMock = new FileWorkerMock();
-	EXPECT_CALL(*setMock, getAllFromDirectory("out/")).WillOnce(Return(filePaths));
-	EXPECT_CALL(*setMock, fileExists(_path1)).WillOnce(Return(true));
-	EXPECT_CALL(*setMock, readFromFileInLines(_path1)).WillOnce(Return(_outputs1));
-	EXPECT_CALL(*setMock, fileExists(_path2)).WillOnce(Return(true));
-	EXPECT_CALL(*setMock, readFromFileInLines(_path2)).WillOnce(Return(_outputs2));
-
-
-	ReminderSet set(setMock);
 
 	try {
-		set.deleteEntry(0);
-		FAIL() << "Expected: Invalid index";
+		editEntryAndTest(-1, edit);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
 	}
-	catch (const char* err) {
-		EXPECT_STREQ(err, "Invalid index");
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
 	}
+
 	try {
-		set.deleteEntry(3);
-		FAIL() << "Expected: Invalid index";
+		editEntryAndTest(11, edit);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
 	}
-	catch (const char* err) {
-		EXPECT_STREQ(err, "Invalid index");
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
 	}
 
-	Mock::AllowLeak(setMock);
-	Mock::VerifyAndClear(setMock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+	try {
+		editEntryAndTest(100, edit);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+	}
 }
 
-TEST(ReminderSet_Tests, SortByDateCreated) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
 
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	std::vector<std::string> paths;
-	std::vector<std::string> outputs;
-	std::vector<std::vector<std::string>> outputInLines;
-	std::vector<std::pair<std::string, std::string>> paths_and_outputs;
-
-	for (int i = 1; i <= 10; i++) {
-		DateTime* execDate = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		std::vector<int> date{ 26,5,2022, 5 + i , 5 + i,5  + i};
-		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-		DateTime* dt = new DateTime(dtMock);
-		std::string _path = "out/TITLE-" + std::to_string(i) + "_" +
-			helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" + 
-			helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _output;
-		std::string _title = "Title: TITLE-" + std::to_string(i);
-		std::string _description = "Description: This is description for " + std::to_string(i);
-		std::string _dateCreated = "Date created: " + dt->getFormat(true);
-		std::string _execDate = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-		if (i % 2 == 0) {
-			_status += "FINISHED";
-		}
-		else {
-			_status += "NOT FINISHED";
-		}
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-		
-		std::vector<std::string> lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated); 
-		lines.push_back(_execDate); lines.push_back(_status);
-		outputInLines.push_back(lines);
-		paths.push_back(_path);
-		outputs.push_back(_output);
-	}
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-
-	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 10);
-
-	int i = 1;
-	std::map<int, ReminderEntry*>::iterator it;
-	for (it = map.begin(); it != map.end(); it++) {
-		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-
-	
-	i = 10;
-	std::map<int, ReminderEntry*> sortedByDateCreated_descending = set.sortByDateCreated(true);
-
-	for (it = sortedByDateCreated_descending.begin(); it != sortedByDateCreated_descending.end(); it++) {
-		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i--;
-	}
-
-	i = 1;
-	std::map<int, ReminderEntry*> sortedByDateCreated_ascending = set.sortByDateCreated(false);
-	for (it = sortedByDateCreated_ascending.begin(); it != sortedByDateCreated_ascending.end(); it++) {
-		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_1) {
+	SetUp(2);
+	initialTest();
+	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, SortByDateCreated_WithOneEntry) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 26,5,2022,10,23, 54};
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-	DateTime* execDate = new DateTime(26, 9, 2050, 12,0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(26, 9, 2050, 12, 0, 0);
-
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: DESCRIPTION";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	std::vector<std::string> paths; 
-	paths.push_back(_path);
-	std::vector<std::string> outputs;
-	outputs.push_back(_output);
-	std::vector<std::vector<std::string>> outputInLines;
-	std::vector<std::string> lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-	outputInLines.push_back(lines);
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	std::map<int, ReminderEntry*> sortedByDateCreated_descending = set.sortByDateCreated(true);
-	EXPECT_TRUE(sortedByDateCreated_descending.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = sortedByDateCreated_descending.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-
-
-	std::map<int, ReminderEntry*> sortedByDateCreated_ascending = set.sortByDateCreated(false);
-	EXPECT_TRUE(sortedByDateCreated_descending.size() == 1);
-	it = sortedByDateCreated_ascending.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_2) {
+	SetUp(5);
+	initialTest();
+	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, SortByDateCreated_WithZeroEntries) {
-	FileWorkerMock* mock = new FileWorkerMock();
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 0);
-
-	std::map<int, ReminderEntry*> sortedByDateCreated_descending = set.sortByDateCreated(true);
-	EXPECT_TRUE(sortedByDateCreated_descending.size() == 0);
-
-	std::map<int, ReminderEntry*> sortedByDateCreated_ascending = set.sortByDateCreated(true);
-	EXPECT_TRUE(sortedByDateCreated_descending.size() == 0);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_3) {
+	SetUp(10);
+	initialTest();
+	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, SortByExecDate) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 26,5,2022, 10 , 44, 32 };
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	std::vector<std::string> paths;
-	std::vector<std::string> outputs;
-	std::vector<std::vector<std::string>> outputInLines;
-
-	for (int i = 1; i <= 10; i++) {
-		DateTime* execDate = new DateTime(2 * i, i, 2030, 5 + i, 0);
-
-		std::string _path = "out/TITLE-" + std::to_string(i) + "_" +
-			helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-			helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _output;
-		std::string _title = "Title: TITLE-" + std::to_string(i);
-		std::string _description = "Description: This is description for " + std::to_string(i);
-		std::string _dateCreated = "Date created: " + dt->getFormat(true);
-		std::string _execDate = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-		if (i % 2 == 0) {
-			_status += "FINISHED";
-		}
-		else {
-			_status += "NOT FINISHED";
-		}
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-		std::vector<std::string> lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-		lines.push_back(_execDate); lines.push_back(_status);
-		outputInLines.push_back(lines);
-		paths.push_back(_path);
-		outputs.push_back(_output);
-	}
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-
-	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 10);
-
-	int i = 1;
-	std::map<int, ReminderEntry*>::iterator it;
-	for (it = map.begin(); it != map.end(); it++) {
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-
-
-	i = 10;
-	std::map<int, ReminderEntry*> sortedByExecDate_descending = set.sortByExecDate(true);
-
-	for (it = sortedByExecDate_descending.begin(); it != sortedByExecDate_descending.end(); it++) {
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i--;
-	}
-
-	i = 1;
-	std::map<int, ReminderEntry*> sortedByExecDate_ascending = set.sortByExecDate(false);
-	for (it = sortedByExecDate_ascending.begin(); it != sortedByExecDate_ascending.end(); it++) {
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_ascending_1) {
+	SetUp(2);
+	initialTest();
+	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, SortByExecDate_WithOneEntry) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 26,5,2022,10,23, 54 };
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-	DateTime* execDate = new DateTime(26, 9, 2050, 12, 0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(26, 9, 2050, 12, 0, 0);
-
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: DESCRIPTION";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	std::vector<std::string> paths;
-	paths.push_back(_path);
-	std::vector<std::string> outputs;
-	outputs.push_back(_output);
-	std::vector<std::vector<std::string>> outputInLines;
-	std::vector<std::string> lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-	outputInLines.push_back(lines);
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(_path)).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	std::map<int, ReminderEntry*> sortedByExecDate_descending = set.sortByExecDate(true);
-	EXPECT_TRUE(sortedByExecDate_descending.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = sortedByExecDate_descending.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
-	EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-
-
-	std::map<int, ReminderEntry*> sortedByExecDate_ascending = set.sortByExecDate(false);
-	EXPECT_TRUE(sortedByExecDate_ascending.size() == 1);
-	it = sortedByExecDate_ascending.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
-	EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_ascending_2) {
+	SetUp(5);
+	initialTest();
+	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, SortByExecDate_WithZeroEntries) {
-	FileWorkerMock* mock = new FileWorkerMock();
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 0);
-
-	std::map<int, ReminderEntry*> sortedByExecDate_descending = set.sortByExecDate(true);
-	EXPECT_TRUE(sortedByExecDate_descending.size() == 0);
-
-	std::map<int, ReminderEntry*> sortedByExecDate_ascending = set.sortByExecDate(true);
-	EXPECT_TRUE(sortedByExecDate_ascending.size() == 0);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_ascending_3) {
+	SetUp(10);
+	initialTest();
+	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, SortByStatus) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	std::vector<std::string> paths;
-	std::vector<std::string> outputs;
-	std::vector<std::vector<std::string>> outputInLines;
-
-	for (int i = 1; i <= 10; i++) {
-		DateTime* execDate = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		std::vector<int> date{ 26,5,2022, 5 + i , 5 + i,5 + i };
-		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-		DateTime* dt = new DateTime(dtMock);
-		std::string _path = "out/TITLE-" + std::to_string(i) + "_" +
-			helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-			helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-
-		std::string _output;
-		std::string _title = "Title: TITLE-" + std::to_string(i);
-		std::string _description = "Description: This is description for " + std::to_string(i);
-		std::string _dateCreated = "Date created: " + dt->getFormat(true);
-		std::string _execDate = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-		if (i % 2 == 0) {
-			_status += "FINISHED";
-		}
-		else {
-			_status += "NOT FINISHED";
-		}
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-		std::vector<std::string> lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-		lines.push_back(_execDate); lines.push_back(_status);
-		outputInLines.push_back(lines);
-		paths.push_back(_path);
-		outputs.push_back(_output);
-	}
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-
-	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-
-	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	EXPECT_TRUE(map.size() == 10);
-
-	int i = 1;
-	std::map<int, ReminderEntry*>::iterator it;
-	for (it = map.begin(); it != map.end(); it++) {
-		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
-		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-
-	
-	i = 1; int j = 5;
-	std::map<int, ReminderEntry*> sortedByStatus_finishedFirst = set.sortByStatus(true);
-	
-	
-	for (it = sortedByStatus_finishedFirst.begin(); it != sortedByStatus_finishedFirst.end(); it++) {
-
-		if (i < 6) {
-			DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + 2 * i, 5 + 2 * i, 5 + 2 * i);
-			DateTime* exec_tmp = new DateTime(4 * i, 2 * i, 2030, 5 + 2 * i, 0);
-			EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(2*i));
-			EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(2*i));
-			EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-			EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-			
-		}
-		else {
-			DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + (i - j), 5 + (i - j), 5 + (i - j));
-			DateTime* exec_tmp = new DateTime(2 * (i - j), i - j, 2030, 5 + (i - j), 0);
-			EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i - j));
-			EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i - j));
-			EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-			EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-			j--;
-		}
-
-		i++; 
-	}
-
-	
-	i = 1; j = 4;
-	int k = 0;
-	std::map<int, ReminderEntry*> sortedByStatus_notfinishedFirst = set.sortByStatus(false);
-	for (it = sortedByStatus_notfinishedFirst.begin(); it != sortedByStatus_notfinishedFirst.end(); it++) {
-		if (i < 6) {
-			DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + (i+ k), 5 + i+k, 5 + i + k);
-			DateTime* exec_tmp = new DateTime(2 * (i+k), i+k, 2030, 5 + i + k, 0);
-			EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i + k));
-			EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i + k));
-			EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-			EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-			k++;
-		}
-		else {
-			DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + (i - j), 5 + (i - j), 5 + (i - j));
-			DateTime* exec_tmp = new DateTime(2 * (i - j), i - j, 2030, 5 + (i - j), 0);
-			EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i - j));
-			EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i - j));
-			EXPECT_TRUE(*it->second->getDateCreated() == *dc_tmp);
-			EXPECT_TRUE(*it->second->getExecutionDate() == *exec_tmp);
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-			j--;
-		}
-
-		i++;
-	}
-	
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithOneEntry) {
+	SetUp(1);
+	initialTest();
+	sortAndTestByDateCreated(true);
 }
 
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithOneEntry_asc) {
+	SetUp(1);
+	initialTest();
+	sortAndTestByDateCreated(false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithZeroEntries) {
+	SetUp(0);
+	initialTest();
+	sortAndTestByDateCreated(true);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithZeroEntries_asc) {
+	SetUp(0);
+	initialTest();
+	sortAndTestByDateCreated(false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_1) {
+	SetUp(2);
+	initialTest();
+	sortAndTestByDateCreated(true);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_2) {
+	SetUp(5);
+	initialTest();
+	sortAndTestByDateCreated(true);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_3) {
+	SetUp(10);
+	initialTest();
+	sortAndTestByDateCreated(true);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_asc_1) {
+	SetUp(2);
+	initialTest();
+	sortAndTestByDateCreated(false);
+}
+
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_asc_2) {
+	SetUp(5);
+	initialTest();
+	sortAndTestByDateCreated(false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_asc_3) {
+	SetUp(10);
+	initialTest();
+	sortAndTestByDateCreated(false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withOneEntry) {
+	SetUp(1);
+	initialTest();
+	sortAndTestByExecDate(true);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withOneEntry_asc) {
+	SetUp(1);
+	initialTest();
+	sortAndTestByExecDate(false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withZeroEntries) {
+	SetUp(0);
+	initialTest();
+	sortAndTestByExecDate(true);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withZeroEntries_asc) {
+	SetUp(0);
+	initialTest();
+	sortAndTestByExecDate(false);
+}
+
+/*
 TEST(ReminderSet_Tests, SortByStatus_WithOneEntry) {
 	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
 	std::vector<int> date{ 26,5,2022,10,23, 54};
@@ -1289,12 +978,12 @@ TEST(ReminderSet_Tests, SortByStatus_WithOneEntry) {
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> sortedByStatus_finishedFirst = set.sortByStatus(true);
+	SetMap sortedByStatus_finishedFirst = set.sortByStatus(true);
 	EXPECT_TRUE(sortedByStatus_finishedFirst.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = sortedByStatus_finishedFirst.begin();
+	SetMap::iterator it = sortedByStatus_finishedFirst.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
 	EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
@@ -1303,7 +992,7 @@ TEST(ReminderSet_Tests, SortByStatus_WithOneEntry) {
 
 
 
-	std::map<int, ReminderEntry*> sortedByStatus_notFinishedFirst = set.sortByStatus(false);
+	SetMap sortedByStatus_notFinishedFirst = set.sortByStatus(false);
 	EXPECT_TRUE(sortedByStatus_notFinishedFirst.size() == 1);
 	it = sortedByStatus_notFinishedFirst.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -1324,13 +1013,13 @@ TEST(ReminderSet_Tests, SortByStatus_WithZeroEntries) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 0);
 
-	std::map<int, ReminderEntry*> sortedByStatus_1 = set.sortByStatus(true);
+	SetMap sortedByStatus_1 = set.sortByStatus(true);
 	EXPECT_TRUE(sortedByStatus_1.size() == 0);
 
-	std::map<int, ReminderEntry*> sortedByStatus_2 = set.sortByStatus(true);
+	SetMap sortedByStatus_2 = set.sortByStatus(true);
 	EXPECT_TRUE(sortedByStatus_2.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -1388,11 +1077,11 @@ TEST(ReminderSet_Tests, SortByTitle){
 	}
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 9);
 
 	int i = 1;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap::iterator it;
 	for (it = map.begin(); it != map.end(); it++) {
 		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
 		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -1412,7 +1101,7 @@ TEST(ReminderSet_Tests, SortByTitle){
 
 
 	i = 9;
-	std::map<int, ReminderEntry*> sortedByTitle_descending = set.sortByTitle(true);
+	SetMap sortedByTitle_descending = set.sortByTitle(true);
 
 
 	for (it = sortedByTitle_descending.begin(); it != sortedByTitle_descending.end(); it++) {
@@ -1434,7 +1123,7 @@ TEST(ReminderSet_Tests, SortByTitle){
 
 
 	i = 1;
-	std::map<int, ReminderEntry*> sortedByTitle_ascending = set.sortByTitle(false);
+	SetMap sortedByTitle_ascending = set.sortByTitle(false);
 	for (it = sortedByTitle_ascending.begin(); it != sortedByTitle_ascending.end(); it++) {
 		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
 		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -1493,12 +1182,12 @@ TEST(ReminderSet_Tests, SortByTitle_WithOneEntry) {
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> sortedByTitle_1 = set.sortByTitle(true);
+	SetMap sortedByTitle_1 = set.sortByTitle(true);
 	EXPECT_TRUE(sortedByTitle_1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = sortedByTitle_1.begin();
+	SetMap::iterator it = sortedByTitle_1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
 	EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
@@ -1507,7 +1196,7 @@ TEST(ReminderSet_Tests, SortByTitle_WithOneEntry) {
 
 
 
-	std::map<int, ReminderEntry*> sortedByTitle_2 = set.sortByTitle(false);
+	SetMap sortedByTitle_2 = set.sortByTitle(false);
 	EXPECT_TRUE(sortedByTitle_2.size() == 1);
 	it = sortedByTitle_2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -1528,13 +1217,13 @@ TEST(ReminderSet_Tests, SortByTitle_WithZeroEntries) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 0);
 
-	std::map<int, ReminderEntry*> sorted_1 = set.sortByTitle(true);
+	SetMap sorted_1 = set.sortByTitle(true);
 	EXPECT_TRUE(sorted_1.size() == 0);
 
-	std::map<int, ReminderEntry*> sorted_2 = set.sortByTitle(true);
+	SetMap sorted_2 = set.sortByTitle(true);
 	EXPECT_TRUE(sorted_2.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -1595,11 +1284,11 @@ TEST(ReminderSet_Tests, SortByDescription){
 	}
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 9);
 
 	int i = 1;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap::iterator it;
 	for (it = map.begin(); it != map.end(); it++) {
 		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
 		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -1619,7 +1308,7 @@ TEST(ReminderSet_Tests, SortByDescription){
 
 
 	i = 9;
-	std::map<int, ReminderEntry*> sortedByDescription_descending = set.sortByTitle(true);
+	SetMap sortedByDescription_descending = set.sortByTitle(true);
 
 
 	for (it = sortedByDescription_descending.begin(); it != sortedByDescription_descending.end(); it++) {
@@ -1640,7 +1329,7 @@ TEST(ReminderSet_Tests, SortByDescription){
 
 
 	i = 1;
-	std::map<int, ReminderEntry*> sortedByDescription_ascending = set.sortByTitle(false);
+	SetMap sortedByDescription_ascending = set.sortByTitle(false);
 	for (it = sortedByDescription_ascending.begin(); it != sortedByDescription_ascending.end(); it++) {
 		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + i, 5 + i, 5 + i);
 		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -1699,12 +1388,12 @@ TEST(ReminderSet_Tests, SortByDescription_WithOneEntry){
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> sortedByDescription_1 = set.sortByDescription(true);
+	SetMap sortedByDescription_1 = set.sortByDescription(true);
 	EXPECT_TRUE(sortedByDescription_1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = sortedByDescription_1.begin();
+	SetMap::iterator it = sortedByDescription_1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
 	EXPECT_TRUE(*it->second->getDateCreated() == DateTime(dtMock));
@@ -1713,7 +1402,7 @@ TEST(ReminderSet_Tests, SortByDescription_WithOneEntry){
 
 
 
-	std::map<int, ReminderEntry*> sortedByDescription_2 = set.sortByDescription(false);
+	SetMap sortedByDescription_2 = set.sortByDescription(false);
 	EXPECT_TRUE(sortedByDescription_2.size() == 1);
 	it = sortedByDescription_2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -1734,13 +1423,13 @@ TEST(ReminderSet_Tests, SortByDescription_WithZeroEntries){
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 0);
 
-	std::map<int, ReminderEntry*> sorted_1 = set.sortByDescription(true);
+	SetMap sorted_1 = set.sortByDescription(true);
 	EXPECT_TRUE(sorted_1.size() == 0);
 
-	std::map<int, ReminderEntry*> sorted_2 = set.sortByDescription(true);
+	SetMap sorted_2 = set.sortByDescription(true);
 	EXPECT_TRUE(sorted_2.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -1797,8 +1486,8 @@ TEST(ReminderSet_Tests, FilterByStatus) {
 	}
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap map = set.getAll();
+	SetMap::iterator it;
 	int i = 1;
 	for (it = map.begin(); it != map.end(); it++) {
 		DateTime* exec_tmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -1819,7 +1508,7 @@ TEST(ReminderSet_Tests, FilterByStatus) {
 	EXPECT_TRUE(map.size() == 10);
 
 	
-	std::map<int, ReminderEntry*> filteredByStatus1 = set.filterByStatus(EntryStatus::FINISHED);
+	SetMap filteredByStatus1 = set.filterByStatus(EntryStatus::FINISHED);
 
 	i = 1;
 	for (it = filteredByStatus1.begin(); it != filteredByStatus1.end(); it++) {
@@ -1834,7 +1523,7 @@ TEST(ReminderSet_Tests, FilterByStatus) {
 	}
 
 	i = 1;
-	std::map<int, ReminderEntry*> filteredByStatus0 = set.filterByStatus(EntryStatus::NOT_FINISHED);
+	SetMap filteredByStatus0 = set.filterByStatus(EntryStatus::NOT_FINISHED);
 	for (it = filteredByStatus0.begin(); it != filteredByStatus0.end(); it++) {
 		DateTime* exec_tmp = new DateTime(2 * (2*i - 1), (2 * i - 1), 2030, 5 + (2 * i - 1), 0);
 		DateTime* dc_tmp = new DateTime(26, 5, 2022, 5 + (2 * i - 1), 5 + (2 * i - 1), 5 + (2 * i - 1));
@@ -1888,8 +1577,8 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry) {
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it = map.begin();
+	SetMap map = set.getAll();
+	SetMap::iterator it = map.begin();
 	EXPECT_TRUE(map.size() == 1);
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
@@ -1898,7 +1587,7 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry) {
 	EXPECT_TRUE(it->second->getEntryStatus() == EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByStatus(EntryStatus::NOT_FINISHED);
+	SetMap filtered1 = set.filterByStatus(EntryStatus::NOT_FINISHED);
 	EXPECT_TRUE(filtered1.size() == 1);
 	it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -1908,7 +1597,7 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry) {
 	EXPECT_TRUE(it->second->getEntryStatus() == EntryStatus::NOT_FINISHED);
 	
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByStatus(EntryStatus::FINISHED);
+	SetMap filtered2 = set.filterByStatus(EntryStatus::FINISHED);
 	EXPECT_TRUE(filtered2.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -1953,8 +1642,8 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry2) {
 	EXPECT_CALL(*mock, readFromFileInLines(_path)).WillOnce(Return(outputInLines[0]));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
-	std::map<int, ReminderEntry*>::iterator it = map.begin();
+	SetMap map = set.getAll();
+	SetMap::iterator it = map.begin();
 	EXPECT_TRUE(map.size() == 1);
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "DESCRIPTION");
@@ -1963,7 +1652,7 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry2) {
 	EXPECT_TRUE(it->second->getEntryStatus() == EntryStatus::FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByStatus(EntryStatus::FINISHED);
+	SetMap filtered1 = set.filterByStatus(EntryStatus::FINISHED);
 	EXPECT_TRUE(filtered1.size() == 1);
 	it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -1973,7 +1662,7 @@ TEST(ReminderSet_Tests, FilterByStatus_WithOneEntry2) {
 	EXPECT_TRUE(it->second->getEntryStatus() == EntryStatus::FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByStatus(EntryStatus::NOT_FINISHED);
+	SetMap filtered2 = set.filterByStatus(EntryStatus::NOT_FINISHED);
 	EXPECT_TRUE(filtered2.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -1988,13 +1677,13 @@ TEST(ReminderSet_Tests, FilterByStatus_WithZeroEntries) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByStatus(EntryStatus::FINISHED);
+	SetMap filtered1 = set.filterByStatus(EntryStatus::FINISHED);
 	EXPECT_TRUE(filtered1.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByStatus(EntryStatus::NOT_FINISHED);
+	SetMap filtered2 = set.filterByStatus(EntryStatus::NOT_FINISHED);
 	EXPECT_TRUE(filtered2.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2068,13 +1757,13 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 	}
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 10);
 
 
 	int i;
-	std::map<int, ReminderEntry*> filtered_beforeDateDescending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap filtered_beforeDateDescending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
+	SetMap::iterator it;
 
 	i = 5;
 	for (it = filtered_beforeDateDescending.begin(); it != filtered_beforeDateDescending.end(); it++) {
@@ -2096,7 +1785,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 	}
 
 	i = 1;
-	std::map<int, ReminderEntry*> filtered_beforeDateAscending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered_beforeDateAscending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
 	for (it = filtered_beforeDateAscending.begin(); it != filtered_beforeDateAscending.end(); it++) {
 		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
 		DateTime* execTmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -2116,7 +1805,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 	}
 
 	i = 10;
-	std::map<int, ReminderEntry*> filtered_afterDateDescending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered_afterDateDescending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
 
 	for (it = filtered_afterDateDescending.begin(); it != filtered_afterDateDescending.end(); it++) {
 		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
@@ -2137,7 +1826,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 	}
 
 	i = 6;
-	std::map<int, ReminderEntry*> filtered_afterDateAscending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered_afterDateAscending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
 	for (it = filtered_afterDateAscending.begin(); it != filtered_afterDateAscending.end(); it++) {
 		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
 		DateTime* execTmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
@@ -2163,7 +1852,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated) {
 	Mock::AllowLeak(filterDateMock);
 	Mock::VerifyAndClear(filterDateMock);
 }
-*/
+
 
 TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate) {
 	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
@@ -2201,12 +1890,12 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
+	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
 	EXPECT_TRUE(filtered1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered1.begin();
+	SetMap::iterator it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
@@ -2214,7 +1903,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate) {
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
 	EXPECT_TRUE(filtered2.size() == 1);
 	it = filtered2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2223,10 +1912,10 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate) {
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
 	EXPECT_TRUE(filtered3.size() == 0);
 	
-	std::map<int, ReminderEntry*> filtered4 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2269,12 +1958,12 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate_2) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, dt, true);
+	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, dt, true);
 	EXPECT_TRUE(filtered1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered1.begin();
+	SetMap::iterator it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
@@ -2282,7 +1971,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate_2) {
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, dt, false);
+	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, dt, false);
 	EXPECT_TRUE(filtered2.size() == 1);
 	it = filtered2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2291,10 +1980,10 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate_2) {
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByDateCreated(FilterMode::AfterDate, dt, true);
+	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, dt, true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByDateCreated(FilterMode::AfterDate, dt, false);
+	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, dt, false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2338,26 +2027,26 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
+	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
 	EXPECT_TRUE(filtered1.size() == 0);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
 	EXPECT_TRUE(filtered2.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
 	EXPECT_TRUE(filtered3.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered3.begin();
+	SetMap::iterator it = filtered3.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
 	EXPECT_TRUE(filtered4.size() == 1);
 	it = filtered4.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2404,12 +2093,12 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate_2) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, dt, true);
+	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, dt, true);
 	EXPECT_TRUE(filtered1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered1.begin();
+	SetMap::iterator it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
@@ -2417,7 +2106,7 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate_2) {
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, dt, false);
+	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, dt, false);
 	EXPECT_TRUE(filtered2.size() == 1);
 	it = filtered2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2426,10 +2115,10 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate_2) {
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByDateCreated(FilterMode::AfterDate, dt, true);
+	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, dt, true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByDateCreated(FilterMode::AfterDate, dt, false);
+	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, dt, false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2444,19 +2133,19 @@ TEST(ReminderSet_Tests, FilterByDateCreated_WithZeroEntries) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, new DateTime(), true);
+	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, new DateTime(), true);
 	EXPECT_TRUE(filtered1.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, new DateTime(), false);
+	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, new DateTime(), false);
 	EXPECT_TRUE(filtered2.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByDateCreated(FilterMode::AfterDate, new DateTime(), true);
+	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, new DateTime(), true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByDateCreated(FilterMode::AfterDate, new DateTime(), false);
+	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, new DateTime(), false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2528,13 +2217,13 @@ TEST(ReminderSet_Tests, FilterByExecDate) {
 	}
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 10);
 
 
 	int i;
-	std::map<int, ReminderEntry*> filtered_beforeDateDescending = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap filtered_beforeDateDescending = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
+	SetMap::iterator it;
 
 	i = 5;
 	for (it = filtered_beforeDateDescending.begin(); it != filtered_beforeDateDescending.end(); it++) {
@@ -2556,7 +2245,7 @@ TEST(ReminderSet_Tests, FilterByExecDate) {
 	}
 
 	i = 1;
-	std::map<int, ReminderEntry*> filtered_beforeDateAscending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered_beforeDateAscending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
 	for (it = filtered_beforeDateAscending.begin(); it != filtered_beforeDateAscending.end(); it++) {
 		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
 		DateTime* execTmp = new DateTime(27, 5, 2023, 10, 53, 25 + i);
@@ -2576,7 +2265,7 @@ TEST(ReminderSet_Tests, FilterByExecDate) {
 	}
 
 	i = 10;
-	std::map<int, ReminderEntry*> filtered_afterDateDescending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered_afterDateDescending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
 
 	for (it = filtered_afterDateDescending.begin(); it != filtered_afterDateDescending.end(); it++) {
 		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
@@ -2597,7 +2286,7 @@ TEST(ReminderSet_Tests, FilterByExecDate) {
 	}
 
 	i = 6;
-	std::map<int, ReminderEntry*> filtered_afterDateAscending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered_afterDateAscending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
 	for (it = filtered_afterDateAscending.begin(); it != filtered_afterDateAscending.end(); it++) {
 		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
 		DateTime* execTmp = new DateTime(27, 5, 2023, 10, 53, 25 + i);
@@ -2659,12 +2348,12 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
+	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
 	EXPECT_TRUE(filtered1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered1.begin();
+	SetMap::iterator it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
@@ -2672,7 +2361,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate) {
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
 	EXPECT_TRUE(filtered2.size() == 1);
 	it = filtered2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2681,10 +2370,10 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate) {
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2728,12 +2417,12 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate_2) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
+	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
 	EXPECT_TRUE(filtered1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered1.begin();
+	SetMap::iterator it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
@@ -2741,7 +2430,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate_2) {
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
 	EXPECT_TRUE(filtered2.size() == 1);
 	it = filtered2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2750,10 +2439,10 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate_2) {
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2797,26 +2486,26 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
+	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
 	EXPECT_TRUE(filtered1.size() == 0);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
 	EXPECT_TRUE(filtered2.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
 	EXPECT_TRUE(filtered3.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered3.begin();
+	SetMap::iterator it = filtered3.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
 	EXPECT_TRUE(filtered4.size() == 1);
 	it = filtered4.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2866,12 +2555,12 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate_2) {
 	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 1);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
+	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
 	EXPECT_TRUE(filtered1.size() == 1);
-	std::map<int, ReminderEntry*>::iterator it = filtered1.begin();
+	SetMap::iterator it = filtered1.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
 	EXPECT_EQ(it->second->getDescription(), "This is description");
 	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
@@ -2879,7 +2568,7 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate_2) {
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
+	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
 	EXPECT_TRUE(filtered2.size() == 1);
 	it = filtered2.begin();
 	EXPECT_EQ(it->second->getTitle(), "TITLE");
@@ -2888,10 +2577,10 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate_2) {
 	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
 	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
+	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
+	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
@@ -2906,21 +2595,23 @@ TEST(ReminderSet_Tests, FilterByExecDate_WithZeroEntries) {
 	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(std::vector<std::string>()));
 
 	ReminderSet set(mock);
-	std::map<int, ReminderEntry*> map = set.getAll();
+	SetMap map = set.getAll();
 	EXPECT_TRUE(map.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered1 = set.filterByExecDate(FilterMode::BeforeDate, new DateTime(), true);
+	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, new DateTime(), true);
 	EXPECT_TRUE(filtered1.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered2 = set.filterByExecDate(FilterMode::BeforeDate, new DateTime(), false);
+	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, new DateTime(), false);
 	EXPECT_TRUE(filtered2.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered3 = set.filterByExecDate(FilterMode::AfterDate, new DateTime(), true);
+	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, new DateTime(), true);
 	EXPECT_TRUE(filtered3.size() == 0);
 
-	std::map<int, ReminderEntry*> filtered4 = set.filterByExecDate(FilterMode::AfterDate, new DateTime(), false);
+	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, new DateTime(), false);
 	EXPECT_TRUE(filtered4.size() == 0);
 
 	Mock::AllowLeak(mock);
 	Mock::VerifyAndClear(mock);
 }
+*/
+

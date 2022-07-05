@@ -5,6 +5,10 @@
 #include "../exception/NullObjectException.h"
 
 namespace fs = std::filesystem;
+using SetMap = std::map<int, ReminderEntry*>;
+using MapIterator = SetMap::iterator;
+using MapPair = std::pair<int, ReminderEntry*>;
+
 
 enum FilterMode {
 	BeforeDate = 0,
@@ -14,7 +18,7 @@ enum FilterMode {
 class ReminderSet
 {
 private:
-	std::map<int, ReminderEntry*> entries;
+	SetMap entries;
 public:
 	FileWorkerInterface* fileWorker = new FileWorker(); // Q: Why initialize it here instead of in constructor?
 	DateTimeWorkerInterface* dtWorker = new DateTimeWorker();
@@ -28,16 +32,16 @@ public:
 	void editEntry(ReminderEntry* old, ReminderEntry* edit);
 	void editEntry(int index , ReminderEntry* edit);
 
-	std::map<int, ReminderEntry*> getAll();
-	std::map<int, ReminderEntry*> filterByDateCreated(FilterMode filterMode, DateTime* filterDate, bool descending = true); // true=descending false=ascending	
-	std::map<int, ReminderEntry*> filterByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending = true);
-	std::map<int, ReminderEntry*> filterByStatus(EntryStatus status = EntryStatus::NOT_FINISHED);
+	SetMap getAll();
+	SetMap filterByDateCreated(FilterMode filterMode, DateTime* filterDate, bool descending = true); // true=descending false=ascending	
+	SetMap filterByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending = true);
+	SetMap filterByStatus(EntryStatus status = EntryStatus::NOT_FINISHED);
 
-	std::map<int, ReminderEntry*> sortByDateCreated(bool descending = true);
-	std::map<int, ReminderEntry*> sortByStatus(bool finishedFirst = true); //true=>FINISHED, NOT false=>NOT, FINISHED
-	std::map<int, ReminderEntry*> sortByExecDate(bool descending = true);
-	std::map<int, ReminderEntry*> sortByTitle(bool descending = true);
-	std::map<int, ReminderEntry*> sortByDescription(bool descending = true);
+	SetMap sortByDateCreated(bool descending = true);
+	SetMap sortByStatus(bool finishedFirst = true); //true=>FINISHED, NOT false=>NOT, FINISHED
+	SetMap sortByExecDate(bool descending = true);
+	SetMap sortByTitle(bool descending = true);
+	SetMap sortByDescription(bool descending = true);
 
 	ReminderEntry* readFromFile(std::string path);
 };

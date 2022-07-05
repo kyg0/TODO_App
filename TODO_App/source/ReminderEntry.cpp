@@ -215,10 +215,11 @@ DateTime* ReminderEntry::getExecutionDate()
 
 bool ReminderEntry::operator==(ReminderEntry& other)
 {
+	
 	if (this->title == other.getTitle()) {
 		if (this->description == other.getDescription()) {
-			if (!(*this->dateCreated < *other.getDateCreated()) && !(*this->dateCreated > *other.getDateCreated())) {
-				if (!(*this->executionDate < *other.getExecutionDate()) && !(*this->executionDate > *other.getExecutionDate())) {
+			if (*this->dateCreated == *other.getDateCreated()) {
+				if (*this->executionDate == *other.getExecutionDate()) {
 					if (this->status == other.getEntryStatus()) {
 						if (this->filePath == other.getFilePath()) {
 							return true;

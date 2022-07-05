@@ -19,7 +19,7 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 		for (auto& filePath : files) {
 			if (fileWorker->fileExists(filePath)) {
 				fileReading = fileWorker->readFromFileInLines(filePath);
-				entries.insert(std::pair<int, ReminderEntry*>(i, new ReminderEntry(fileReading, dtWorker, fileWorker)));
+				entries.insert(MapPair(i, new ReminderEntry(fileReading, dtWorker, fileWorker)));
 				i++;
 			}
 		}
@@ -53,7 +53,7 @@ void ReminderSet::makeNewEntry(ReminderEntry* newEntry)
 				if (!fileWorker->fileExists(newEntry->getFilePath())) {
 					fileWorker->writeInFile(newEntry->getFilePath(), newEntry->getFileOutput());
 				}
-				entries.insert(std::pair<int, ReminderEntry*>(i, newEntry));
+				entries.insert(MapPair(i, newEntry));
 				break;
 			}
 		}
@@ -70,12 +70,12 @@ void ReminderSet::makeNewEntry(ReminderEntry* newEntry)
 void ReminderSet::deleteEntry(int index)
 {
 	if (entries.count(index)) {
-		std::map<int, ReminderEntry*>::iterator entry = entries.find(index);
+		MapIterator entry = entries.find(index);
 		int key = entry->first;
 
 		entry->second->fileWorker = this->fileWorker;
 		entry->second->deleteEntry(entry->second->getFilePath());
-		entries.erase(entry);
+		entries.erase(key);
 	}
 	else {
 		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
@@ -85,9 +85,9 @@ void ReminderSet::deleteEntry(int index)
 void ReminderSet::deleteEntry(ReminderEntry* entryToDelete)
 {
 	if (entryToDelete == nullptr) {
-		NullObjectException(ERR_MSG_NULL_OBJ);
+		throw NullObjectException(ERR_MSG_NULL_OBJ);
 	}
-	std::map<int, ReminderEntry*>::iterator it;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		if (*entryToDelete == *it->second) {
 			it->second->fileWorker = fileWorker;
@@ -96,6 +96,7 @@ void ReminderSet::deleteEntry(ReminderEntry* entryToDelete)
 			return;
 		}
 	}
+	throw InvalidIndexException(ERR_MSG_INVALID_OBJECT);
 }
 
 void ReminderSet::editEntry(ReminderEntry* old, ReminderEntry* edit)
@@ -107,7 +108,7 @@ void ReminderSet::editEntry(ReminderEntry* old, ReminderEntry* edit)
 		throw NullObjectException(ERR_MSG_NULL_NEW_OBJ);
 	}
 	
-	std::map<int, ReminderEntry*>::iterator it;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		if (*old == *it->second) {
 			it->second->editEntry(edit);
@@ -123,21 +124,21 @@ void ReminderSet::editEntry(int index, ReminderEntry* edit)
 	if (!entries.count(index)) {
 		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
-	std::map<int, ReminderEntry*>::iterator it;
+	MapIterator it;
 	it = entries.find(index);
 	it->second->editEntry(edit);
 }
 
-std::map<int, ReminderEntry*> ReminderSet::getAll()
+SetMap ReminderSet::getAll()
 {
 	return entries;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDate, bool descending)
+SetMap ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDate, bool descending)
 {
 	std::vector<ReminderEntry*> vector;
-	std::map<int, ReminderEntry*> filtered;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap filtered;
+	MapIterator it;
 
 	switch (filterMode) {
 	case FilterMode::BeforeDate:
@@ -157,10 +158,10 @@ std::map<int, ReminderEntry*> ReminderSet::filterByDateCreated(FilterMode filter
 	}
 	
 	if (vector.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vector.size() == 1) {
-		filtered.insert(std::pair<int, ReminderEntry*>(1, vector[0]));
+		filtered.insert(MapPair(1, vector[0]));
 	}
 
 	for (int i = 1; i < vector.size(); i++) {
@@ -176,22 +177,22 @@ std::map<int, ReminderEntry*> ReminderSet::filterByDateCreated(FilterMode filter
 
 	if (descending) {
 		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(std::pair<int, ReminderEntry*>(i + 1, vector[i]));
+			filtered.insert(MapPair(i + 1, vector[i]));
 		}
 	}
 	else {
 		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(std::pair<int, ReminderEntry*>(i + 1, vector[vector.size() - 1 - i]));
+			filtered.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
 		}
 	}
 	
 	return filtered;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::filterByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending){
+SetMap ReminderSet::filterByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending){
 	std::vector<ReminderEntry*> vector;
-	std::map<int, ReminderEntry*> filtered;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap filtered;
+	MapIterator it;
 
 	switch (filterMode) {
 	case FilterMode::BeforeDate:
@@ -211,10 +212,10 @@ std::map<int, ReminderEntry*> ReminderSet::filterByExecDate(FilterMode filterMod
 	}
 
 	if (vector.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vector.size() == 1) {
-		filtered.insert(std::pair<int, ReminderEntry*>(1, vector[0]));
+		filtered.insert(MapPair(1, vector[0]));
 	}
 
 	for (int i = 1; i < vector.size(); i++) {
@@ -230,27 +231,27 @@ std::map<int, ReminderEntry*> ReminderSet::filterByExecDate(FilterMode filterMod
 
 	if (descending) {
 		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(std::pair<int, ReminderEntry*>(i + 1, vector[i]));
+			filtered.insert(MapPair(i + 1, vector[i]));
 		}
 	}
 	else {
 		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(std::pair<int, ReminderEntry*>(i + 1, vector[vector.size() - 1 - i]));
+			filtered.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
 		}
 	}
 
 	return filtered;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::filterByStatus(EntryStatus status)
+SetMap ReminderSet::filterByStatus(EntryStatus status)
 {
-	std::map<int, ReminderEntry*> filtered;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap filtered;
+	MapIterator it;
 	int i = 0;
 
 	for (it = entries.begin(); it != entries.end(); it++) {
 		if (it->second->getEntryStatus() == status) {
-			filtered.insert(std::pair<int, ReminderEntry*>(i, it->second));
+			filtered.insert(MapPair(i, it->second));
 			i++;
 		}
 	}
@@ -258,21 +259,21 @@ std::map<int, ReminderEntry*> ReminderSet::filterByStatus(EntryStatus status)
 	return filtered;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::sortByDateCreated(bool descending)
+SetMap ReminderSet::sortByDateCreated(bool descending)
 {
 	std::vector<ReminderEntry*> vector;
-	std::map<int, ReminderEntry*> sorted;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap sorted;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		vector.push_back(it->second);
 	}
 
 
 	if (vector.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vector.size() == 1) {
-		sorted.insert(std::pair<int, ReminderEntry*>(1, vector[0]));
+		sorted.insert(MapPair(1, vector[0]));
 	}
 
 	for (int i = 1; i < vector.size(); i++) {
@@ -288,33 +289,33 @@ std::map<int, ReminderEntry*> ReminderSet::sortByDateCreated(bool descending)
 
 	if (descending) {
 		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vector[i]));
+			sorted.insert(MapPair(i + 1, vector[i]));
 		}
 	}
 	else {
 		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vector[vector.size() - 1 - i]));
+			sorted.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
 		}
 	}
 
 	return sorted;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::sortByExecDate(bool descending)
+SetMap ReminderSet::sortByExecDate(bool descending)
 {
 	std::vector<ReminderEntry*> vector;
-	std::map<int, ReminderEntry*> sorted;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap sorted;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		vector.push_back(it->second);
 	}
 
 
 	if (vector.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vector.size() == 1) {
-		sorted.insert(std::pair<int, ReminderEntry*>(1, vector[0]));
+		sorted.insert(MapPair(1, vector[0]));
 	}
 
 	for (int i = 1; i < vector.size(); i++) {
@@ -330,32 +331,32 @@ std::map<int, ReminderEntry*> ReminderSet::sortByExecDate(bool descending)
 
 	if (descending) {
 		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vector[i]));
+			sorted.insert(MapPair(i + 1, vector[i]));
 		}
 	}
 	else {
 		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vector[vector.size() - 1 - i]));
+			sorted.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
 		}
 	}
 
 	return sorted;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::sortByStatus(bool finishedFirst)
+SetMap ReminderSet::sortByStatus(bool finishedFirst)
 {
 	std::vector<ReminderEntry*> vec;
-	std::map<int, ReminderEntry*> sorted;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap sorted;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		vec.push_back(it->second);
 	}
 
 	if (vec.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vec.size() == 1) {
-		sorted.insert(std::pair<int, ReminderEntry*>(1, vec[0]));
+		sorted.insert(MapPair(1, vec[0]));
 		return sorted;
 	}
 
@@ -363,13 +364,13 @@ std::map<int, ReminderEntry*> ReminderSet::sortByStatus(bool finishedFirst)
 		int i = 1;
 		for (ReminderEntry* x : vec) {
 			if (x->getEntryStatus() == EntryStatus::FINISHED) {
-				sorted.insert(std::pair<int, ReminderEntry*>(i, x));
+				sorted.insert(MapPair(i, x));
 				i++;
 			}
 		}
 		for (ReminderEntry* x : vec) {
 			if (x->getEntryStatus() == EntryStatus::NOT_FINISHED) {
-				sorted.insert(std::pair<int, ReminderEntry*>(i, x));
+				sorted.insert(MapPair(i, x));
 				i++;
 			}
 		}
@@ -378,13 +379,13 @@ std::map<int, ReminderEntry*> ReminderSet::sortByStatus(bool finishedFirst)
 		int i = 1;
 		for (ReminderEntry* x : vec) {
 			if (x->getEntryStatus() == EntryStatus::NOT_FINISHED) {
-				sorted.insert(std::pair<int, ReminderEntry*>(i, x));
+				sorted.insert(MapPair(i, x));
 				i++;
 			}
 		}
 		for (ReminderEntry* x : vec) {
 			if (x->getEntryStatus() == EntryStatus::FINISHED) {
-				sorted.insert(std::pair<int, ReminderEntry*>(i, x));
+				sorted.insert(MapPair(i, x));
 				i++;
 			}
 		}
@@ -393,20 +394,20 @@ std::map<int, ReminderEntry*> ReminderSet::sortByStatus(bool finishedFirst)
 	return sorted;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::sortByTitle(bool descending)
+SetMap ReminderSet::sortByTitle(bool descending)
 {
 	std::vector<ReminderEntry*> vec;
-	std::map<int, ReminderEntry*> sorted;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap sorted;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		vec.push_back(it->second);
 	}
 
 	if (vec.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vec.size() == 1) {
-		sorted.insert(std::pair<int, ReminderEntry*>(1, vec[0]));
+		sorted.insert(MapPair(1, vec[0]));
 	}
 
 	for (int i = 1; i < vec.size(); i++) {
@@ -422,32 +423,32 @@ std::map<int, ReminderEntry*> ReminderSet::sortByTitle(bool descending)
 
 	if (descending) {
 		for (int i = 0; i < vec.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vec[i]));
+			sorted.insert(MapPair(i + 1, vec[i]));
 		}
 	}
 	else {
 		for (int i = 0; i < vec.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vec[vec.size() - 1 - i]));
+			sorted.insert(MapPair(i + 1, vec[vec.size() - 1 - i]));
 		}
 	}
 
 	return sorted;
 }
 
-std::map<int, ReminderEntry*> ReminderSet::sortByDescription(bool descending)
+SetMap ReminderSet::sortByDescription(bool descending)
 {
 	std::vector<ReminderEntry*> vec;
-	std::map<int, ReminderEntry*> sorted;
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap sorted;
+	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		vec.push_back(it->second);
 	}
 
 	if (vec.size() == 0) {
-		return std::map<int, ReminderEntry*>();
+		return SetMap();
 	}
 	if (vec.size() == 1) {
-		sorted.insert(std::pair<int, ReminderEntry*>(1, vec[0]));
+		sorted.insert(MapPair(1, vec[0]));
 	}
 
 	for (int i = 1; i < vec.size(); i++) {
@@ -463,12 +464,12 @@ std::map<int, ReminderEntry*> ReminderSet::sortByDescription(bool descending)
 
 	if (descending) {
 		for (int i = 0; i < vec.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vec[i]));
+			sorted.insert(MapPair(i + 1, vec[i]));
 		}
 	}
 	else {
 		for (int i = 0; i < vec.size(); i++) {
-			sorted.insert(std::pair<int, ReminderEntry*>(i + 1, vec[vec.size() - 1 - i]));
+			sorted.insert(MapPair(i + 1, vec[vec.size() - 1 - i]));
 		}
 	}
 

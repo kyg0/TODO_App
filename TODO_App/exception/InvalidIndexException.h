@@ -2,6 +2,7 @@
 #include <string>
 
 #define ERR_MSG_INVALID_INDEX "Invalid index"
+#define ERR_MSG_INVALID_OBJECT "Invalid object"
 
 class InvalidIndexException : public std::exception {
 	std::string err_msg;
