@@ -104,13 +104,8 @@ public:
 
 	void TearDown() {
 		dt = nullptr;
-	}
-
-	void forceTearDown() {
 		Mock::AllowLeak(mock);
 		Mock::VerifyAndClear(mock);
-
-		TearDown();
 	}
 };
 
@@ -181,6 +176,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 1);
 	EXPECT_EQ(dt->getSeconds(), 1);
 	EXPECT_EQ(dt->getFormat(true), "01/01/2022 01:01:01");
+	TearDown();
 
 	SetUp("31/05/2022 23:59:59");
 	EXPECT_EQ(dt->getDay(), 31);
@@ -190,6 +186,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 59);
 	EXPECT_EQ(dt->getSeconds(), 59);
 	EXPECT_EQ(dt->getFormat(true), "31/05/2022 23:59:59");
+	TearDown();
 
 	SetUp("29/02/2024 00:00:00");
 	EXPECT_EQ(dt->getDay(), 29);
@@ -199,6 +196,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 0);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "29/02/2024 00:00:00");
+	TearDown();
 
 	SetUp("28/02/2022 23:59:59");
 	EXPECT_EQ(dt->getDay(), 28);
@@ -208,6 +206,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 59);
 	EXPECT_EQ(dt->getSeconds(), 59);
 	EXPECT_EQ(dt->getFormat(true), "28/02/2022 23:59:59");
+	TearDown();
 
 	SetUp("31/12/9999 23:59:59");
 	EXPECT_EQ(dt->getDay(), 31);
@@ -217,6 +216,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 59);
 	EXPECT_EQ(dt->getSeconds(), 59);
 	EXPECT_EQ(dt->getFormat(true), "31/12/9999 23:59:59");
+	TearDown();
 
 	SetUp("30/09/2022 00:00:00");
 	EXPECT_EQ(dt->getDay(), 30);
@@ -226,6 +226,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 0);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "30/09/2022 00:00:00");
+	TearDown();
 
 	SetUp("25-02-2022");
 	EXPECT_EQ(dt->getDay(), 25);
@@ -235,6 +236,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 0);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "25/02/2022 00:00:00");
+	TearDown();
 
 	SetUp("01-01-2022 01:01:01");
 	EXPECT_EQ(dt->getDay(), 1);
@@ -244,6 +246,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 1);
 	EXPECT_EQ(dt->getSeconds(), 1);
 	EXPECT_EQ(dt->getFormat(true), "01/01/2022 01:01:01");
+	TearDown();
 
 	SetUp("31-12-2033 23:59");
 	EXPECT_EQ(dt->getDay(), 31);
@@ -253,6 +256,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 59);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "31/12/2033 23:59:00");
+	TearDown();
 
 	SetUp("28\\02\\2022 12.12.12");
 	EXPECT_EQ(dt->getDay(), 28);
@@ -262,6 +266,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 12);
 	EXPECT_EQ(dt->getSeconds(), 12);
 	EXPECT_EQ(dt->getFormat(true), "28/02/2022 12:12:12");
+	TearDown();
 
 	SetUp("29\\05\\2022 12.12");
 	EXPECT_EQ(dt->getDay(), 29);
@@ -271,6 +276,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 12);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "29/05/2022 12:12:00");
+	TearDown();
 
 	SetUp("31\\10\\2022");
 	EXPECT_EQ(dt->getDay(), 31);
@@ -280,6 +286,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 0);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "31/10/2022 00:00:00");
+	TearDown();
 
 	SetUp("01\\01\\2022 12/12/12");
 	EXPECT_EQ(dt->getDay(), 1);
@@ -289,6 +296,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 12);
 	EXPECT_EQ(dt->getSeconds(), 12);
 	EXPECT_EQ(dt->getFormat(true), "01/01/2022 12:12:12");
+	TearDown();
 
 	SetUp("01\\01\\2022 12/12");
 	EXPECT_EQ(dt->getDay(), 1);
@@ -298,6 +306,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 12);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "01/01/2022 12:12:00");
+	TearDown();
 
 	SetUp("26 09 2022 05 35 45");
 	EXPECT_EQ(dt->getDay(), 26);
@@ -307,6 +316,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 35);
 	EXPECT_EQ(dt->getSeconds(), 45);
 	EXPECT_EQ(dt->getFormat(true), "26/09/2022 05:35:45");
+	TearDown();
 
 	SetUp("26 09 2022 05 35");
 	EXPECT_EQ(dt->getDay(), 26);
@@ -316,6 +326,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getMinutes(), 35);
 	EXPECT_EQ(dt->getSeconds(), 0);
 	EXPECT_EQ(dt->getFormat(true), "26/09/2022 05:35:00");
+	TearDown();
 
 	SetUp("26 09 2022");
 	EXPECT_EQ(dt->getDay(), 26);
@@ -324,6 +335,7 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 	EXPECT_EQ(dt->getHours(), 0);
 	EXPECT_EQ(dt->getMinutes(), 0);
 	EXPECT_EQ(dt->getSeconds(), 0);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Constructor, InvalidFormat) {
@@ -823,63 +835,75 @@ TEST_F(DateTimeTest_Setter, CorrectValues_ForDays_30DaysMonth) {
 	SetUp(10, Month::APRIL, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::JUNE, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::SEPTEMBER, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::NOVEMBER, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Setter, CorrectValues_ForDays_31DaysMonth) {
 	SetUp(10, Month::JANUARY, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::MARCH, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::MAY, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::JULY, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::AUGUST, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::OCTOBER, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 
 	SetUp(10, Month::DECEMBER, 2030);
 	setAndTestDay(MIN_DAY_VALUE);
 	setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH);
+	TearDown();
 }
-
-//OVJE STIGAO
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForMonth) {
 	std::vector<int> date{ 26,9,2022,5, 5, 5 };
 	
 	SetUp(date);
 	setAndTestMonth(MIN_MONTH_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestMonth(MAX_MONTH_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestMonth(7);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForYear) {
@@ -887,11 +911,15 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForYear) {
 	
 	SetUp(date);
 	setAndTestYear(MIN_YEAR_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestYear(MAX_YEAR_VALUE);
+	TearDown();
 
+	SetUp(date);
 	setAndTestYear(2050);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForHours) {
@@ -899,12 +927,15 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForHours) {
 	
 	SetUp(date);
 	setAndTestHours(MAX_HOURS_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestHours(MIN_HOURS_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestHours(13);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForMinutes) {
@@ -912,12 +943,15 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForMinutes) {
 	
 	SetUp(date);
 	setAndTestMinutes(MAX_MINUTES_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestMinutes(MIN_MINUTES_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestMinutes(30);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForSeconds) {
@@ -925,12 +959,15 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForSeconds) {
 
 	SetUp(date);
 	setAndTestSeconds(MAX_SECONDS_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestSeconds(MIN_SECONDS_VALUE);
+	TearDown();
 
 	SetUp(date);
 	setAndTestSeconds(30);
+	TearDown();
 }
 
 TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
@@ -942,6 +979,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(ERR_MSG_FOR_DAYS, err.what());
+		TearDown();
 	}
 
 	try {
@@ -951,6 +989,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(ERR_MSG_FOR_DAYS, err.what());
+		TearDown();
 	}
 
 	try {
@@ -960,6 +999,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(ERR_MSG_FOR_DAYS, err.what());
+		TearDown();
 	}
 }
 
@@ -1487,6 +1527,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForMonth) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MONTH);
+		TearDown();
 	}
 
 	try {
@@ -1497,6 +1538,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForMonth) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MONTH);
+		TearDown();
 	}
 
 	try {
@@ -1507,6 +1549,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForMonth) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MONTH);
+		TearDown();
 	}
 
 	try {
@@ -1517,6 +1560,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForMonth) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MONTH);
+		TearDown();
 	}
 }
 
@@ -1530,6 +1574,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForYear) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_YEAR);
+		TearDown();
 	}
 
 	try {
@@ -1540,6 +1585,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForYear) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_YEAR);
+		TearDown();
 	}
 
 	try {
@@ -1550,6 +1596,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForYear) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_YEAR);
+		TearDown();
 	}
 
 	try {
@@ -1560,6 +1607,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForYear) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_YEAR);
+		TearDown();
 	}
 
 	try {
@@ -1570,6 +1618,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForYear) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_YEAR);
+		TearDown();
 	}
 }
 
@@ -1583,6 +1632,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForHours) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_HOURS);
+		TearDown();
 	}
 
 	try {
@@ -1593,6 +1643,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForHours) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_HOURS);
+		TearDown();
 	}
 
 	try {
@@ -1603,6 +1654,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForHours) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_HOURS);
+		TearDown();
 	}
 
 	try {
@@ -1613,6 +1665,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForHours) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_HOURS);
+		TearDown();
 	}
 }
 
@@ -1626,6 +1679,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForMinutes) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MINUTES);
+		TearDown();
 	}
 
 	try {
@@ -1636,6 +1690,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForMinutes) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MINUTES);
+		TearDown();
 	}
 
 	try {
@@ -1646,6 +1701,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForMinutes) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MINUTES);
+		TearDown();
 	}
 
 	try {
@@ -1656,6 +1712,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForMinutes) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_MINUTES);
+		TearDown();
 	}
 }
 
@@ -1669,6 +1726,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForSeconds) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_SECONDS);
+		TearDown();
 	}
 
 	try {
@@ -1679,6 +1737,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForSeconds) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_SECONDS);
+		TearDown();
 	}
 
 	try {
@@ -1689,6 +1748,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForSeconds) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_SECONDS);
+		TearDown();
 	}
 
 	try {
@@ -1699,6 +1759,7 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForSeconds) {
 	}
 	catch (DateTimeException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_FOR_SECONDS);
+		TearDown();
 	}
 }
 

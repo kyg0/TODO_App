@@ -410,7 +410,7 @@ public:
 };
 
 TEST(ReminderEntryTestNoSuit_Constructor, Constructor_WithFileOutput) {
-	std::vector<std::string> fileReading;
+	StringVector fileReading;
 	fileReading.push_back("Title: title");
 	fileReading.push_back("Description: description");
 	fileReading.push_back("Date created: 24/05/2022 13:30:43");
@@ -1126,7 +1126,7 @@ TEST(ReminderEntryTests_Comparison, OperatorEquals_5) {
 	std::string _status2 = "Status: FINISHED";
 	std::string _output2 = _title2 + "\n" + _description2 + "\n" + _dateCreated2 + "\n" + _executionDate2 + "\n" + _status2;
 
-	std::vector<std::string> _outputInLines;
+	StringVector _outputInLines;
 	_outputInLines.push_back(_title2); _outputInLines.push_back(_description2); _outputInLines.push_back(_dateCreated2);
 	_outputInLines.push_back(_executionDate2); _outputInLines.push_back(_status2);
 

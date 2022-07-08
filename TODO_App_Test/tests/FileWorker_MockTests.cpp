@@ -27,7 +27,7 @@ public:
 		return fw->readFromFile(path);
 	}
 
-	std::vector<std::string> InvokeReadFromFileInLines(std::string path) {
+	StringVector InvokeReadFromFileInLines(std::string path) {
 		if (fw == nullptr) {
 			throw FileException(ERR_MSG_FW_NULL);
 		}
@@ -41,7 +41,7 @@ public:
 		return fw->fileExists(path);
 	}
 
-	std::vector<std::string> InvokeGetAllFromDir(std::string path) {
+	StringVector InvokeGetAllFromDir(std::string path) {
 		if (fw == nullptr) {
 			throw FileException(ERR_MSG_FW_NULL);
 		}
@@ -187,7 +187,7 @@ TEST(FileWorkerTest, WriteAndReadInLines) {
 	adapter.fw = mock;
 
 	std::string path = "out/test.txt";
-	std::vector<std::string> output;
+	StringVector output;
 	std::string outputInLines;
 	for (int i = 1; i <= 10; i++) {
 		output.push_back("This is some output in line " + std::to_string(i));
@@ -202,7 +202,7 @@ TEST(FileWorkerTest, WriteAndReadInLines) {
 	for (int i = 0; i < output.size(); i++) {
 		adapter.InvokeWriteInFile(path, output[i]);
 	}
-	std::vector<std::string> lines = adapter.InvokeReadFromFileInLines(path);
+	StringVector lines = adapter.InvokeReadFromFileInLines(path);
 	
 	for (int i = 0; i < output.size(); i++) {
 		EXPECT_EQ(lines[0], output[0]);
@@ -219,7 +219,7 @@ TEST(FileWorkerTest, InvalidWriteAndReadInLines) {
 
 	std::string path = "out/test.txt";
 	std::string output = "This is some random text to write in file";
-	std::vector<std::string> reading;
+	StringVector reading;
 
 	EXPECT_CALL(*mock, readFromFileInLines(path)).WillOnce(Throw(FileException(ERR_MSG_FILE_FAILED_TO_OPEN)));
 	try {
