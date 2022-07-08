@@ -8,8 +8,8 @@ class FileWorkerMock : public FileWorkerInterface {
 public:
 	MOCK_METHOD(void, writeInFile, (std::string, std::string), (override));
 	MOCK_METHOD(std::string, readFromFile, (std::string), (override));
-	MOCK_METHOD(std::vector<std::string>, readFromFileInLines, (std::string), (override));
+	MOCK_METHOD(StringVector, readFromFileInLines, (std::string), (override));
 	MOCK_METHOD(bool, deleteFile, (std::string), (override));
-	MOCK_METHOD(std::vector<std::string>, getAllFromDirectory, (std::string), (override));
+	MOCK_METHOD(StringVector, getAllFromDirectory, (std::string), (override));
 	MOCK_METHOD(bool, fileExists, (std::string), (override));
 };

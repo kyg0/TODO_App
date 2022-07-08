@@ -28,14 +28,14 @@ std::string FileWorker::readFromFile(std::string path)
 	return returnValue;
 }
 
-std::vector<std::string> FileWorker::readFromFileInLines(std::string path)
+StringVector FileWorker::readFromFileInLines(std::string path)
 {
 	std::ifstream inFile(path);
 	if (!inFile) {
 		throw FileException(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
 
-	std::vector<std::string> returnValue;
+	StringVector returnValue;
 
 	std::string line;
 
@@ -56,9 +56,9 @@ bool FileWorker::deleteFile(std::string path) {
 	}
 }
 
-std::vector<std::string> FileWorker::getAllFromDirectory(std::string dir_path)
+StringVector FileWorker::getAllFromDirectory(std::string dir_path)
 {
-	std::vector<std::string> files;
+	StringVector files;
 	for (auto& x : fs::directory_iterator(dir_path)) {
 		if (!x.is_directory()) {
 			files.push_back(x.path().string());

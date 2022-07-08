@@ -7,9 +7,9 @@ class FileWorker :
 public:
 	void writeInFile(std::string path, std::string output);
 	std::string readFromFile(std::string path);
-	std::vector<std::string> readFromFileInLines(std::string path);
+	StringVector readFromFileInLines(std::string path);
 	bool deleteFile(std::string path);
-	std::vector<std::string> getAllFromDirectory(std::string dir_path);
+	StringVector getAllFromDirectory(std::string dir_path);
 	bool fileExists(std::string path);
 };
 

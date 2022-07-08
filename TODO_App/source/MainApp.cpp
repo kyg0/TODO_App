@@ -26,7 +26,7 @@ void MainApp::updateSet() {
 
 void MainApp::execCommand(std::string command)
 {
-	std::vector<std::string> cmd_split = deriveCommand(command);
+	StringVector cmd_split = deriveCommand(command);
 	
 	std::string cmd = cmd_split[0];
 	for (int i = 0; i < cmd.size(); i++) {
@@ -144,7 +144,7 @@ void MainApp::execCommand(std::string command)
 	}
 }
 
-void MainApp::deriveAndExecCommand_Filter(std::vector<std::string> command) {
+void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 	std::string attFilter = "";
 	FilterMode* filterMode = nullptr;
 	DateTime* filterDate = nullptr;
@@ -263,13 +263,13 @@ void MainApp::deriveAndExecCommand_Filter(std::vector<std::string> command) {
 	}
 }
 
-std::vector<std::string> MainApp::deriveCommand(std::string command) {
+StringVector MainApp::deriveCommand(std::string command) {
 	if (command == "") {
 		system("cls");
 		printStartScreen();
 	}
 
-	std::vector<std::string> cmd_split;
+	StringVector cmd_split;
 
 	int pos = 0;
 	int split_size = 0;
@@ -309,9 +309,9 @@ std::vector<std::string> MainApp::deriveCommand(std::string command) {
 	return cmd_split;
 }
 
-void MainApp::printSet(std::map<int, ReminderEntry*> printSet)
+void MainApp::printSet(SetMap printSet)
 {
-	std::map<int, ReminderEntry*>::iterator it;
+	SetMap::iterator it;
 
 
 	std::cout << "========================================================================================" << std::endl;
@@ -533,7 +533,7 @@ void MainApp::execCommand_Get() {
 void MainApp::execCommand_Get(std::string index) {
 	int n = std::stoi(index);
 
-	std::map<int, ReminderEntry*>::const_iterator elem = set->getAll().find(n);
+	SetMap::const_iterator elem = set->getAll().find(n);
 	if (elem == set->getAll().end()) {
 		std::cout << "  Reminder with index < " << n << " > doesnt exist" << std::endl;
 	}
@@ -551,7 +551,7 @@ void MainApp::execCommand_Delete(int index) {
 	}
 }
 
-void MainApp::execCommand_New(std::vector<std::string> cmd) {
+void MainApp::execCommand_New(StringVector cmd) {
 	if (cmd.size() == 1) {
 		printMakeNewEntry();
 		return;

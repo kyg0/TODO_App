@@ -57,7 +57,7 @@ ReminderEntry::ReminderEntry(std::string title, std::string description, DateTim
 	writeInFile();
 }
 
-ReminderEntry::ReminderEntry(std::vector<std::string> readingFromFile, DateTimeWorkerInterface* dtw, FileWorkerInterface* fw){
+ReminderEntry::ReminderEntry(StringVector readingFromFile, DateTimeWorkerInterface* dtw, FileWorkerInterface* fw){
 	if (fw != nullptr) {
 			fileWorker = std::move(fw);
 	}

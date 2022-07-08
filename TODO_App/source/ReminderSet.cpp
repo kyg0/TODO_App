@@ -11,8 +11,8 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 
 	int i = 1;
 	std::string path = "out/";
-	std::vector<std::string> fileReading;
-	std::vector<std::string> files = fileWorker->getAllFromDirectory(path);
+	StringVector fileReading;
+	StringVector files = fileWorker->getAllFromDirectory(path);
 
 	try {
 
@@ -36,7 +36,7 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 ReminderEntry* ReminderSet::readFromFile(std::string path)
 {
 	std::string reading = fileWorker->readFromFile(path);
-	return new ReminderEntry(std::vector<std::string>(), fileWorker);
+	return new ReminderEntry(StringVector(), fileWorker);
 }
 
 ReminderSet::~ReminderSet() 
@@ -247,7 +247,7 @@ SetMap ReminderSet::filterByStatus(EntryStatus status)
 {
 	SetMap filtered;
 	MapIterator it;
-	int i = 0;
+	int i = 1;
 
 	for (it = entries.begin(); it != entries.end(); it++) {
 		if (it->second->getEntryStatus() == status) {
