@@ -121,7 +121,7 @@ void ReminderSet::editEntry(int index, ReminderEntry* edit)
 	if (edit == nullptr) {
 		throw NullObjectException(ERR_MSG_NULL_OBJ);
 	}
-	if (!entries.count(index)) {
+	if (entries.find(index) == entries.end()) {
 		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
 	MapIterator it;
@@ -162,30 +162,30 @@ SetMap ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDa
 	}
 	if (vector.size() == 1) {
 		filtered.insert(MapPair(1, vector[0]));
+		return filtered;
 	}
 
-	for (int i = 1; i < vector.size(); i++) {
-		ReminderEntry* key = vector[i];
-		int j = i - 1;
-
-		while (j >= 0 && *vector[j]->getExecutionDate() > *key->getExecutionDate()) {
-			vector[j + 1] = vector[j];
-			j = j - 1;
-		}
-		vector[j + 1] = key;
-	}
-
-	if (descending) {
-		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(MapPair(i + 1, vector[i]));
-		}
-	}
-	else {
-		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
-		}
-	}
 	
+
+	for (int i = 0; i < vector.size() - 1; i++) {
+		int toSwapId= i;
+
+		for (int j = i + 1; j < vector.size(); j++) {
+			if (descending && *vector[j]->getDateCreated() > *vector[toSwapId]->getDateCreated()) {
+				toSwapId = j;
+			}
+			else if (!descending && *vector[j]->getDateCreated() < *vector[toSwapId]->getDateCreated()) {
+				toSwapId = j;
+			}
+		}
+
+		std::swap(vector[toSwapId], vector[i]);
+	}
+
+	for (int i = 0; i < vector.size(); i++) {
+		filtered.insert(MapPair(i + 1, vector[i]));
+	}
+
 	return filtered;
 }
 
@@ -216,28 +216,28 @@ SetMap ReminderSet::filterByExecDate(FilterMode filterMode, DateTime* filterDate
 	}
 	if (vector.size() == 1) {
 		filtered.insert(MapPair(1, vector[0]));
+		return filtered;
 	}
 
-	for (int i = 1; i < vector.size(); i++) {
-		ReminderEntry* key = vector[i];
-		int j = i - 1;
 
-		while (j >= 0 && *vector[j]->getExecutionDate() > *key->getExecutionDate()) {
-			vector[j + 1] = vector[j];
-			j = j - 1;
+
+	for (int i = 0; i < vector.size() - 1; i++) {
+		int toSwapId = i;
+
+		for (int j = i + 1; j < vector.size(); j++) {
+			if (descending && *vector[j]->getExecutionDate() > *vector[toSwapId]->getExecutionDate()) {
+				toSwapId = j;
+			}
+			else if (!descending && *vector[i]->getExecutionDate() < *vector[toSwapId]->getExecutionDate()) {
+				toSwapId = j;
+			}
 		}
-		vector[j + 1] = key;
+
+		std::swap(vector[toSwapId], vector[i]);
 	}
 
-	if (descending) {
-		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(MapPair(i + 1, vector[i]));
-		}
-	}
-	else {
-		for (int i = 0; i < vector.size(); i++) {
-			filtered.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
-		}
+	for (int i = 0; i < vector.size(); i++) {
+		filtered.insert(MapPair(i + 1, vector[i]));
 	}
 
 	return filtered;
@@ -276,26 +276,23 @@ SetMap ReminderSet::sortByDateCreated(bool descending)
 		sorted.insert(MapPair(1, vector[0]));
 	}
 
-	for (int i = 1; i < vector.size(); i++) {
-		ReminderEntry* key = vector[i];
-		int j = i - 1;
+	for (int i = 0; i < vector.size() - 1; i++) {
+		int toSwapId = i;
 
-		while (j >= 0 && *vector[j]->getDateCreated() > *key->getDateCreated()) {
-			vector[j + 1] = vector[j];
-			j = j - 1;
+		for (int j = i + 1; j < vector.size(); j++) {
+			if (descending && *vector[j]->getDateCreated() > *vector[toSwapId]->getDateCreated()) {
+				toSwapId = j;
+			}
+			else if (!descending && *vector[j]->getDateCreated() < *vector[toSwapId]->getDateCreated()) {
+				toSwapId = j;
+			}
 		}
-		vector[j + 1] = key;
+
+		std::swap(vector[toSwapId], vector[i]);
 	}
 
-	if (descending) {
-		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(MapPair(i + 1, vector[i]));
-		}
-	}
-	else {
-		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
-		}
+	for (int i = 0; i < vector.size(); i++) {
+		sorted.insert(MapPair(i + 1, vector[i]));
 	}
 
 	return sorted;
@@ -318,26 +315,23 @@ SetMap ReminderSet::sortByExecDate(bool descending)
 		sorted.insert(MapPair(1, vector[0]));
 	}
 
-	for (int i = 1; i < vector.size(); i++) {
-		ReminderEntry* key = vector[i];
-		int j = i - 1;
+	for (int i = 0; i < vector.size() - 1; i++) {
+		int toSwapId = i;
 
-		while (j >= 0 && *vector[j]->getExecutionDate() > *key->getExecutionDate()) {
-			vector[j + 1] = vector[j];
-			j = j - 1;
+		for (int j = i + 1; j < vector.size(); j++) {
+			if (descending && *vector[j]->getExecutionDate() > *vector[toSwapId]->getExecutionDate()) {
+				toSwapId = j;
+			}
+			else if (!descending && *vector[j]->getExecutionDate() < *vector[toSwapId]->getExecutionDate()) {
+				toSwapId = j;
+			}
 		}
-		vector[j + 1] = key;
+
+		std::swap(vector[toSwapId], vector[i]);
 	}
 
-	if (descending) {
-		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(MapPair(i + 1, vector[i]));
-		}
-	}
-	else {
-		for (int i = 0; i < vector.size(); i++) {
-			sorted.insert(MapPair(i + 1, vector[vector.size() - 1 - i]));
-		}
+	for (int i = 0; i < vector.size(); i++) {
+		sorted.insert(MapPair(i + 1, vector[i]));
 	}
 
 	return sorted;

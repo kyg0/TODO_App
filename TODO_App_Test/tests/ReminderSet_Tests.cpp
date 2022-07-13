@@ -299,6 +299,7 @@ protected:
 	}
 
 	void editEntryAndTest(int index, ReminderEntry* edit) {
+
 		SetMap map = set->getAll();
 		SetMap::iterator it;
 		if (edit == nullptr) {
@@ -319,7 +320,20 @@ protected:
 			}
 		}
 		
+		std::string newPath = "out/" + edit->getTitle() + "_" +
+			helper.getPath(it->second->getDateCreated()->getDay(), it->second->getDateCreated()->getMonth(), it->second->getDateCreated()->getYear(),
+				it->second->getDateCreated()->getHours(), it->second->getDateCreated()->getMinutes(), it->second->getDateCreated()->getSeconds()) + "_" +
+			helper.getPath(edit->getExecutionDate()->getDay(), edit->getExecutionDate()->getMonth(), edit->getExecutionDate()->getYear(),
+				edit->getExecutionDate()->getHours(), edit->getExecutionDate()->getMinutes(), edit->getExecutionDate()->getSeconds());
+
+		std::string newOutput = "Title: " + edit->getTitle() + "\n" +
+			"Description: " + edit->getDescription() + "\n" +
+			"Date created: " + it->second->getDateCreated()->getFormat(true) + "\n" +
+			"Execution date: " + edit->getExecutionDate()->getFormat(true) + "\n" +
+			"Status: NOT FINISHED";
+
 		EXPECT_CALL(*fwMock, deleteFile(it->second->getFilePath())).WillOnce(Return(true));
+		//EXPECT_CALL(*fwMock, writeInFile(newPath, newOutput)).Times(1);
 		set->editEntry(index, edit);	
 
 		it = map.find(index);
@@ -331,6 +345,8 @@ protected:
 		EXPECT_EQ(it->second->getFilePath(), edit->getFilePath());
 
 	}
+
+	
 };
 
 class ReminderSet_SortAndFilterTest : public Test {
@@ -365,9 +381,6 @@ protected:
 		dtMock = new DateTimeWorkerMock();
 
 		for (int i = 1; i != setSize + 1; i++) {
-			
-			std::cout << i << " : ";
-
 			std::vector<int> tmp_DateCreated{ 
 				((2 * i + date[0]) % MAX_DAY_VALUE_FEBRUARY_NOLEAP) + 1, 
 				((i + date[1]) % MAX_MONTH_VALUE) + 1, 
@@ -381,7 +394,6 @@ protected:
 			EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(tmp_DateCreated));
 			DateTime* dt = new DateTime(dtMock);
 
-			std::cout << dt->getFormat(true) << "  =>  ";
 
 			DateTime* tmp_ExecDate = new DateTime(((tmp_DateCreated[0] + 1) % MAX_DAY_VALUE_FEBRUARY_NOLEAP) +1, 
 				tmp_DateCreated[1], 
@@ -394,10 +406,6 @@ protected:
 				tmp_ExecDate->setYear(tmp_ExecDate->getYear() + 1);
 			}
 
-			std::cout << tmp_ExecDate->getFormat(true) << "  =>  ";
-
-			std::string str = std::to_string(i) + " : " + tmp_ExecDate->getFormat(true) + "  <==>  " + dt->getFormat(true);
-			std::cout << str;
 
 			std::string path = "out/title-" + std::to_string(i) + "_" +
 				helper.getPath(tmp_DateCreated[0], tmp_DateCreated[1], tmp_DateCreated[2],
@@ -426,8 +434,6 @@ protected:
 			std::random_device rd;
 			std::mt19937 g(rd());
 			std::shuffle(paths_and_outputs.begin(), paths_and_outputs.end(), g);
-
-			std::cout << "  => stigne do ovdje" << std::endl;
 		}
 
 
@@ -497,97 +503,90 @@ protected:
 	}
 
 	void sortAndTestByDateCreated(bool descending) {
-		std::vector<std::pair<int, DateTime*>> dateCreated_array;
-		SetMap map = set->getAll();
-		SetMap::iterator it;
+		std::vector<DateTime*> expectedDates;
 
-		if (setSize == 0) {
-			map = set->sortByDateCreated(descending);
-			EXPECT_TRUE(map.size() == 0);
+		SetMap map = set->getAll();
+		SetMap sorted = set->sortByDateCreated(descending);
+		MapIterator it;
+		
+		for (it = map.begin(); it != map.end(); it++) {
+			expectedDates.push_back(it->second->getDateCreated());
+		}
+
+		if (map.size() == 0) {
+			EXPECT_TRUE(sorted.size() == 0);
+			EXPECT_TRUE(expectedDates.size() == 0);
+			return;
+		}
+		else if (map.size() == 1){
+			EXPECT_TRUE(sorted.size() == 1);
+			EXPECT_TRUE(expectedDates.size() == 1);
+			EXPECT_TRUE(*expectedDates[0] == *sorted[1]->getDateCreated());
 			return;
 		}
 
-		for (it = map.begin(); it != map.end(); it++) {
-			dateCreated_array.push_back(std::pair<int, DateTime*>(it->first, it->second->getDateCreated()));
-		}
+		for (int i = 0; i < expectedDates.size() - 1; i++) {
+			int toSwapId = i;
 
-		int i, j;
-		int idToSwap; //its index of min if descending=true or index of max if descending=false
-
-		for (i = 0; i < dateCreated_array.size() - 1; i++) {
-			idToSwap = i;
-			for (j = i + 1; j < dateCreated_array.size(); j++) {
-				if (descending) {
-					if (*dateCreated_array[j].second < *dateCreated_array[idToSwap].second) {
-						idToSwap = j;
-					}
+			for (int j = i + 1; j < expectedDates.size(); j++) {
+				if (descending && *expectedDates[j] > *expectedDates[toSwapId]) {
+					toSwapId = j;
 				}
-				else {
-					if (*dateCreated_array[j].second > *dateCreated_array[idToSwap].second) {
-						idToSwap = j;
-					}
+				else if (!descending && *expectedDates[j] < *expectedDates[toSwapId]) {
+					toSwapId = j;
 				}
 			}
 
-			//std::vector<int, DateTime*>::swap(&dateCreated_array[idToSwap], &dateCreated_array[i]);
-			dateCreated_array[idToSwap].swap(dateCreated_array[i]);
+			std::swap(expectedDates[toSwapId], expectedDates[i]);
 		}
 
-		for (int i = 1; i != dateCreated_array.size(); i++) {
-			dateCreated_array[i].first = i;
-		}
-
-		map = set->sortByDateCreated(descending);
-		for (int i = 1; i != map.size(); i++) {
-			EXPECT_TRUE(map.size() == setSize);
-			EXPECT_TRUE(*map[i]->getDateCreated() == *dateCreated_array[i-1].second);
+		ASSERT_TRUE(sorted.size() == expectedDates.size());
+		for (int i = 0; i != expectedDates.size(); i++) {
+			ASSERT_TRUE(*sorted[i + 1]->getDateCreated() == *expectedDates[i]);
 		}
 	}
 
 	void sortAndTestByExecDate(bool descending){
-		std::vector<std::pair<int, DateTime*>> execDate_array;
-		SetMap map = set->getAll();
-		SetMap::iterator it;
+		std::vector<DateTime*> expectedDates;
 
-		if (setSize == 0) {
-			map = set->sortByExecDate(descending);
-			EXPECT_TRUE(map.size() == 0);
+		SetMap map = set->getAll();
+		SetMap sorted = set->sortByExecDate(descending);
+		MapIterator it;
+
+		for (it = map.begin(); it != map.end(); it++) {
+			expectedDates.push_back(it->second->getExecutionDate());
+		}
+
+		if (map.size() == 0) {
+			EXPECT_TRUE(sorted.size() == 0);
+			EXPECT_TRUE(expectedDates.size() == 0);
+			return;
+		}
+		else if (map.size() == 1) {
+			EXPECT_TRUE(sorted.size() == 1);
+			EXPECT_TRUE(expectedDates.size() == 1);
+			EXPECT_TRUE(*expectedDates[0] == *sorted[1]->getExecutionDate());
 			return;
 		}
 
-		for (it = map.begin(); it != map.end(); it++) {
-			execDate_array.push_back(std::pair<int, DateTime*>(it->first, it->second->getExecutionDate()));
-		}
+		for (int i = 0; i < expectedDates.size() - 1; i++) {
+			int toSwapId = i;
 
-		int i, j;
-		int idToSwap; //its index of min if descending=true or index of max if descending=false
-
-		for (i = 0; i < execDate_array.size() - 1; i++) {
-			idToSwap = i;
-			for (j = i + 1; j < execDate_array.size(); j++) {
-				if (descending) {
-					if (*execDate_array[j].second < *execDate_array[idToSwap].second) {
-						idToSwap = j;
-					}
+			for (int j = i + 1; j < expectedDates.size(); j++) {
+				if (descending && *expectedDates[j] > *expectedDates[toSwapId]) {
+					toSwapId = j;
 				}
-				else {
-					if (*execDate_array[j].second > *execDate_array[idToSwap].second) {
-						idToSwap = j;
-					}
+				else if (!descending && *expectedDates[j] < *expectedDates[toSwapId]) {
+					toSwapId = j;
 				}
 			}
 
-			execDate_array[idToSwap].swap(execDate_array[i]);
+			std::swap(expectedDates[toSwapId], expectedDates[i]);
 		}
 
-		for (int i = 1; i != execDate_array.size(); i++) {
-			execDate_array[i].first = i;
-		}
-
-		map = set->sortByExecDate(descending);
-		for (int i = 1; i != map.size(); i++) {
-			EXPECT_TRUE(map.size() == setSize);
-			EXPECT_TRUE(*map[i]->getExecutionDate() == *execDate_array[i - 1].second);
+		for (int i = 0; i != expectedDates.size(); i++) {
+			ASSERT_TRUE(sorted.size() == expectedDates.size());
+			ASSERT_TRUE(*sorted[i + 1]->getExecutionDate() == *expectedDates[i]);
 		}
 	}
 
@@ -735,55 +734,113 @@ protected:
 		}
 	}
 
-	void filterAndTestByDateCreated(FilterMode filterMode, DateTime* filterDate, bool descending) {
+	void filterAndTest_byDateCreated(FilterMode filterMode, DateTime* filterDate, bool descending) {
+
 		SetMap filtered = set->filterByDateCreated(filterMode, filterDate, descending);
-
-		if (setSize == 0) {
-			EXPECT_TRUE(filtered.size() == 0);
-		}
-
 		SetMap fullMap = set->getAll();
 		MapIterator it;
-		std::vector<std::pair<std::string, DateTime*>> expectedValues;
 
+		std::vector <DateTime*> expectedDates;
 
 		for (it = fullMap.begin(); it != fullMap.end(); it++) {
-			if (filterMode == FilterMode::BeforeDate) {
-				if ((*it->second->getDateCreated() > *filterDate) || (*it->second->getDateCreated() == *filterDate)) {
-					expectedValues.push_back(std::pair<std::string, DateTime*>(it->second->getTitle(), it->second->getDateCreated()));
-				}
+			if (filterMode == FilterMode::BeforeDate && (*it->second->getDateCreated() > *filterDate || *it->second->getDateCreated() == *filterDate)) {
+				expectedDates.push_back(it->second->getDateCreated());
 			}
-			else {
-				if (*it->second->getDateCreated() < *filterDate) {
-					expectedValues.push_back(std::pair<std::string, DateTime*>(it->second->getTitle(), it->second->getDateCreated()));
-				}
+			else if (filterMode == FilterMode::AfterDate && *it->second->getDateCreated() < *filterDate) {
+				expectedDates.push_back(it->second->getDateCreated());
 			}
 		}
 
-		for (int i = 0; i < expectedValues.size(); i++) {
+		if (expectedDates.size() == 0) {
+			EXPECT_TRUE(filtered.size() == 0);
+			return;
+		}
+		else if (expectedDates.size() == 1) {
+			EXPECT_TRUE(filtered.size() == 1);
+			EXPECT_TRUE(*filtered[1]->getDateCreated() == *expectedDates[0]);
+			return;
+		}
+
+		for (int i = 0; i < expectedDates.size() - 1; i++) {
 			int toSwapId = i;
 
-			for (int j = i + 1; j < expectedValues.size(); j++) {
-				if (descending) {
-					if (*expectedValues[j].second > *expectedValues[toSwapId].second) {
-						toSwapId = j;
-					}
+			for (int j = i + 1; j < expectedDates.size(); j++) {
+				if (descending && *expectedDates[j] > *expectedDates[toSwapId]) {
+					toSwapId = j;
 				}
-				else {
-					if (*expectedValues[j].second < *expectedValues[toSwapId].second) {
-						toSwapId = j;
-					}
+				else if (!descending && *expectedDates[j] < *expectedDates[toSwapId]) {
+					toSwapId = j;
 				}
 			}
 
-			expectedValues[toSwapId].swap(expectedValues[i]);
+			std::swap(expectedDates[toSwapId], expectedDates[i]);
 		}
 
-		EXPECT_EQ(filtered.size(), expectedValues.size());
+
+		ASSERT_TRUE(filtered.size() == expectedDates.size());
+
+		int i = 0;
 		for (it = filtered.begin(); it != filtered.end(); it++) {
-			EXPECT_EQ(it->second->getTitle(), expectedValues[it->first - 1].first);
-			EXPECT_TRUE(*it->second->getDateCreated() == *expectedValues[it->first - 1].second);
+			ASSERT_TRUE(*it->second->getDateCreated() == *expectedDates[i]);
+			i++;
 		}
+	}
+
+	void filterAndTestByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending) {
+		SetMap filtered = set->filterByExecDate(filterMode, filterDate, descending);
+		SetMap fullMap = set->getAll();
+		MapIterator it;
+
+		std::vector <DateTime*> expectedDates;
+
+		for (it = fullMap.begin(); it != fullMap.end(); it++) {
+			if (filterMode == FilterMode::BeforeDate && (*it->second->getExecutionDate() > *filterDate || *it->second->getExecutionDate() == *filterDate)) {
+				expectedDates.push_back(it->second->getExecutionDate());
+			}
+			else if (filterMode == FilterMode::AfterDate && *it->second->getExecutionDate() < *filterDate) {
+				expectedDates.push_back(it->second->getExecutionDate());
+			}
+		}
+
+		if (expectedDates.size() == 0) {
+			EXPECT_TRUE(filtered.size() == 0);
+			return;
+		}
+		else if (expectedDates.size() == 1) {
+			EXPECT_TRUE(filtered.size() == 1);
+			EXPECT_TRUE(*filtered[1]->getExecutionDate() == *expectedDates[0]);
+			return;
+		}
+
+		for (int i = 0; i < expectedDates.size() - 1; i++) {
+			int toSwapId = i;
+
+			for (int j = i + 1; j < expectedDates.size(); j++) {
+				if (descending && *expectedDates[j] > *expectedDates[toSwapId]) {
+					toSwapId = j;
+				}
+				else if (!descending && *expectedDates[j] < *expectedDates[toSwapId]) {
+					toSwapId = j;
+				}
+			}
+
+			std::swap(expectedDates[toSwapId], expectedDates[i]);
+		}
+
+		ASSERT_TRUE(filtered.size() == expectedDates.size());
+
+		int i = 0;
+		for (it = filtered.begin(); it != filtered.end(); it++) {
+			ASSERT_TRUE(*it->second->getExecutionDate() == *expectedDates[i]);
+			i++;
+		}
+	}
+
+	void TearDown() {
+		Mock::AllowLeak(dtMock);
+		Mock::VerifyAndClear(dtMock);
+		Mock::AllowLeak(fwMock);
+		Mock::VerifyAndClear(fwMock);
 	}
 
 	void print(SetMap map) {
@@ -1079,6 +1136,19 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_03) {
 	}
 }
 
+TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_04) {
+	try {
+		SetUp(0);
+		deleteEntryAndTest(-1);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+		TearDown();
+	}
+}
+
 TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_11) {
 	try {
 		SetUp(2);
@@ -1123,6 +1193,19 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_14) {
 	try {
 		SetUp(2);
 		deleteEntryAndTest(10);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_15) {
+	try {
+		SetUp(2);
+		deleteEntryAndTest(-1);
 
 		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
 	}
@@ -1238,6 +1321,19 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_34) {
 	}
 }
 
+TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_35) {
+	try {
+		SetUp(50);
+		deleteEntryAndTest(-1);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+		TearDown();
+	}
+}
+
 TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_41) {
 	try {
 		SetUp(1000);
@@ -1282,6 +1378,19 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_44) {
 	try {
 		SetUp(1000);
 		deleteEntryAndTest(1150);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), std::string(ERR_MSG_INVALID_INDEX));
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_45) {
+	try {
+		SetUp(1000);
+		deleteEntryAndTest(-1);
 
 		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
 	}
@@ -1692,27 +1801,34 @@ ReminderEntry* getReminderEntry(int nameExtension, DateTimeWorkerMock* dtMock, F
 
 	DateTime* execDate = new DateTime(4, 7, 2100, 12, 0, 0);
 
-	std::string new_title = "Title: new title " + std::to_string(nameExtension);
-	std::string new_description = "Description: new description";
-	std::string new_dc = "Date created: " + dt->getFormat(true);
-	std::string new_ed = "Execution date: " + execDate->getFormat(true);
-	std::string new_status = "Status: NOT FINISHED";
+	std::string new_title = "NewTitle_" + std::to_string(nameExtension);
+	std::string new_description = "NewDescription_" + std::to_string(nameExtension);
+	std::string new_dc = dt->getFormat(true);
+
+	std::string titleOutput = "Title: " + new_title;
+	std::string descriptionOutput = "Description: " + new_description;
+	std::string dcOutput = "Date created: " + new_dc;
+	
+	std::string edOutput = "Execution date: " + execDate->getFormat(true);
+	std::string statusOutput = "Status: NOT FINISHED";
 
 	std::string newPath = "out/" + new_title + "_" + helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" +
 		helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-	std::string newOutput = new_title + "\n" + new_description + "\n" + new_dc + "\n" + new_ed + "\n" + new_status;
+	std::string newOutput = titleOutput + "\n" + descriptionOutput + "\n" + dcOutput + "\n" + edOutput + "\n" + statusOutput;
 
 	StringVector reading;
-	reading.push_back(new_title); reading.push_back(new_description); reading.push_back(new_dc); reading.push_back(new_ed); reading.push_back(new_status);
+	reading.push_back(titleOutput); reading.push_back(descriptionOutput); reading.push_back(dcOutput); reading.push_back(edOutput); reading.push_back(statusOutput);
 
-	return new ReminderEntry(reading, dtMock, fwMock);
+
+	EXPECT_CALL(*fwMock, writeInFile(_, _)).Times(AnyNumber());
+	return new ReminderEntry(execDate, new_title, new_description, dtMock, fwMock);
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_1) {
 	SetUp(1);
 	
 
-	editEntryAndTest(1, getReminderEntry(setSize + 1, dtMock, fwMock));
+	editEntryAndTest(1, getReminderEntry(setSize + 1, this->dtMock, this->fwMock));
 	TearDown();
 }
 
@@ -1792,67 +1908,325 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_34) {
 	TearDown();
 }
 
-/*
-
-TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex) {
-	DateTime* dt;
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillRepeatedly(Return(date));
-	dt = new DateTime(dtMock);
-
-	DateTime* execDate = new DateTime(4, 7, 2100, 12, 0, 0);
-
-	std::string new_title = "Title: new title";
-	std::string new_description = "Description: new description";
-	std::string new_dc = "Date created: " + dt->getFormat(true);
-	std::string new_ed = "Execution date: " + execDate->getFormat(true);
-	std::string new_status = "Status: NOT FINISHED";
-
-	std::string newPath = "out/" + new_title + "_" + helper.getPath(dt->getDay(), dt->getMonth(), dt->getYear(), dt->getHours(), dt->getMinutes(), dt->getSeconds()) + "_" +
-		helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
-	std::string newOutput = new_title + "\n" + new_description + "\n" + new_dc + "\n" + new_ed + "\n" + new_status;
-
-	StringVector reading;
-	reading.push_back(new_title); reading.push_back(new_description); reading.push_back(new_dc); reading.push_back(new_ed); reading.push_back(new_status);
-
-	ReminderEntry* edit = new ReminderEntry(reading, dtMock, fwMock);
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_01) {
+	SetUp(0);
 
 	try {
-		editEntryAndTest(0, edit);
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(0, r);
 
 		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
 		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
-	}
-
-	try {
-		editEntryAndTest(-1, edit);
-
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
-	}
-	catch (InvalidIndexException err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
-	}
-
-	try {
-		editEntryAndTest(11, edit);
-
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
-	}
-	catch (InvalidIndexException err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
-	}
-
-	try {
-		editEntryAndTest(100, edit);
-
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
-	}
-	catch (InvalidIndexException err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
 	}
 }
-*/
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_02) {
+	SetUp(0);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(1, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_03) {
+	SetUp(0);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(-1, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_04) {
+	SetUp(0);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(2, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_11) {
+	SetUp(1);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(-1, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_12) {
+	SetUp(1);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(2, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_13) {
+	SetUp(1);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(10, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_21) {
+	SetUp(10);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(-1, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_22) {
+	SetUp(10);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(0, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_23) {
+	SetUp(10);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(11, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_24) {
+	SetUp(10);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(12, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_25) {
+	SetUp(1);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(50, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_31) {
+	SetUp(100);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(-1, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_32) {
+	SetUp(100);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(0, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_33) {
+	SetUp(100);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(101, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_34) {
+	SetUp(100);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(200, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_41) {
+	SetUp(2500);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(-1, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_42) {
+	SetUp(2500);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(0, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_43) {
+	SetUp(2500);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(5001, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
+
+TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_44) {
+	SetUp(2500);
+
+	try {
+		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
+
+		editEntryAndTest(5002, r);
+
+		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_INDEX);
+	}
+	catch (InvalidIndexException err) {
+		EXPECT_EQ(err.what(), ERR_MSG_INVALID_INDEX);
+		TearDown();
+	}
+}
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_1) {
 	SetUp(2);
@@ -1891,6 +2265,7 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_ascending_1) {
 	TearDown();
 }
 
+
 TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_ascending_2) {
 	SetUp(5);
 	initialTest();
@@ -1916,97 +2291,112 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithOneEntry) {
 	SetUp(1);
 	initialTest();
 	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithOneEntry_asc) {
 	SetUp(1);
 	initialTest();
 	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithZeroEntries) {
 	SetUp(0);
 	initialTest();
 	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_WithZeroEntries_asc) {
 	SetUp(0);
 	initialTest();
 	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_1) {
 	SetUp(2);
 	initialTest();
 	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_2) {
 	SetUp(5);
 	initialTest();
 	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_3) {
 	SetUp(10);
 	initialTest();
 	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_4) {
 	SetUp(50);
 	initialTest();
 	sortAndTestByDateCreated(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_5) {
 	SetUp(1000);
 	initialTest();
 	sortAndTestByExecDate(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_asc_1) {
 	SetUp(2);
 	initialTest();
 	sortAndTestByDateCreated(false);
+	TearDown();
 }
-
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_asc_2) {
 	SetUp(5);
 	initialTest();
 	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_asc_3) {
 	SetUp(10);
 	initialTest();
 	sortAndTestByDateCreated(false);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withOneEntry) {
 	SetUp(1);
 	initialTest();
 	sortAndTestByExecDate(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withOneEntry_asc) {
 	SetUp(1);
 	initialTest();
 	sortAndTestByExecDate(false);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withZeroEntries) {
 	SetUp(0);
 	initialTest();
 	sortAndTestByExecDate(true);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withZeroEntries_asc) {
 	SetUp(0);
 	initialTest();
 	sortAndTestByExecDate(false);
+	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_finishedFirst_1) {
@@ -2240,6 +2630,20 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_3) {
 	TearDown();
 }
 
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_4) {
+	SetUp(100);
+	filterAndTestByFilter(EntryStatus::FINISHED);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_5) {
+	SetUp(2500);
+	filterAndTestByFilter(EntryStatus::FINISHED);
+
+	TearDown();
+}
+
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_1) {
 	SetUp(2);
 	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
@@ -2256,6 +2660,20 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_2) {
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_3) {
 	SetUp(10);
+	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_4) {
+	SetUp(100);
+	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_5) {
+	SetUp(2500);
 	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
 	TearDown();
@@ -2289,8 +2707,307 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_withZeroEntries_notFinished
 	TearDown();
 }
 
-TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated) {
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_0) {
+	SetUp(0);
 
+	// Date should not matter as long as it is a correct date
+	// We won't test for correct date as this is covered in DateTime_Tests
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_1) {
+	SetUp(1);
+
+	DateTime* filterDate = new DateTime(std::string("04/03/2030 03:04:05")); // first date created that is assigned in set
+
+	// Testing with exact date
+	// Should include the one because BeforeDate takes every date that is either before or on that date
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
+
+	// With previous reasoning, this one should be empty
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+
+	//Let's increment filterDate's seconds by 1
+	DateTime* filterDate2 = new DateTime(std::string("04/03/2030 03:04:06"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+
+	//Let's now decrease original filterDate's seconds by 1
+	DateTime* filterDate3 = new DateTime(std::string("04/03/2030 03:04:04"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_2_1) {
+	SetUp(2);
+	// 1 06/04/2030 04:06:07
+	// 2 04/03/2030 03:04:05
+
+	DateTime* filterDate1 = new DateTime(4,3,2030, 3,4,5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+
+	
+	DateTime* filterDate2 = new DateTime(4, 3, 2030, 3,4,6);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+
+	DateTime* filterDate3 = new DateTime(4, 3, 2030, 3, 4, 4);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+
+	DateTime* filterDate4 = new DateTime(6, 4, 2030, 4, 6, 6);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+
+	DateTime* filterDate5 = new DateTime(6, 4, 2030, 4, 6, 7);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+
+	DateTime* filterDate6 = new DateTime(6, 4, 2030, 4, 6, 8);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_2_2) {
+	SetUp(2);
+	// 1 06/04/2030 04:06:07
+	// 2 04/03/2030 03:04:05
+
+	DateTime* filterDate1 = new DateTime(4, 3, 2030, 3, 3, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+
+
+	DateTime* filterDate2 = new DateTime(4, 3, 2030, 3, 5, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+
+	DateTime* filterDate3 = new DateTime(4, 3, 2030, 2, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+
+	DateTime* filterDate4 = new DateTime(4, 3, 2030, 4, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+
+	DateTime* filterDate5 = new DateTime(4, 3, 2029, 3, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+
+	DateTime* filterDate6 = new DateTime(4, 3, 2031, 3, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+
+	DateTime* filterDate7 = new DateTime(4, 2, 2030, 3, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, false);
+
+	DateTime* filterDate8 = new DateTime(3, 4, 2030, 3, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, false);
+
+	DateTime* filterDate9 = new DateTime(5, 3, 2030, 3, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, false);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_3_1) {
+	SetUp(10);
+	// 1  04/03/2030 03:04:05
+	//10. 22/12/2030 12:22:23
+
+	DateTime* filterDate1 = new DateTime(4, 3, 2030, 3, 4, 4);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+
+	DateTime* filterDate2 = new DateTime(4, 3, 2030, 3, 4, 5);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+
+	DateTime* filterDate3 = new DateTime(4, 3, 2030, 3, 4, 6);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+
+	DateTime* filterDate4 = new DateTime(22,12,2030,12,22,22);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+
+	DateTime* filterDate5 = new DateTime(22,12,2030,12,22,23);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+
+	DateTime* filterDate6 = new DateTime(22, 12, 2030, 12, 22, 24);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_4_1) {
+	SetUp(1000);
+	// 1    :  04/01/2030 01:04:05
+	// 499  :  26/06/2030 17:28:29
+	// 500  :  26/06/2030 18:55:56
+	// 1000 :  26/12/2030 22:30:31
+
+	DateTime* filterDate1 = new DateTime(std::string("26/06/2030 17:28:29"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	
+	DateTime* filterDate2 = new DateTime(std::string("26/06/2030 17:28:30"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+
+	DateTime* filterDate3 = new DateTime(std::string("26/06/2030 17:28:28"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+
+	DateTime* filterDate4 = new DateTime(std::string("26/06/2030 18:55:55"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+
+	DateTime* filterDate5 = new DateTime(std::string("26/06/2030 18:55:56"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+
+	DateTime* filterDate6 = new DateTime(std::string("26/06/2030 18:55:57"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_4_2) {
+	SetUp(1000);
+	// 1    :  04/01/2030 01:04:05
+	// 499  :  26/06/2030 17:28:29
+	// 500  :  26/06/2030 18:55:56
+	// 1000 :  26/12/2030 22:30:31
+
+	DateTime* filterDate1 = new DateTime(std::string("04/01/2030 01:04:04"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+
+	DateTime* filterDate2 = new DateTime(std::string("04/01/2030 01:04:05"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+
+	DateTime* filterDate3 = new DateTime(std::string("04/01/2030 01:04:06"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+
+	DateTime* filterDate4 = new DateTime(std::string("26/12/2030 22:30:31"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+
+	DateTime* filterDate5 = new DateTime(std::string("26/12/2030 22:30:31"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+
+	DateTime* filterDate6 = new DateTime(std::string("26/12/2030 22:30:31"));
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FitlerByDateCreated_5) {
+	SetUp(50);
+
+	//We'll go through every date in set and test filtering
+
+	SetMap m = set->getAll();
+	MapIterator it;
+
+
+	for (it = m.begin(); it != m.end(); it++) {
+		DateTime* tmp = it->second->getDateCreated();
+
+		filterAndTest_byDateCreated(FilterMode::BeforeDate, tmp, true);
+		filterAndTest_byDateCreated(FilterMode::BeforeDate, tmp, false);
+		filterAndTest_byDateCreated(FilterMode::AfterDate, tmp, true);
+		filterAndTest_byDateCreated(FilterMode::AfterDate, tmp, false);
+	}
 }
 
 /*
