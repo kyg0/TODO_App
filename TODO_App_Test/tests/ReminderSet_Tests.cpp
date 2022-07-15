@@ -376,7 +376,6 @@ protected:
 	void SetUp(int n = 10) {
 		this->setSize = n;
 
-
 		fwMock = new FileWorkerMock();
 		dtMock = new DateTimeWorkerMock();
 
@@ -539,6 +538,7 @@ protected:
 
 			std::swap(expectedDates[toSwapId], expectedDates[i]);
 		}
+
 
 		ASSERT_TRUE(sorted.size() == expectedDates.size());
 		for (int i = 0; i != expectedDates.size(); i++) {
@@ -709,12 +709,18 @@ protected:
 		}
 	}
 
-	void filterAndTestByFilter(EntryStatus filterStatus) {
+	/*
+		Returns number of entries that pass the filter check.
+		Use this value to explicitly test size of filtered set 
+		in your test case
+	*/
+	int filterAndTestByFilter(EntryStatus filterStatus) {
 		SetMap filtered = set->filterByStatus(filterStatus);
+		int expectedSize = 0;
 
 		if (setSize == 0) {
 			EXPECT_TRUE(setSize == 0);
-			return;
+			return expectedSize;
 		}
 
 		SetMap fullMap = set->getAll();
@@ -724,41 +730,55 @@ protected:
 		for (it = fullMap.begin(); it != fullMap.end(); it++) {
 			if (it->second->getEntryStatus()  == filterStatus) {
 				expectedValues.push_back(std::pair<std::string, EntryStatus>(it->second->getTitle(), it->second->getEntryStatus()));
+				expectedSize++;
 			}
 		}
-
 
 		for (it = filtered.begin(); it != filtered.end(); it++) {
 			EXPECT_EQ(it->second->getTitle(), expectedValues[it->first - 1].first);
 			EXPECT_EQ(it->second->getEntryStatus(), expectedValues[it->first - 1].second);
 		}
+
+		return expectedSize;
 	}
 
-	void filterAndTest_byDateCreated(FilterMode filterMode, DateTime* filterDate, bool descending) {
+	/*
+		Returns number of entries that pass the filter check.
+		Use this value to explicitly test size of filtered set
+		in your test case
 
+		FilterMode = [AfterDate, BeforeDate] - self-explanatory
+		filterDate - reference date that we wil filter by
+		descending - true for descending & false for ascending order
+	*/
+	int filterAndTest_byDateCreated(FilterMode filterMode, DateTime* filterDate, bool descending) {
 		SetMap filtered = set->filterByDateCreated(filterMode, filterDate, descending);
 		SetMap fullMap = set->getAll();
 		MapIterator it;
+		int expectedSize = 0;
+
 
 		std::vector <DateTime*> expectedDates;
 
 		for (it = fullMap.begin(); it != fullMap.end(); it++) {
 			if (filterMode == FilterMode::BeforeDate && (*it->second->getDateCreated() > *filterDate || *it->second->getDateCreated() == *filterDate)) {
 				expectedDates.push_back(it->second->getDateCreated());
+				expectedSize++;
 			}
 			else if (filterMode == FilterMode::AfterDate && *it->second->getDateCreated() < *filterDate) {
 				expectedDates.push_back(it->second->getDateCreated());
+				expectedSize++;
 			}
 		}
 
 		if (expectedDates.size() == 0) {
 			EXPECT_TRUE(filtered.size() == 0);
-			return;
+			return expectedSize;
 		}
 		else if (expectedDates.size() == 1) {
 			EXPECT_TRUE(filtered.size() == 1);
 			EXPECT_TRUE(*filtered[1]->getDateCreated() == *expectedDates[0]);
-			return;
+			return expectedSize;
 		}
 
 		for (int i = 0; i < expectedDates.size() - 1; i++) {
@@ -777,39 +797,54 @@ protected:
 		}
 
 
-		ASSERT_TRUE(filtered.size() == expectedDates.size());
+		EXPECT_TRUE(filtered.size() == expectedDates.size());
 
 		int i = 0;
 		for (it = filtered.begin(); it != filtered.end(); it++) {
-			ASSERT_TRUE(*it->second->getDateCreated() == *expectedDates[i]);
+			EXPECT_TRUE(*it->second->getDateCreated() == *expectedDates[i]);
 			i++;
 		}
+
+		return expectedSize;
 	}
 
-	void filterAndTestByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending) {
+	/*
+		Returns number of entries that pass the filter check.
+		Use this value to explicitly test size of filtered set
+		in your test case
+
+		FilterMode = [AfterDate, BeforeDate] - self-explanatory
+		filterDate - reference date that we wil filter by
+		descending - true for descending & false for ascending order
+	*/
+	int filterAndTestByExecDate(FilterMode filterMode, DateTime* filterDate, bool descending) {
 		SetMap filtered = set->filterByExecDate(filterMode, filterDate, descending);
 		SetMap fullMap = set->getAll();
 		MapIterator it;
+
+		int expectedSize = 0;
 
 		std::vector <DateTime*> expectedDates;
 
 		for (it = fullMap.begin(); it != fullMap.end(); it++) {
 			if (filterMode == FilterMode::BeforeDate && (*it->second->getExecutionDate() > *filterDate || *it->second->getExecutionDate() == *filterDate)) {
 				expectedDates.push_back(it->second->getExecutionDate());
+				expectedSize++;
 			}
 			else if (filterMode == FilterMode::AfterDate && *it->second->getExecutionDate() < *filterDate) {
 				expectedDates.push_back(it->second->getExecutionDate());
+				expectedSize++;
 			}
 		}
 
 		if (expectedDates.size() == 0) {
 			EXPECT_TRUE(filtered.size() == 0);
-			return;
+			return expectedSize;
 		}
 		else if (expectedDates.size() == 1) {
 			EXPECT_TRUE(filtered.size() == 1);
 			EXPECT_TRUE(*filtered[1]->getExecutionDate() == *expectedDates[0]);
-			return;
+			return expectedSize;
 		}
 
 		for (int i = 0; i < expectedDates.size() - 1; i++) {
@@ -827,13 +862,15 @@ protected:
 			std::swap(expectedDates[toSwapId], expectedDates[i]);
 		}
 
-		ASSERT_TRUE(filtered.size() == expectedDates.size());
+		EXPECT_TRUE(filtered.size() == expectedDates.size());
 
 		int i = 0;
 		for (it = filtered.begin(); it != filtered.end(); it++) {
-			ASSERT_TRUE(*it->second->getExecutionDate() == *expectedDates[i]);
+			EXPECT_TRUE(*it->second->getExecutionDate() == *expectedDates[i]);
 			i++;
 		}
+
+		return expectedSize;
 	}
 
 	void TearDown() {
@@ -841,14 +878,6 @@ protected:
 		Mock::VerifyAndClear(dtMock);
 		Mock::AllowLeak(fwMock);
 		Mock::VerifyAndClear(fwMock);
-	}
-
-	void print(SetMap map) {
-		SetMap::iterator it;
-
-		for (it = map.begin(); it != map.end(); it++) {
-			std::cout << it->first << " : " << it->second->getDateCreated()->getFormat(true) << std::endl;
-		}
 	}
 };
 
@@ -2609,101 +2638,133 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_withZeroEntries_asc) {
 	TearDown();
 }
 
-TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_1) {
-	SetUp(2);
-	filterAndTestByFilter(EntryStatus::FINISHED);
-
-	TearDown();
-}
-
-TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_2) {
-	SetUp(5);
-	filterAndTestByFilter(EntryStatus::FINISHED);
-
-	TearDown();
-}
-
-TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_3) {
-	SetUp(10);
-	filterAndTestByFilter(EntryStatus::FINISHED);
-
-	TearDown();
-}
-
-TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_4) {
-	SetUp(100);
-	filterAndTestByFilter(EntryStatus::FINISHED);
-
-	TearDown();
-}
-
-TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_5) {
-	SetUp(2500);
-	filterAndTestByFilter(EntryStatus::FINISHED);
-
-	TearDown();
-}
-
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_1) {
 	SetUp(2);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 1;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_2) {
 	SetUp(5);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 3;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+	
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_3) {
 	SetUp(10);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 5;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_4) {
 	SetUp(100);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 50;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_notFinished_5) {
 	SetUp(2500);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 1250;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_finished_1) {
+	SetUp(2);
+
+	int expectedValue = 1;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_finished_2) {
+	SetUp(5);
+
+	int expectedValue = 2;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_finished_3) {
+	SetUp(10);
+
+	int expectedValue = 5;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_finished_4) {
+	SetUp(1001);
+
+	int expectedValue = 500;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_withOneEntry_finished) {
 	SetUp(1);
-	filterAndTestByFilter(EntryStatus::FINISHED);
 
+	int expectedValue = 0;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_withOneEntry_notFinished) {
 	SetUp(1);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 1;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	EXPECT_TRUE(numOfFilteredEntries == expectedValue);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_withZeroEntries) {
 	SetUp(0);
-	filterAndTestByFilter(EntryStatus::FINISHED);
 
+	int expectedValue = 0;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::FINISHED);
+
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, FilterByStatus_withZeroEntries_notFinished) {
 	SetUp(0);
-	filterAndTestByFilter(EntryStatus::NOT_FINISHED);
 
+	int expectedValue = 0;
+	int numOfFilteredEntries = filterAndTestByFilter(EntryStatus::NOT_FINISHED);
+
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 	TearDown();
 }
 
@@ -2712,10 +2773,20 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_0) {
 
 	// Date should not matter as long as it is a correct date
 	// We won't test for correct date as this is covered in DateTime_Tests
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+	int expectedValue = 0;
+	int numOfFilteredEntries;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	TearDown();
 }
@@ -2723,30 +2794,68 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_0) {
 TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_1) {
 	SetUp(1);
 
-	DateTime* filterDate = new DateTime(std::string("04/03/2030 03:04:05")); // first date created that is assigned in set
+	int expectedValue;
+	int numOfFilteredEntries;
+
+	// first date created that is assigned in set
+	DateTime* filterDate = new DateTime(std::string("04/03/2030 03:04:05")); 
 
 	// Testing with exact date
 	// Should include the one because BeforeDate takes every date that is either before or on that date
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
+	expectedValue = 1;
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	// With previous reasoning, this one should be empty
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+	expectedValue = 0;
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
 
 	//Let's increment filterDate's seconds by 1
 	DateTime* filterDate2 = new DateTime(std::string("04/03/2030 03:04:06"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+
+	expectedValue = 1;
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	//Let's now decrease original filterDate's seconds by 1
 	DateTime* filterDate3 = new DateTime(std::string("04/03/2030 03:04:04"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate, false);
+
+	expectedValue = 0;
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	TearDown();
 }
@@ -2756,42 +2865,88 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_2_1) {
 	// 1 06/04/2030 04:06:07
 	// 2 04/03/2030 03:04:05
 
-	DateTime* filterDate1 = new DateTime(4,3,2030, 3,4,5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	int expectedValue;
+	int numOfFilteredEntries;
 
+	DateTime* filterDate1 = new DateTime(4,3,2030, 3,4,5);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 	
 	DateTime* filterDate2 = new DateTime(4, 3, 2030, 3,4,6);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate3 = new DateTime(4, 3, 2030, 3, 4, 4);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate4 = new DateTime(6, 4, 2030, 4, 6, 6);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate5 = new DateTime(6, 4, 2030, 4, 6, 7);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate6 = new DateTime(6, 4, 2030, 4, 6, 8);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	TearDown();
 }
@@ -2800,61 +2955,318 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_2_2) {
 	SetUp(2);
 	// 1 06/04/2030 04:06:07
 	// 2 04/03/2030 03:04:05
+	int expectedValue;
+	int numOfFilteredEntries;
 
 	DateTime* filterDate1 = new DateTime(4, 3, 2030, 3, 3, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 
 	DateTime* filterDate2 = new DateTime(4, 3, 2030, 3, 5, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate3 = new DateTime(4, 3, 2030, 2, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate4 = new DateTime(4, 3, 2030, 4, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate5 = new DateTime(4, 3, 2029, 3, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate6 = new DateTime(4, 3, 2031, 3, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	expectedValue = 2;
 
-	DateTime* filterDate7 = new DateTime(4, 2, 2030, 3, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, false);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate7 = new DateTime(3, 2, 2030, 3, 4, 5);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate8 = new DateTime(3, 4, 2030, 3, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, false);
+	expectedValue = 1;
+	
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate9 = new DateTime(5, 3, 2030, 3, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, false);
+	expectedValue = 1;
+
+	numOfFilteredEntries  = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate10 = new DateTime(2, 3, 2030, 3, 4, 5);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_2_3) {
+	SetUp(2);
+	// 1 06/04/2030 04:06:07
+	// 2 04/03/2030 03:04:05
+	int expectedValue;
+	int numOfFilteredEntries;
+
+	DateTime* filterDate1 = new DateTime(6, 4, 2030, 4, 6, 6);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+
+	DateTime* filterDate2 = new DateTime(6, 4, 2030, 4, 6, 8);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate3 = new DateTime(6, 4, 2030, 4, 5, 7);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate4 = new DateTime(6, 4, 2030, 4, 7, 7);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate5 = new DateTime(6, 4, 2030, 3, 6, 7);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate6 = new DateTime(6, 4, 2030, 5, 6, 7);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate7 = new DateTime(6, 4, 2029, 4, 6, 7);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate8 = new DateTime(6, 4, 2031, 4, 6, 7);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate9 = new DateTime(6, 3, 2030, 4, 6, 7);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate10 = new DateTime(6, 5, 2030, 4, 6, 7);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate11 = new DateTime(5, 4, 2030, 4, 6, 7);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate11, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate11, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate11, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate11, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate12 = new DateTime(7, 4, 2030, 4, 6, 7);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate12, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate12, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate12, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate12, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	TearDown();
 }
@@ -2864,1076 +3276,892 @@ TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_3_1) {
 	// 1  04/03/2030 03:04:05
 	//10. 22/12/2030 12:22:23
 
+	//It this case we're testing around first and last (sorted) dates
+
+	int expectedValue;
+	int numOfFilteredEntries;
+
+
 	DateTime* filterDate1 = new DateTime(4, 3, 2030, 3, 4, 4);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 10;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate2 = new DateTime(4, 3, 2030, 3, 4, 5);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 9;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate3 = new DateTime(4, 3, 2030, 3, 4, 6);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 9;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate4 = new DateTime(22,12,2030,12,22,22);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+
+	expectedValue = 9;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate5 = new DateTime(22,12,2030,12,22,23);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	expectedValue = 10;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	DateTime* filterDate6 = new DateTime(22, 12, 2030, 12, 22, 24);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	expectedValue = 10;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 	TearDown();
 }
 
-TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_4_1) {
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_4) {
 	SetUp(1000);
-	// 1    :  04/01/2030 01:04:05
-	// 499  :  26/06/2030 17:28:29
-	// 500  :  26/06/2030 18:55:56
-	// 1000 :  26/12/2030 22:30:31
+	//	500 : 26/06/2030 18:55:56
+	//	501 : 26/06/2030 19:23:24
 
-	DateTime* filterDate1 = new DateTime(std::string("26/06/2030 17:28:29"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	// In this case we're gonna test aroung the 2 dates that are right in the middle
+	// Which mean 500th and 501th date (dates are sorted)
+
+	int expectedValue;
+	int numOfFilteredEntries;
+
+
+	DateTime* filterDate1 = new DateTime(std::string("26/06/2030 18:55:55"));
+	expectedValue = 499;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 501;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 	
-	DateTime* filterDate2 = new DateTime(std::string("26/06/2030 17:28:30"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	DateTime* filterDate2 = new DateTime(std::string("26/06/2030 18:55:56"));
+	expectedValue = 500;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	DateTime* filterDate3 = new DateTime(std::string("26/06/2030 17:28:28"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	DateTime* filterDate3 = new DateTime(std::string("26/06/2030 18:55:57"));
+	expectedValue = 500;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	DateTime* filterDate4 = new DateTime(std::string("26/06/2030 18:55:55"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	DateTime* filterDate4 = new DateTime(std::string("26/06/2030 19:23:23"));
+	expectedValue = 500;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	DateTime* filterDate5 = new DateTime(std::string("26/06/2030 18:55:56"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	DateTime* filterDate5 = new DateTime(std::string("26/06/2030 19:23:24"));
+	expectedValue = 501;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	DateTime* filterDate6 = new DateTime(std::string("26/06/2030 18:55:57"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	expectedValue = 499;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate6 = new DateTime(std::string("26/06/2030 19:23:25"));
+	expectedValue = 501;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 499;
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 }
 
-TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_4_2) {
-	SetUp(1000);
-	// 1    :  04/01/2030 01:04:05
-	// 499  :  26/06/2030 17:28:29
-	// 500  :  26/06/2030 18:55:56
-	// 1000 :  26/12/2030 22:30:31
-
-	DateTime* filterDate1 = new DateTime(std::string("04/01/2030 01:04:04"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate1, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate1, false);
-
-	DateTime* filterDate2 = new DateTime(std::string("04/01/2030 01:04:05"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate2, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate2, false);
-
-	DateTime* filterDate3 = new DateTime(std::string("04/01/2030 01:04:06"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate3, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate3, false);
-
-	DateTime* filterDate4 = new DateTime(std::string("26/12/2030 22:30:31"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate4, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate4, false);
-
-	DateTime* filterDate5 = new DateTime(std::string("26/12/2030 22:30:31"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate5, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate5, false);
-
-	DateTime* filterDate6 = new DateTime(std::string("26/12/2030 22:30:31"));
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::BeforeDate, filterDate6, false);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, true);
-	filterAndTest_byDateCreated(FilterMode::AfterDate, filterDate6, false);
-}
-
-TEST_F(ReminderSet_SortAndFilterTest, FitlerByDateCreated_5) {
+TEST_F(ReminderSet_SortAndFilterTest, FilterByDateCreated_5) {
 	SetUp(50);
 
 	//We'll go through every date in set and test filtering
 
-	SetMap m = set->getAll();
+	SetMap m = set->sortByDateCreated(true);
 	MapIterator it;
 
+	int m_size = m.size();
+
+	int expectedValue;
+	int numOfFilteredEntries;
 
 	for (it = m.begin(); it != m.end(); it++) {
 		DateTime* tmp = it->second->getDateCreated();
 
-		filterAndTest_byDateCreated(FilterMode::BeforeDate, tmp, true);
-		filterAndTest_byDateCreated(FilterMode::BeforeDate, tmp, false);
-		filterAndTest_byDateCreated(FilterMode::AfterDate, tmp, true);
-		filterAndTest_byDateCreated(FilterMode::AfterDate, tmp, false);
+		expectedValue = it->first;
+		numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, tmp, true);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+		numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::BeforeDate, tmp, false);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+		
+		expectedValue = m_size - it->first;
+		numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, tmp, true);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+		numOfFilteredEntries = filterAndTest_byDateCreated(FilterMode::AfterDate, tmp, false);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 	}
 }
 
-/*
-/*
-TEST(ReminderSet_Tests, FilterByDateCreated) {
-	DateTimeWorkerMock* filterDateMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 27, 5, 2022, 9, 56, 31 };
-	EXPECT_CALL(*filterDateMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* filterDate = new DateTime(filterDateMock);
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_0) {
+	SetUp(0);
 
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
+	// Date should not matter as long as it is a correct date
+	// We won't test for correct date as this is covered in DateTime_Tests
+	int expectedValue = 0;
+	int numOfFilteredEntries;
 
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	StringVector paths;
-	StringVector outputs;
-	std::vector<StringVector> outputInLines;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	std::vector<std::tuple<std::string, std::string, StringVector>> paths_and_outputs; // first=path, second=
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, new DateTime(12, 7, 2022, 13, 0, 0), false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_1) {
+	SetUp(1);
+
+	int expectedValue;
+	int numOfFilteredEntries;
+
+	// first date created that is assigned in set
+	DateTime* filterDate = new DateTime(std::string("06/03/2030 05:10:11"));
+
+	// Testing with exact date
+	// Should include the one because BeforeDate takes every date that is either before or on that date
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	// With previous reasoning, this one should be empty
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+
+	//Let's increment filterDate's seconds by 1
+	DateTime* filterDate2 = new DateTime(std::string("06/03/2030 05:10:12"));
+
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	//Let's now decrease original filterDate's seconds by 1
+	DateTime* filterDate3 = new DateTime(std::string("06/03/2030 05:10:10"));
+
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_2_1) {
+	SetUp(2);
+	
+	//		06/03/2030 05:10:11
+	//		08/04/2030 06:12:13
 	
 
-	std::vector<std::pair<std::string, std::string>> paths_and_outputs;
+	int expectedValue;
+	int numOfFilteredEntries;
 
-	for (int i = 1; i <= 10; i++) {
-		std::vector<int> dtVector{ 27,5,2022,9, 56, 26 + i };
-		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(dtVector));
-		DateTime* dt = new DateTime(dtMock);
-		DateTime* execDate = new DateTime(2 * i, i, 2030, 5 + i, 0);
+	DateTime* filterDate1 = new DateTime(6,3,2030,5,10,11);
+	expectedValue = 1;
 
-		std::string _path = "out/TITLE-" + std::to_string(i) + "_" +
-			helper.getPath(dtVector[0], dtVector[1], dtVector[2], dtVector[3], dtVector[4], dtVector[5]) + "_" +
-			helper.getPath(execDate->getDay(), execDate->getMonth(), execDate->getYear(), execDate->getHours(), execDate->getMinutes(), execDate->getSeconds());
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-		std::string _output;
-		std::string _title = "Title: TITLE-" + std::to_string(i);
-		std::string _description = "Description: This is description for " + std::to_string(i);
-		std::string _dateCreated = "Date created: " + dt->getFormat(true);
-		std::string _execDate = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		if (i % 2 == 0) {
-			_status += "FINISHED";
-		}
-		else {
-			_status += "NOT FINISHED";
-		}
-		
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-		StringVector lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-		lines.push_back(_execDate); lines.push_back(_status);
-		
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-		paths_and_outputs.push_back(std::pair(_path, _output));
-		paths.push_back(_path);
-		outputs.push_back(_output);
-		outputInLines.push_back(lines);
-	}
+	DateTime* filterDate2 = new DateTime(6, 3, 2030, 5, 10, 10);
+	expectedValue = 0;
 
-	std::random_device rd;
-	std::mt19937 g(rd());
-	std::shuffle(paths_and_outputs.begin(), paths_and_outputs.end(), g);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
+	DateTime* filterDate3 = new DateTime(6,3,2030,5,10,12);
+	expectedValue = 1;
 
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 10);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
+	DateTime* filterDate4 = new DateTime(8,4,2030,6,12,13);
+	expectedValue = 2;
 
-	int i;
-	SetMap filtered_beforeDateDescending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
-	SetMap::iterator it;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	i = 5;
-	for (it = filtered_beforeDateDescending.begin(); it != filtered_beforeDateDescending.end(); it++) {
-		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
-		DateTime* execTmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-		
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-		i--;
-	}
+	DateTime* filterDate5 = new DateTime(8,4,2030,6,12,12);
+	expectedValue = 1;
 
-	i = 1;
-	SetMap filtered_beforeDateAscending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
-	for (it = filtered_beforeDateAscending.begin(); it != filtered_beforeDateAscending.end(); it++) {
-		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
-		DateTime* execTmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
+	DateTime* filterDate6 = new DateTime(8,4,2030,6,12,14);
+	expectedValue = 2;
 
-		i++;
-	}
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	i = 10;
-	SetMap filtered_afterDateDescending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	for (it = filtered_afterDateDescending.begin(); it != filtered_afterDateDescending.end(); it++) {
-		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
-		DateTime* execTmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i--;
-	}
-
-	i = 6;
-	SetMap filtered_afterDateAscending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
-	for (it = filtered_afterDateAscending.begin(); it != filtered_afterDateAscending.end(); it++) {
-		DateTime* dcTmp = new DateTime(27, 5, 2022, 9, 56, 26 + i);
-		DateTime* execTmp = new DateTime(2 * i, i, 2030, 5 + i, 0);
-
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-	Mock::AllowLeak(filterDateMock);
-	Mock::VerifyAndClear(filterDateMock);
+	TearDown();
 }
 
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_2_2) {
+	SetUp(2);
+	//		06/03/2030 05:10:11				6,3,2030,5,10,11
+	//		08/04/2030 06:12:13
 
-TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 27,5,2022, 10,27,30 };
-	std::vector<int> date{ 27,5,2022, 10, 27, 29 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
+	int expectedValue;
+	int numOfFilteredEntries;
 
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17, 4, 2050, 12, 0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17,4,2050,12,0, 0);
+	DateTime* filterDate1 = new DateTime(6, 3, 2030, 5, 9, 11);
+	expectedValue = 0;
 
-	std::string _output;// = "Title: TITLE\nDescription: This is description\nDate created: " +
-		//dt.getFormat(true) + "\nExecution date: " + execDate->getFormat(true) + "\nStatus: NOT FINISHED";
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
-	EXPECT_TRUE(filtered1.size() == 1);
-	SetMap::iterator it = filtered1.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 
-	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
-	EXPECT_TRUE(filtered2.size() == 1);
-	it = filtered2.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	DateTime* filterDate2 = new DateTime(6, 3, 2030, 5, 11, 11);
+	expectedValue = 1;
 
-	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
-	EXPECT_TRUE(filtered3.size() == 0);
-	
-	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
-	EXPECT_TRUE(filtered4.size() == 0);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+	DateTime* filterDate3 = new DateTime(6, 3, 2030, 4, 10, 11);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate4 = new DateTime(6, 3, 2030, 6, 10, 11);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate5 = new DateTime(6, 3, 2029, 5, 10, 11);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate6 = new DateTime(6, 3, 2031, 5, 10, 11);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate7 = new DateTime(6, 2, 2030, 5, 10, 11);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate8 = new DateTime(6, 4, 2030, 5, 10, 11);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate9 = new DateTime(5, 3, 2030, 5, 10, 11);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate10 = new DateTime(7, 3, 2030, 5, 10, 11);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_BeforeDate_2) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 27,5,2022, 10, 27, 29 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_2_3) {
+	SetUp(2);
+	//		06/03/2030 05:10:11				
+	//		08/04/2030 06:12:13				8,4,2030,6,12,13
 
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	
-	DateTime* execDate = new DateTime(17, 4, 2050, 12, 0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17, 4, 2050, 12, 0, 0);
+	int expectedValue;
+	int numOfFilteredEntries;
 
-	std::string _output;// = "Title: TITLE\nDescription: This is description\nDate created: " +
-		//dt.getFormat(true) + "\nExecution date: " + execDate->getFormat(true) + "\nStatus: NOT FINISHED";
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
+	DateTime* filterDate1 = new DateTime(8, 4, 2030, 6, 11, 13);
+	expectedValue = 1;
 
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, dt, true);
-	EXPECT_TRUE(filtered1.size() == 1);
-	SetMap::iterator it = filtered1.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
 
-	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, dt, false);
-	EXPECT_TRUE(filtered2.size() == 1);
-	it = filtered2.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	DateTime* filterDate2 = new DateTime(8, 4, 2030, 6, 13, 13);
+	expectedValue = 2;
 
-	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, dt, true);
-	EXPECT_TRUE(filtered3.size() == 0);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, dt, false);
-	EXPECT_TRUE(filtered4.size() == 0);
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+	DateTime* filterDate3 = new DateTime(8, 4, 2030, 5, 12, 13);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate4 = new DateTime(8, 4, 2030, 7, 12, 13);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate5 = new DateTime(8, 4, 2029, 6, 12, 13);
+	expectedValue = 0;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 2;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate6 = new DateTime(8, 4, 2031, 6, 12, 13);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate7 = new DateTime(8, 3, 2030, 6, 12, 13);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate7, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate7, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate8 = new DateTime(8, 5, 2030, 6, 12, 13);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate8, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate8, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate9 = new DateTime(7, 4, 2030, 6, 12, 13);
+	expectedValue = 1;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate9, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate9, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate10 = new DateTime(9, 4, 2030, 6, 12, 13);
+	expectedValue = 2;
+
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate10, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate10, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 27,5,2022, 10,27,30 };
-	std::vector<int> date{ 27,5,2022, 10, 27, 40 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_3_1) {
+	SetUp(10);
 
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17, 4, 2050, 12, 0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17, 4, 2050, 12, 0, 0);
+	//		1 : 06/03/2030 05:10:11	
+	//		10 : 24/12/2030 14:28:29
 
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, true);
-	EXPECT_TRUE(filtered1.size() == 0);
+	int expectedValue;
+	int numOfFilteredEntries;
 
 
-	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
-	EXPECT_TRUE(filtered2.size() == 0);
+	DateTime* filterDate1 = new DateTime(6, 3, 2030, 5, 10, 10);
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
-	EXPECT_TRUE(filtered3.size() == 1);
-	SetMap::iterator it = filtered3.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	expectedValue = 10;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
-	EXPECT_TRUE(filtered4.size() == 1);
-	it = filtered4.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	DateTime* filterDate2 = new DateTime(6, 3, 2030, 5, 10, 11);
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+	expectedValue = 9;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate3 = new DateTime(6, 3, 2030, 5, 10, 12);
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 9;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate4 = new DateTime(24, 12, 2030, 14, 28, 28);
+
+	expectedValue = 9;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 1;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate5 = new DateTime(24, 12, 2030, 14, 28, 29);
+	expectedValue = 10;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate6 = new DateTime(24, 12, 2030, 14, 28, 30);
+	expectedValue = 10;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 0;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	TearDown();
 }
 
-TEST(ReminderSet_Tests, FilterByDateCreated_WithOneEntry_AfterDate_2) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> date{ 27,5,2022, 10, 27, 30 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_4) {
+	SetUp(1000);
 
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17, 4, 2050, 12, 0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17, 4, 2050, 12, 0, 0);
+	//	500 : 14/07/2030 16:59:01
+	//	501 : 14/07/2030 21:46:47
 
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, dt, true);
-	EXPECT_TRUE(filtered1.size() == 1);
-	SetMap::iterator it = filtered1.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	int expectedValue;
+	int numOfFilteredEntries;
 
 
-	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, dt, false);
-	EXPECT_TRUE(filtered2.size() == 1);
-	it = filtered2.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
+	DateTime* filterDate1 = new DateTime(std::string("14/07/2030 16:59:00"));
+	expectedValue = 499;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, dt, true);
-	EXPECT_TRUE(filtered3.size() == 0);
+	expectedValue = 501;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate1, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, dt, false);
-	EXPECT_TRUE(filtered4.size() == 0);
+	DateTime* filterDate2 = new DateTime(std::string("14/07/2030 16:59:01"));
+	expectedValue = 500;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate2, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
+	DateTime* filterDate3 = new DateTime(std::string("14/07/2030 16:59:02"));
+	expectedValue = 500;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate3, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate4 = new DateTime(std::string("14/07/2030 21:46:46"));
+	expectedValue = 500;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate4, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate5 = new DateTime(std::string("14/07/2030 21:46:47"));
+	expectedValue = 501;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 499;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate5, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	DateTime* filterDate6 = new DateTime(std::string("14/07/2030 21:46:48"));
+	expectedValue = 501;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+
+	expectedValue = 499;
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, true);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
+	numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, filterDate6, false);
+	EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 }
 
-TEST(ReminderSet_Tests, FilterByDateCreated_WithZeroEntries) {
-	FileWorkerMock* mock = new FileWorkerMock();
+TEST_F(ReminderSet_SortAndFilterTest, FilterByExecDate_5) {
+	SetUp(50);
 
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(StringVector()));
+	//We'll go through every date in set and test filtering
 
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 0);
+	SetMap m = set->sortByExecDate(true);
+	MapIterator it;
 
-	SetMap filtered1 = set.filterByDateCreated(FilterMode::BeforeDate, new DateTime(), true);
-	EXPECT_TRUE(filtered1.size() == 0);
+	int m_size = m.size();
 
-	SetMap filtered2 = set.filterByDateCreated(FilterMode::BeforeDate, new DateTime(), false);
-	EXPECT_TRUE(filtered2.size() == 0);
+	int expectedValue;
+	int numOfFilteredEntries;
 
-	SetMap filtered3 = set.filterByDateCreated(FilterMode::AfterDate, new DateTime(), true);
-	EXPECT_TRUE(filtered3.size() == 0);
+	for (it = m.begin(); it != m.end(); it++) {
+		DateTime* tmp = it->second->getExecutionDate();
 
-	SetMap filtered4 = set.filterByDateCreated(FilterMode::AfterDate, new DateTime(), false);
-	EXPECT_TRUE(filtered4.size() == 0);
+		expectedValue = it->first;
+		numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, tmp, true);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
+		numOfFilteredEntries = filterAndTestByExecDate(FilterMode::BeforeDate, tmp, false);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-}
+		expectedValue = m_size - it->first;
+		numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, tmp, true);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 
-TEST(ReminderSet_Tests, FilterByExecDate) {
-	DateTimeWorkerMock* filterDateMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 27, 5, 2022, 9, 56, 30 };
-	EXPECT_CALL(*filterDateMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(filterDateMock);
-
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	StringVector paths;
-	StringVector outputs;
-	std::vector<StringVector> outputInLines;
-
-	std::vector<std::pair<std::string, std::string>> paths_and_outputs;
-
-	for (int i = 1; i <= 10; i++) {
-		std::vector<int> dtVector{ 2 * i, i, 2022, 5 + i, 0, i };
-		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(dtVector));
-		DateTime* dt = new DateTime(dtMock);
-		DateTime* execDate = new DateTime(27,5, 2023, 10,53, 25+i);
-
-		std::string _path = "out/TITLE-" + std::to_string(i) + "_" +
-			helper.getPath(dtVector[0], dtVector[1], dtVector[2], dtVector[3], dtVector[4], dtVector[5]) + "_" +
-			helper.getPath(27,5,2023,10,53,25+i);
-
-		std::string _output;
-		std::string _title = "Title: TITLE-" + std::to_string(i);
-		std::string _description = "Description: This is description for " + std::to_string(i);
-		std::string _dateCreated = "Date created: " + dt->getFormat(true);
-		std::string _execDate = "Execution date: " + execDate->getFormat(true);
-		std::string _status = "Status: ";
-		if (i % 2 == 0) {
-			_status += "FINISHED";
-		}
-		else {
-			_status += "NOT FINISHED";
-		}
-
-		_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-		StringVector lines;
-		lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-		lines.push_back(_execDate); lines.push_back(_status);
-
-
-		paths_and_outputs.push_back(std::pair(_path, _output));
-		paths.push_back(_path);
-		outputs.push_back(_output);
-		outputInLines.push_back(lines);
+		numOfFilteredEntries = filterAndTestByExecDate(FilterMode::AfterDate, tmp, false);
+		EXPECT_TRUE(expectedValue == numOfFilteredEntries);
 	}
-
-	std::random_device rd;
-	std::mt19937 g(rd());
-	std::shuffle(paths_and_outputs.begin(), paths_and_outputs.end(), g);
-
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	for (int i = 0; i < 10; i++) {
-		EXPECT_CALL(*mock, fileExists(paths[i])).WillOnce(Return(true));
-		EXPECT_CALL(*mock, readFromFileInLines(paths[i])).WillOnce(Return(outputInLines[i]));
-	}
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 10);
-
-
-	int i;
-	SetMap filtered_beforeDateDescending = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
-	SetMap::iterator it;
-
-	i = 5;
-	for (it = filtered_beforeDateDescending.begin(); it != filtered_beforeDateDescending.end(); it++) {
-		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
-		DateTime* execTmp = new DateTime(27, 5, 2023, 10, 53, 25 + i);
-
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i--;
-	}
-
-	i = 1;
-	SetMap filtered_beforeDateAscending = set.filterByDateCreated(FilterMode::BeforeDate, filterDate, false);
-	for (it = filtered_beforeDateAscending.begin(); it != filtered_beforeDateAscending.end(); it++) {
-		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
-		DateTime* execTmp = new DateTime(27, 5, 2023, 10, 53, 25 + i);
-
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-
-	i = 10;
-	SetMap filtered_afterDateDescending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, true);
-
-	for (it = filtered_afterDateDescending.begin(); it != filtered_afterDateDescending.end(); it++) {
-		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
-		DateTime* execTmp = new DateTime(27, 5, 2023, 10, 53, 25 + i);
-
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i--;
-	}
-
-	i = 6;
-	SetMap filtered_afterDateAscending = set.filterByDateCreated(FilterMode::AfterDate, filterDate, false);
-	for (it = filtered_afterDateAscending.begin(); it != filtered_afterDateAscending.end(); it++) {
-		DateTime* dcTmp = new DateTime(2 * i, i, 2022, 5 + i, 0, i);
-		DateTime* execTmp = new DateTime(27, 5, 2023, 10, 53, 25 + i);
-
-		EXPECT_EQ(it->second->getTitle(), "TITLE-" + std::to_string(i));
-		EXPECT_EQ(it->second->getDescription(), "This is description for " + std::to_string(i));
-		EXPECT_TRUE(*it->second->getDateCreated() == *dcTmp);
-		EXPECT_TRUE(*it->second->getExecutionDate() == *execTmp);
-		if (i % 2 == 0) {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::FINISHED);
-		}
-		else {
-			EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-		}
-
-		i++;
-	}
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-	Mock::AllowLeak(filterDateMock);
-	Mock::VerifyAndClear(filterDateMock);
 }
-
-TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 17,5,2023, 12,0,0 };
-	std::vector<int> date{ 27,5,2022, 10, 27, 29 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17,5,2023,11,59,59);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17,5,2023,11,59,59);
-
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
-	EXPECT_TRUE(filtered1.size() == 1);
-	SetMap::iterator it = filtered1.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-
-	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
-	EXPECT_TRUE(filtered2.size() == 1);
-	it = filtered2.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
-	EXPECT_TRUE(filtered3.size() == 0);
-
-	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
-	EXPECT_TRUE(filtered4.size() == 0);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_BeforeDate_2) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 17,5,2023, 12,0,0 };
-	std::vector<int> date{ 27,5,2022, 10, 27, 29 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17, 5, 2023, 12, 0,0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17, 5, 2023, 12,0,0);
-
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
-	EXPECT_TRUE(filtered1.size() == 1);
-	SetMap::iterator it = filtered1.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-
-	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
-	EXPECT_TRUE(filtered2.size() == 1);
-	it = filtered2.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
-	EXPECT_TRUE(filtered3.size() == 0);
-
-	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
-	EXPECT_TRUE(filtered4.size() == 0);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 17,5,2023, 12,0,0 };
-	std::vector<int> date{ 27,5,2022, 10, 27, 29 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17, 5, 2023, 12, 0, 1);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17, 5, 2023, 12, 0, 1);
-
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
-	EXPECT_TRUE(filtered1.size() == 0);
-
-
-	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
-	EXPECT_TRUE(filtered2.size() == 0);
-
-	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
-	EXPECT_TRUE(filtered3.size() == 1);
-	SetMap::iterator it = filtered3.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
-	EXPECT_TRUE(filtered4.size() == 1);
-	it = filtered4.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, FilterByExecDate_WithOneEntry_AfterDate_2) {
-	DateTimeWorkerMock* dtMock = new DateTimeWorkerMock();
-	std::vector<int> filterDateVector{ 17,5,2023, 12,0,0 };
-	std::vector<int> date{ 27,5,2022, 10, 27, 29 };
-	FileWorkerMock* mock = new FileWorkerMock();
-	HelperClass helper;
-
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(date));
-	DateTime* dt = new DateTime(dtMock);
-	EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(filterDateVector));
-	DateTime* filterDate = new DateTime(dtMock);
-	DateTime* execDate = new DateTime(17, 5, 2023, 12, 0, 0);
-	std::string _path = "out/TITLE_" +
-		helper.getPath(date[0], date[1], date[2], date[3], date[4], date[5]) + "_" +
-		helper.getPath(17, 5, 2023, 12, 0, 0);
-
-	std::string _output;
-	std::string _title = "Title: TITLE";
-	std::string _description = "Description: This is description";
-	std::string _dateCreated = "Date created: " + dt->getFormat(true);
-	std::string _execDate = "Execution date: " + execDate->getFormat(true);
-	std::string _status = "Status: NOT FINISHED";
-
-	_output = _title + "\n" + _description + "\n" + _dateCreated + "\n" + _execDate + "\n" + _status;
-
-	StringVector lines;
-	lines.push_back(_title); lines.push_back(_description); lines.push_back(_dateCreated);
-	lines.push_back(_execDate); lines.push_back(_status);
-
-	StringVector paths{ _path };
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(paths));
-	EXPECT_CALL(*mock, fileExists(paths[0])).WillOnce(Return(true));
-	EXPECT_CALL(*mock, readFromFileInLines(paths[0])).WillOnce(Return(lines));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 1);
-
-	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, true);
-	EXPECT_TRUE(filtered1.size() == 1);
-	SetMap::iterator it = filtered1.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-
-	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, filterDate, false);
-	EXPECT_TRUE(filtered2.size() == 1);
-	it = filtered2.begin();
-	EXPECT_EQ(it->second->getTitle(), "TITLE");
-	EXPECT_EQ(it->second->getDescription(), "This is description");
-	EXPECT_TRUE(*it->second->getDateCreated() == *dt);
-	EXPECT_TRUE(*it->second->getExecutionDate() == *execDate);
-	EXPECT_EQ(it->second->getEntryStatus(), EntryStatus::NOT_FINISHED);
-
-	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, filterDate, true);
-	EXPECT_TRUE(filtered3.size() == 0);
-
-	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, filterDate, false);
-	EXPECT_TRUE(filtered4.size() == 0);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-	Mock::AllowLeak(dtMock);
-	Mock::VerifyAndClear(dtMock);
-}
-
-TEST(ReminderSet_Tests, FilterByExecDate_WithZeroEntries) {
-	FileWorkerMock* mock = new FileWorkerMock();
-
-	EXPECT_CALL(*mock, getAllFromDirectory("out/")).WillOnce(Return(StringVector()));
-
-	ReminderSet set(mock);
-	SetMap map = set.getAll();
-	EXPECT_TRUE(map.size() == 0);
-
-	SetMap filtered1 = set.filterByExecDate(FilterMode::BeforeDate, new DateTime(), true);
-	EXPECT_TRUE(filtered1.size() == 0);
-
-	SetMap filtered2 = set.filterByExecDate(FilterMode::BeforeDate, new DateTime(), false);
-	EXPECT_TRUE(filtered2.size() == 0);
-
-	SetMap filtered3 = set.filterByExecDate(FilterMode::AfterDate, new DateTime(), true);
-	EXPECT_TRUE(filtered3.size() == 0);
-
-	SetMap filtered4 = set.filterByExecDate(FilterMode::AfterDate, new DateTime(), false);
-	EXPECT_TRUE(filtered4.size() == 0);
-
-	Mock::AllowLeak(mock);
-	Mock::VerifyAndClear(mock);
-}
-*/
 

@@ -228,7 +228,7 @@ SetMap ReminderSet::filterByExecDate(FilterMode filterMode, DateTime* filterDate
 			if (descending && *vector[j]->getExecutionDate() > *vector[toSwapId]->getExecutionDate()) {
 				toSwapId = j;
 			}
-			else if (!descending && *vector[i]->getExecutionDate() < *vector[toSwapId]->getExecutionDate()) {
+			else if (!descending && *vector[j]->getExecutionDate() < *vector[toSwapId]->getExecutionDate()) {
 				toSwapId = j;
 			}
 		}
