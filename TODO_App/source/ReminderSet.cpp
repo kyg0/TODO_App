@@ -30,6 +30,9 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 	catch (InvalidIndexException err) {
 		throw err;
 	}
+	catch (NullObjectException err) {
+		throw err;
+	}
 	
 }
 

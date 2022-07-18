@@ -2519,6 +2519,12 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_3) {
 	TearDown();
 }
 
+TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_4) {
+	SetUp(1000);
+	sortAndTestByTitle(true);
+	TearDown();
+}
+
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_1) {
 	SetUp(2);
 	sortAndTestByTitle(false);
@@ -2537,6 +2543,12 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_3) {
 	SetUp(10);
 	sortAndTestByTitle(false);
 
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_4) {
+	SetUp(1000);
+	sortAndTestByTitle(false);
 	TearDown();
 }
 
@@ -2585,7 +2597,12 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_2) {
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_3){
 	SetUp(10);
 	sortAndTestByDescription(true);
+	TearDown();
+}
 
+TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_4) {
+	SetUp(1000);
+	sortAndTestByDescription(true);
 	TearDown();
 }
 
@@ -2607,6 +2624,12 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_asc_3) {
 	SetUp(10);
 	sortAndTestByDescription(false);
 
+	TearDown();
+}
+
+TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_asc_4) {
+	SetUp(1000);
+	sortAndTestByDescription(false);
 	TearDown();
 }
 

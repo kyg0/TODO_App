@@ -4,7 +4,14 @@
 
 MainApp::MainApp()
 {
-	set = new ReminderSet();
+	try {
+		set = new ReminderSet();
+	}
+	catch (...) {
+		std::cout << "Program can't be started, something's wrong with the files." << std::endl;
+		std::cout << "Check if they are unnecessary files where all the reminders are located" << std::endl;
+		exit(1);
+	}
 }
 
 MainApp* MainApp::getInstance()
@@ -34,7 +41,21 @@ void MainApp::execCommand(std::string command)
 	}
 
 	if (cmd == "new") {
-		execCommand_New(cmd_split);
+		try {
+			execCommand_New(cmd_split);
+		}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidIndexException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (DateTimeException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidExecutionDate err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
 	}
 	else if (cmd == "get") {
 		if (cmd_split.size() > 2) {
@@ -44,15 +65,20 @@ void MainApp::execCommand(std::string command)
 		else if (cmd_split.size() == 1) {
 			execCommand_Get();
 		}
-		else if (cmd_split.size() == 2) {
-
-		}
 	}
 	else if (cmd == "delete") {
 		if (cmd_split.size() > 2) {
 			std::cout << std::endl << "  Too many arguments." << std::endl;
 		}
-		execCommand_Delete(std::stoi(cmd_split[1]));
+		try {
+			execCommand_Delete(std::stoi(cmd_split[1]));
+		}
+		catch (InvalidIndexException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
 	}
 	else if (cmd == "sort") {
 		if (cmd_split.size() > 3) {
@@ -60,41 +86,70 @@ void MainApp::execCommand(std::string command)
 			return;
 		}
 		bool descending = true;
-		if (cmd_split.size() == 2) {
-			execCommand_Sort(cmd_split[1]);
+		try {
+			if (cmd_split.size() == 2) {
+				execCommand_Sort(cmd_split[1]);
+			}
+			else if (cmd_split.size() == 3) {
+				if (cmd_split[1] == "-des" || cmd_split[1] == "-1") {
+					descending = true;
+					execCommand_Sort(cmd_split[2], descending);
+				}
+				else if (cmd_split[1] == "-asc" || cmd_split[1] == "-0") {
+					descending = false;
+					execCommand_Sort(cmd_split[2], descending);
+				}
+				else if (cmd_split[2] == "-asc" || cmd_split[2] == "-0") {
+					descending = false;
+					execCommand_Sort(cmd_split[1], descending);
+				}
+				else if (cmd_split[2] == "-des" || cmd_split[2] == "-1") {
+					descending = true;
+					execCommand_Sort(cmd_split[1], descending);
+				}
+				else {
+					std::cout << std::endl << "  Wrong set of arguments" << std::endl;
+				}
+			}
 		}
-		else if (cmd_split.size() == 3) {
-			if (cmd_split[1] == "-des" || cmd_split[1] == "-1") {
-				descending = true;
-				execCommand_Sort(cmd_split[2], descending);
-			}
-			else if (cmd_split[1] == "-asc" || cmd_split[1] == "-0") {
-				descending = false;
-				execCommand_Sort(cmd_split[2], descending);
-			}
-			else if (cmd_split[2] == "-asc" || cmd_split[2] == "-0") {
-				descending = false;
-				execCommand_Sort(cmd_split[1], descending);
-			}
-			else if (cmd_split[2] == "-des" || cmd_split[2] == "-1") {
-				descending = true;
-				execCommand_Sort(cmd_split[1], descending);
-			}
-			else {
-				std::cout << std::endl << "  Wrong set of arguments" << std::endl;
-			}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
 		}
 	}
-
 	else if (cmd == "filter") {
-		deriveAndExecCommand_Filter(cmd_split);
+		try {
+			deriveAndExecCommand_Filter(cmd_split);
+		}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (DateTimeException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidIndexException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
 	}
 	else if (cmd == "edit") {
 		if (cmd_split.size() != 2) {
-			std::cout << "  Wrong use of this command." << std::endl;
+			std::cout << "  Something went wrong: " << TOO_FEW_ARGS << std::endl;
 			return;
 		}
-		execCommand_Edit(std::stoi(cmd_split[1]));
+		try {
+			execCommand_Edit(std::stoi(cmd_split[1]));
+		}
+		catch (DateTimeException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidExecutionDate err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidIndexException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
 	}
 	else if (cmd == "help") {
 		if (cmd_split.size() == 1) {
@@ -153,12 +208,10 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 	std::string tmp_date;
 
 	if (command.size() > 8) {
-		std::cout << std::endl << "  Too many arguments" << std::endl;
-		return;
+		throw InvalidCommandException(TOO_MANY_ARGS);
 	}
 	else if (command.size() < 2) {
-		std::cout << std::endl << "  Too few arguments" << std::endl;
-		return;
+		throw InvalidCommandException(TOO_FEW_ARGS);
 	}
 	else if (command.size() == 3 || command.size() == 2) {
 		bool finished = false;
@@ -182,8 +235,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 			return;
 		}
 		else {
-			std::cout << "  Wrong use of command" << std::endl;
-			return;
+			throw InvalidCommandException(WRONG_USE);
 		}
 	}
 	for (int i = 1; i < command.size(); i++) {
@@ -194,7 +246,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 			if (i + 1 >= command.size()) {
 				std::cout << std::endl << "  You have to define argument for -mode" << std::endl;
 				std::cout << "  '-mode [1|0]' or '-mode [after|before]" << std::endl;
-				return;
+				throw InvalidCommandException(WRONG_USE);
 			}
 			else if (command[i + 1] == "before" || command[i + 1] == "0") {
 				filterMode = new FilterMode(FilterMode::BeforeDate);
@@ -207,7 +259,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 			else {
 				std::cout << std::endl << "  You have to define argument for -mode" << std::endl;
 				std::cout << "  '-mode [1|0]' or '-mode [after|before]" << std::endl;
-				return;
+				throw InvalidCommandException(WRONG_USE);
 			}
 		}
 		else if (command[i] == "-date") {
@@ -217,7 +269,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 			else {
 				std::cout << std::endl << "  You have to define date and time for -date" << std::endl;
 				std::cout << "  'Format: -date <date> <time>' or '-date \"date and time\"'" << std::endl;
-				return;
+				throw InvalidCommandException(NO_DATE);
 			}
 			if (i + 2 < command.size()) {
 				if (command[i + 2] != "-mode" && command[i + 2] != "-asc" && command[i + 2] != "-des" && command[i + 2] != "-ed" && command[i + 2] != "-dc") {
@@ -225,16 +277,20 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 						tmp_date = tmp_date + " " + command[i + 2];
 						filterDate = new DateTime(tmp_date);
 					}
-					catch (const char* err) {
-						std::cout << std::endl << "Something went wrong: " << err << std::endl;
+					catch (DateTimeException err) {
+						throw err;
+					}
+					catch (...) {
+						throw InvalidIndexException(ERR_MSG_INVALID_DATE_ARGUMENT);
+
 					}
 				}
 				else {
 					try {
 						filterDate = new DateTime(tmp_date);
 					}
-					catch (const char* err) {
-						std::cout << std::endl << "Something went wrong: " << err << std::endl;
+					catch (DateTimeException err) {
+						throw err;
 					}
 				}
 			}
@@ -242,8 +298,8 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 				try {
 					filterDate = new DateTime(tmp_date);
 				}
-				catch (const char* err) {
-					std::cout << std::endl << "Something went wrong: " << err << std::endl;
+				catch (DateTimeException err) {
+					throw err;
 				}
 			}
 		}
@@ -259,7 +315,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 		execCommand_Filter(attFilter, *filterMode, filterDate, descending);
 	}
 	else {
-		std::cout << std::endl << "  Too few arguments" << std::endl;
+		throw InvalidCommandException(TOO_FEW_ARGS);
 	}
 }
 
@@ -521,7 +577,7 @@ void MainApp::execCommand_Help(std::string flag) {
 		
 		else {
 			std::cout << "'" << flag << "'" << " is invalid command" << std::endl;
-			printEnterCommandScreen();
+			//printEnterCommandScreen();
 		}
 	}
 }
@@ -546,27 +602,38 @@ void MainApp::execCommand_Delete(int index) {
 	try {
 		set->deleteEntry(index);
 	}
-	catch (const char* err) {
-		std::cout << std::endl <<"  Something went wrong: " << err << std::endl;
+	catch (InvalidIndexException err) {
+		throw err;
+	}
+	catch (...) {
+		throw InvalidCommandException(UNKNOWN_ERROR);
 	}
 }
 
 void MainApp::execCommand_New(StringVector cmd) {
 	if (cmd.size() == 1) {
-		printMakeNewEntry();
-		return;
+		try {
+			printMakeNewEntry();
+		}
+		catch (InvalidCommandException err) {
+			throw err;
+		}
+		catch (DateTimeException err) {
+			throw err;
+		}
+		catch (InvalidExecutionDate err) {
+			throw err;
+		}
 	}
 	else {
 		if (cmd.size() > 8) {
-			std::cout << std::endl << "  Too many arguments" << std::endl;
-			return;
+			throw InvalidCommandException(TOO_MANY_ARGS);
 		}
 	}
 
 
 	if (cmd[1] != "-t" && cmd[1] != "-d" && cmd[1] != "-ed") {
-		std::cout << std::endl << "  Wrong format for this command" << std::endl;
-		return;
+		throw InvalidCommandException(WRONG_FORMAT);
 	}
 
 	std::string title = "";
@@ -579,8 +646,8 @@ void MainApp::execCommand_New(StringVector cmd) {
 				_title = cmd[i + 1];
 				title = _title;
 			}
-			catch (std::exception err) {
-				// ...
+			catch (...) {
+				throw InvalidIndexException(ERR_MSG_INVALID_TITLE_ARGUMENT);
 			}
 			if (_title == "-d" || _title == "-ed") {
 				title = "";
@@ -596,8 +663,8 @@ void MainApp::execCommand_New(StringVector cmd) {
 				_description = cmd[i + 1];
 				description = _description;
 			}
-			catch (std::exception err) {
-				// ...
+			catch (...) {
+				throw InvalidIndexException(ERR_MSG_INVALID_DESCRIPTION_ARGUMENT);
 			}
 			if (_description == "-t" || _description == "-ed") {
 				description = "";
@@ -622,18 +689,12 @@ void MainApp::execCommand_New(StringVector cmd) {
 						execDate += date;
 					}
 				}
-				catch (std::exception err) {
-					std::cout << err.what() << std::endl;
-				}
-				catch (const char* err) {
-					std::cout << err << std::endl;
+				catch (...) {
+					throw InvalidIndexException(ERR_MSG_INVALID_DATE_ARGUMENT);
 				}
 			}
-			catch (std::exception err) {
-				std::cout << err.what() << std::endl;
-			}
-			catch (const char* err) {
-				std::cout << err << std::endl;
+			catch (...) {
+				throw InvalidIndexException(ERR_MSG_INVALID_DATE_ARGUMENT);
 			}
 
 
@@ -641,8 +702,7 @@ void MainApp::execCommand_New(StringVector cmd) {
 				date_time = "";
 			}
 			else if (date == "" && time != "") {
-				std::cout << std::endl << "  Something went wrong" << std::endl;
-				return;
+				throw InvalidCommandException(NO_DATE);
 			}
 			else if (date != "" && time == "") {
 				date_time = date;
@@ -666,14 +726,25 @@ void MainApp::execCommand_New(StringVector cmd) {
 		}
 	}
 
-	makeNewEntry(execDate, title, description);
+	try {
+		makeNewEntry(execDate, title, description);
+	}
+	catch (InvalidCommandException err) {
+		throw err;
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidExecutionDate err) {
+		throw err;
+	}
 }
 
 void MainApp::execCommand_Sort(std::string attSort, bool descending) {
 	if (attSort != "-t" && attSort != "-d" && attSort != "-ed" && attSort != "-dc" && attSort != "-s") {
-		std::cout << std::endl << "  Wrong argument" << std::endl;
 		std::cout << "Type 'help sort' to see what are available arguments for this command" << std::endl;
-		return;
+		
+		throw InvalidCommandException(WRONG_ARGUMENT);
 	}
 
 	if (attSort == "-t") {
@@ -692,14 +763,13 @@ void MainApp::execCommand_Sort(std::string attSort, bool descending) {
 		printSet(set->sortByStatus(descending));
 	}
 	else {
-		std::cout << std::endl << "  Something went wrong. Try again" << std::endl;
+		throw InvalidCommandException(UNKNOWN_ERROR);
 	}
 }
 
 void MainApp::execCommand_Filter(std::string attFilter, FilterMode filter, DateTime* filterDate, bool descending) {
 	if (attFilter != "-ed" && attFilter != "-dc") {
-		std::cout << std::endl << "  Wrong arguments" << std::endl;
-		return;
+		throw InvalidCommandException(WRONG_ARGUMENT);
 	}
 	if (attFilter == "-dc") {
 		printSet(set->filterByDateCreated(filter, filterDate, descending));
@@ -708,7 +778,7 @@ void MainApp::execCommand_Filter(std::string attFilter, FilterMode filter, DateT
 		printSet(set->filterByExecDate(filter, filterDate, descending));
 	}
 	else {
-		std::cout << std::endl << "  Something went wrong" << std::endl;
+		throw InvalidCommandException(UNKNOWN_ERROR);
 	}
 }
 
@@ -718,11 +788,24 @@ void MainApp::execCommand_Filter(EntryStatus filterStatus) {
 
 void MainApp::execCommand_Edit(int index) {
 	if (!set->getAll().count(index)) {
-		std::cout << "  Reminder with index <" << index << "> doesn't exist" << std::endl;
-		return;
+		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
 
-	printEditEntry(index, set->getAll()[index]); 
+	try {
+		printEditEntry(index, set->getAll()[index]);
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidExecutionDate err) {
+		throw err;
+	}
+	catch (InvalidIndexException err) {
+
+	}
+	catch (InvalidCommandException err) {
+		throw err;
+	}
 }
 
 void MainApp::makeNewEntry(std::string execDate, std::string title, std::string description) {
@@ -730,11 +813,8 @@ void MainApp::makeNewEntry(std::string execDate, std::string title, std::string 
 		try {
 			set->makeNewEntry(new ReminderEntry());
 		}
-		catch (const char* err) {
-			std::cout << std::endl << "  Something went wrong: " << err << std::endl;
-		}
 		catch (...) {
-			std::cout << std::endl << "  Unknown error occurred" << std::endl;
+			throw InvalidCommandException(UNKNOWN_ERROR);
 		}
 	}
 	else if (execDate == "") {
@@ -749,27 +829,35 @@ void MainApp::makeNewEntry(std::string execDate, std::string title, std::string 
 				std::cout << "   Type 'get' to see what the reminder looks like" << std::endl;
 			} 
 		}
-		catch (const char* err) {
-			std::cout << std::endl << "  Something went wrong: " << err << std::endl;
-		}
 		catch (...) {
-			std::cout << std::endl << "  Unknown error occurred" << std::endl;
+			throw InvalidCommandException(UNKNOWN_ERROR);
 		}
 		
 	}
 	else if (execDate != "") {
 		try {
 			set->makeNewEntry(new ReminderEntry(new DateTime(execDate), title, description));
+			if (title.size() > MAX_TITLE_LEN) {
+				std::cout << "   Title was too long." << " Title was set to: " << title.substr(0, MAX_TITLE_LEN) << std::endl;
+				std::cout << "   Instead of : " << title << std::endl;
+			}
+			if (description.size() > MAX_DESCRIPTION_LEN) {
+				std::cout << "   Description was to long and it was shortened to " << MAX_DESCRIPTION_LEN << " characters" << std::endl;
+				std::cout << "   Type 'get' to see what the reminder looks like" << std::endl;
+			}
 		}
-		catch (const char* err) {
-			std::cout << std::endl << "  Something went wrong: " << err << std::endl;
+		catch (DateTimeException err) {
+			throw err;
+		}
+		catch (InvalidExecutionDate err) {
+			throw err;
 		}
 		catch (...) {
-			std::cout << std::endl << "  Unknown error occurred" << std::endl;
+			throw InvalidCommandException(UNKNOWN_ERROR);
 		}
 	}
 	else {
-		std::cout << std::endl << "  Unknown error occurred" << std::endl;
+		throw InvalidCommandException(UNKNOWN_ERROR);
 	}
 }
 
@@ -783,21 +871,38 @@ void MainApp::printMakeNewEntry() {
 	std::string description;
 	std::string execDate;
 
-	std::cout << std::endl << "If you want empty field, type '.' + ENTER" << std::endl;
-	std::cout << "Enter title for reminder: ";
-	getline(std::cin, title);
-	std::cout << "Enter description for reminder: ";
-	getline(std::cin, description);
-	std::cout << "Enter date and/or time when the task should get done: ";
-	getline(std::cin, execDate);
+	try {
+		std::cout << std::endl << "If you want empty field, type '.' + ENTER" << std::endl;
+		std::cout << "Enter title for reminder: ";
+		getline(std::cin, title);
+		std::cout << "Enter description for reminder: ";
+		getline(std::cin, description);
+		std::cout << "Enter date and/or time when the task should get done: ";
+		getline(std::cin, execDate);
 
-	if (execDate == ".")
-		execDate = "";
-	if (description == ".")
-		description = "";
-	if (title == ".")
-		title = "";
-	makeNewEntry(execDate, title, description);
+		if (execDate == ".")
+			execDate = "";
+		if (description == ".")
+			description = "";
+		if (title == ".")
+			title = "";
+	}
+	catch (...) {
+		throw InvalidCommandException(UNKNOWN_ERROR);
+	}
+
+	try {
+		makeNewEntry(execDate, title, description);
+	}
+	catch (InvalidCommandException err) {
+		throw err;
+	}
+	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (...) {
+		throw InvalidCommandException(UNKNOWN_ERROR);
+	}
 }
 
 void MainApp::printEditEntry(int index, ReminderEntry* oldEntry) {
@@ -920,8 +1025,17 @@ void MainApp::printEditEntry(int index, ReminderEntry* oldEntry) {
 
 			std::cout << "  Successfully edited!" << std::endl;
 		}
-		catch (const char* err) {
-			std::cout << "  Something went wrong: " << err << std::endl;
+		catch (DateTimeException err) {
+			throw err;
+		}
+		catch (InvalidIndexException err) {
+			throw err;
+		}
+		catch (InvalidExecutionDate err) {
+			throw err;
+		}
+		catch (...) {
+			throw InvalidCommandException(UNKNOWN_ERROR);
 		}
 	}
 	else {

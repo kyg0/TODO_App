@@ -1,5 +1,6 @@
 #pragma once
 #include <../ReminderSet.h>
+#include "../exception/InvalidCommandException.h"
 
 class MainApp
 {

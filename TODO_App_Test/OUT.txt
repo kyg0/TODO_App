@@ -1,0 +1,777 @@
+Running main() from C:\Users\dkajganic\source\repos\TODO_App\packages\gmock.1.11.0\lib\native\src\gtest\src\gtest_main.cc
+[==========] Running 252 tests from 15 test suites.
+[----------] Global test environment set-up.
+[----------] 2 tests from DateTimeTests_Constructor
+[ RUN      ] DateTimeTests_Constructor.DefaultConstructor_withMock
+[       OK ] DateTimeTests_Constructor.DefaultConstructor_withMock (0 ms)
+[ RUN      ] DateTimeTests_Constructor.DefaultConstructor_withNullMock
+[       OK ] DateTimeTests_Constructor.DefaultConstructor_withNullMock (0 ms)
+[----------] 2 tests from DateTimeTests_Constructor (1 ms total)
+
+[----------] 16 tests from DateTimeTest_Constructor
+[ RUN      ] DateTimeTest_Constructor.CorrectFormat
+[       OK ] DateTimeTest_Constructor.CorrectFormat (1 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidFormat
+[       OK ] DateTimeTest_Constructor.InvalidFormat (7 ms)
+[ RUN      ] DateTimeTest_Constructor.WrongValues
+[       OK ] DateTimeTest_Constructor.WrongValues (23 ms)
+[ RUN      ] DateTimeTest_Constructor.CorrectValuesAny
+[       OK ] DateTimeTest_Constructor.CorrectValuesAny (0 ms)
+[ RUN      ] DateTimeTest_Constructor.CorrectValues_MinMax
+[       OK ] DateTimeTest_Constructor.CorrectValues_MinMax (0 ms)
+[ RUN      ] DateTimeTest_Constructor.CorrectValue_30DayMonth_Boundary
+[       OK ] DateTimeTest_Constructor.CorrectValue_30DayMonth_Boundary (0 ms)
+[ RUN      ] DateTimeTest_Constructor.CorrectValue_31DayMonth_Boundary
+[       OK ] DateTimeTest_Constructor.CorrectValue_31DayMonth_Boundary (0 ms)
+[ RUN      ] DateTimeTest_Constructor.CorrectValues_BoundaryValuesForFebruary
+[       OK ] DateTimeTest_Constructor.CorrectValues_BoundaryValuesForFebruary (0 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForDays_30DaysMonth
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForDays_30DaysMonth (3 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForDays_AnyMonth
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForDays_AnyMonth (1 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForMonth
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForMonth (1 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForYear
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForYear (3 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForFebruary
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForFebruary (4 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForHours
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForHours (2 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForMinutes
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForMinutes (1 ms)
+[ RUN      ] DateTimeTest_Constructor.InvalidValues_ForSeconds
+[       OK ] DateTimeTest_Constructor.InvalidValues_ForSeconds (2 ms)
+[----------] 16 tests from DateTimeTest_Constructor (55 ms total)
+
+[----------] 16 tests from DateTimeTest_Setter
+[ RUN      ] DateTimeTest_Setter.CorrectValues_ForDays_30DaysMonth
+[       OK ] DateTimeTest_Setter.CorrectValues_ForDays_30DaysMonth (0 ms)
+[ RUN      ] DateTimeTest_Setter.CorrectValues_ForDays_31DaysMonth
+[       OK ] DateTimeTest_Setter.CorrectValues_ForDays_31DaysMonth (0 ms)
+[ RUN      ] DateTimeTest_Setter.CorrectValue_ForMonth
+[       OK ] DateTimeTest_Setter.CorrectValue_ForMonth (0 ms)
+[ RUN      ] DateTimeTest_Setter.CorrectValue_ForYear
+[       OK ] DateTimeTest_Setter.CorrectValue_ForYear (0 ms)
+[ RUN      ] DateTimeTest_Setter.CorrectValue_ForHours
+[       OK ] DateTimeTest_Setter.CorrectValue_ForHours (0 ms)
+[ RUN      ] DateTimeTest_Setter.CorrectValue_ForMinutes
+[       OK ] DateTimeTest_Setter.CorrectValue_ForMinutes (0 ms)
+[ RUN      ] DateTimeTest_Setter.CorrectValue_ForSeconds
+[       OK ] DateTimeTest_Setter.CorrectValue_ForSeconds (0 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValues_ForDays
+[       OK ] DateTimeTest_Setter.InvalidValues_ForDays (4 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValues_ForDays_30DaysMonth
+[       OK ] DateTimeTest_Setter.InvalidValues_ForDays_30DaysMonth (17 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValues_ForDays_31DayMonth
+[       OK ] DateTimeTest_Setter.InvalidValues_ForDays_31DayMonth (24 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValues_ForDays_February
+[       OK ] DateTimeTest_Setter.InvalidValues_ForDays_February (7 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValues_ForMonth
+[       OK ] DateTimeTest_Setter.InvalidValues_ForMonth (3 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValues_ForYear
+[       OK ] DateTimeTest_Setter.InvalidValues_ForYear (4 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValue_ForHours
+[       OK ] DateTimeTest_Setter.InvalidValue_ForHours (2 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValue_ForMinutes
+[       OK ] DateTimeTest_Setter.InvalidValue_ForMinutes (3 ms)
+[ RUN      ] DateTimeTest_Setter.InvalidValue_ForSeconds
+[       OK ] DateTimeTest_Setter.InvalidValue_ForSeconds (2 ms)
+[----------] 16 tests from DateTimeTest_Setter (70 ms total)
+
+[----------] 3 tests from DateTime_ComparisonTest
+[ RUN      ] DateTime_ComparisonTest.ComparationOperator
+[       OK ] DateTime_ComparisonTest.ComparationOperator (0 ms)
+[ RUN      ] DateTime_ComparisonTest.EqualsOperator_Case1
+[       OK ] DateTime_ComparisonTest.EqualsOperator_Case1 (0 ms)
+[ RUN      ] DateTime_ComparisonTest.EqualsOperator_Case2
+[       OK ] DateTime_ComparisonTest.EqualsOperator_Case2 (0 ms)
+[----------] 3 tests from DateTime_ComparisonTest (0 ms total)
+
+[----------] 7 tests from FileWorkerTest
+[ RUN      ] FileWorkerTest.NullCheckForFileWorker
+[       OK ] FileWorkerTest.NullCheckForFileWorker (1 ms)
+[ RUN      ] FileWorkerTest.FileExistsCheck_NullCheckForFileWorker
+[       OK ] FileWorkerTest.FileExistsCheck_NullCheckForFileWorker (0 ms)
+[ RUN      ] FileWorkerTest.WriteAndReadFromFile
+[       OK ] FileWorkerTest.WriteAndReadFromFile (0 ms)
+[ RUN      ] FileWorkerTest.InvalidWriteAndReadFromFile
+[       OK ] FileWorkerTest.InvalidWriteAndReadFromFile (0 ms)
+[ RUN      ] FileWorkerTest.WriteAndReadInLines
+[       OK ] FileWorkerTest.WriteAndReadInLines (0 ms)
+[ RUN      ] FileWorkerTest.InvalidWriteAndReadInLines
+[       OK ] FileWorkerTest.InvalidWriteAndReadInLines (0 ms)
+[ RUN      ] FileWorkerTest.DeleteFile
+[       OK ] FileWorkerTest.DeleteFile (0 ms)
+[----------] 7 tests from FileWorkerTest (3 ms total)
+
+[----------] 1 test from ReminderEntryTestNoSuit_Constructor
+[ RUN      ] ReminderEntryTestNoSuit_Constructor.Constructor_WithFileOutput
+[       OK ] ReminderEntryTestNoSuit_Constructor.Constructor_WithFileOutput (0 ms)
+[----------] 1 test from ReminderEntryTestNoSuit_Constructor (0 ms total)
+
+[----------] 6 tests from ReminderEntryTest_Constructor
+[ RUN      ] ReminderEntryTest_Constructor.DefaultConstructor
+[       OK ] ReminderEntryTest_Constructor.DefaultConstructor (0 ms)
+[ RUN      ] ReminderEntryTest_Constructor.CorrectValues_ForConstructor
+[       OK ] ReminderEntryTest_Constructor.CorrectValues_ForConstructor (0 ms)
+[ RUN      ] ReminderEntryTest_Constructor.CorrectValues_BoundaryCaseForTitleAndDescription
+[       OK ] ReminderEntryTest_Constructor.CorrectValues_BoundaryCaseForTitleAndDescription (0 ms)
+[ RUN      ] ReminderEntryTest_Constructor.CorrectValues_LongTitleAndDescription
+[       OK ] ReminderEntryTest_Constructor.CorrectValues_LongTitleAndDescription (0 ms)
+[ RUN      ] ReminderEntryTest_Constructor.CorrectValues_ForConstructorWithExecDate
+[       OK ] ReminderEntryTest_Constructor.CorrectValues_ForConstructorWithExecDate (0 ms)
+[ RUN      ] ReminderEntryTest_Constructor.InvalidValues_ForExecDate
+[       OK ] ReminderEntryTest_Constructor.InvalidValues_ForExecDate (2 ms)
+[----------] 6 tests from ReminderEntryTest_Constructor (4 ms total)
+
+[----------] 6 tests from ReminderEntryTest_Setter
+[ RUN      ] ReminderEntryTest_Setter.InvalidValues_ForExecDate
+[       OK ] ReminderEntryTest_Setter.InvalidValues_ForExecDate (3 ms)
+[ RUN      ] ReminderEntryTest_Setter.CorrectValues_ForExecDate
+[       OK ] ReminderEntryTest_Setter.CorrectValues_ForExecDate (2 ms)
+[ RUN      ] ReminderEntryTest_Setter.CorrectValues_ForLong_TitleAndDescription
+[       OK ] ReminderEntryTest_Setter.CorrectValues_ForLong_TitleAndDescription (0 ms)
+[ RUN      ] ReminderEntryTest_Setter.CorrectValues_BoundaryCase_TitleAndDescription
+[       OK ] ReminderEntryTest_Setter.CorrectValues_BoundaryCase_TitleAndDescription (0 ms)
+[ RUN      ] ReminderEntryTest_Setter.CorrectValues_ForStatus
+[       OK ] ReminderEntryTest_Setter.CorrectValues_ForStatus (2 ms)
+[ RUN      ] ReminderEntryTest_Setter.ChangeStatus
+[       OK ] ReminderEntryTest_Setter.ChangeStatus (1 ms)
+[----------] 6 tests from ReminderEntryTest_Setter (11 ms total)
+
+[----------] 1 test from ReminderEntryTests_Copy
+[ RUN      ] ReminderEntryTests_Copy.CopyAssignment
+[       OK ] ReminderEntryTests_Copy.CopyAssignment (0 ms)
+[----------] 1 test from ReminderEntryTests_Copy (0 ms total)
+
+[----------] 1 test from ReminderEntryTest_MoveAndCopy
+[ RUN      ] ReminderEntryTest_MoveAndCopy.CopyConstructor
+[       OK ] ReminderEntryTest_MoveAndCopy.CopyConstructor (0 ms)
+[----------] 1 test from ReminderEntryTest_MoveAndCopy (0 ms total)
+
+[----------] 5 tests from ReminderEntryTests_Comparison
+[ RUN      ] ReminderEntryTests_Comparison.OperatorEquals_1
+[       OK ] ReminderEntryTests_Comparison.OperatorEquals_1 (0 ms)
+[ RUN      ] ReminderEntryTests_Comparison.OperatorEquals_2
+[       OK ] ReminderEntryTests_Comparison.OperatorEquals_2 (0 ms)
+[ RUN      ] ReminderEntryTests_Comparison.OperatorEquals_3
+[       OK ] ReminderEntryTests_Comparison.OperatorEquals_3 (0 ms)
+[ RUN      ] ReminderEntryTests_Comparison.OperatorEquals_4
+[       OK ] ReminderEntryTests_Comparison.OperatorEquals_4 (0 ms)
+[ RUN      ] ReminderEntryTests_Comparison.OperatorEquals_5
+[       OK ] ReminderEntryTests_Comparison.OperatorEquals_5 (0 ms)
+[----------] 5 tests from ReminderEntryTests_Comparison (2 ms total)
+
+[----------] 6 tests from ReminderSetTest_Constructor
+[ RUN      ] ReminderSetTest_Constructor.ConstructorWithMock_0
+[       OK ] ReminderSetTest_Constructor.ConstructorWithMock_0 (0 ms)
+[ RUN      ] ReminderSetTest_Constructor.ConstructorWithMock_1
+[       OK ] ReminderSetTest_Constructor.ConstructorWithMock_1 (8 ms)
+[ RUN      ] ReminderSetTest_Constructor.ConstructorWithMock_2
+[       OK ] ReminderSetTest_Constructor.ConstructorWithMock_2 (2 ms)
+[ RUN      ] ReminderSetTest_Constructor.ConstructorWithMock_3
+[       OK ] ReminderSetTest_Constructor.ConstructorWithMock_3 (4 ms)
+[ RUN      ] ReminderSetTest_Constructor.ConstructorWithMock_4
+[       OK ] ReminderSetTest_Constructor.ConstructorWithMock_4 (27 ms)
+[ RUN      ] ReminderSetTest_Constructor.ConstructorWithMock_5
+[       OK ] ReminderSetTest_Constructor.ConstructorWithMock_5 (2593 ms)
+[----------] 6 tests from ReminderSetTest_Constructor (2637 ms total)
+
+[----------] 98 tests from ReminderSet_MethodTest
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_0
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_0 (0 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_01
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_01 (0 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_02
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_02 (15 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_1
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_1 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_11
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_11 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_12
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_12 (17 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_2
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_2 (2 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_21
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_21 (3 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_22
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_22 (34 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_3
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_3 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_4
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_4 (25 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_5
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_5 (2036 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_51
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_51 (1977 ms)
+[ RUN      ] ReminderSet_MethodTest.MakeNewEntryCase_52
+[       OK ] ReminderSet_MethodTest.MakeNewEntryCase_52 (5517 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_1
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_1 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_2
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_2 (2 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_22
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_22 (2 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_3
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_3 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_33
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_33 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_4
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_4 (25 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_44
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_44 (25 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_5
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_5 (1984 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_55
+[       OK ] ReminderSet_MethodTest.DeleteEntry_ValidIndex_55 (1990 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_01
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_01 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_02
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_02 (0 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_03
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_03 (0 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_04
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_04 (0 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_11
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_11 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_12
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_12 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_13
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_13 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_14
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_14 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_15
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_15 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_21
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_21 (6 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_22
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_22 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_23
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_23 (6 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_24
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_24 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_31
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_31 (26 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_32
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_32 (27 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_33
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_33 (25 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_34
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_34 (26 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_35
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_35 (24 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_41
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_41 (1951 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_42
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_42 (1956 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_43
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_43 (1932 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_44
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_44 (1931 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_45
+[       OK ] ReminderSet_MethodTest.DeleteEntry_InvalidIndex_45 (1968 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_0
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_0 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_1
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_1 (2 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_2
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_2 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_3
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithNullObject_3 (593 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_0
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_0 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_1
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_1 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_2
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_2 (59 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_3
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithInvalidObject_3 (1945 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_1
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_1 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_2
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_2 (4 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_22
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_22 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_3
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_3 (61 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_33
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_33 (63 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_4
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_4 (1987 ms)
+[ RUN      ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_44
+[       OK ] ReminderSet_MethodTest.DeleteEntry_WithConcreteObject_44 (2630 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_1
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_1 (2 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_21
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_21 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_22
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_22 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_23
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_23 (12 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_31
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_31 (604 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_32
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_32 (596 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithNullObject_33
+[       OK ] ReminderSet_MethodTest.EditEntry_WithNullObject_33 (916 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_1
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_1 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_11
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_11 (3 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_21
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_21 (4 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_22
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_22 (4 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_23
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_23 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_24
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_24 (41 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_31
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_31 (600 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_32
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_32 (592 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_33
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_33 (606 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithValidIndex_34
+[       OK ] ReminderSet_MethodTest.EditEntry_WithValidIndex_34 (1851 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_01
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_01 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_02
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_02 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_03
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_03 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_04
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_04 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_11
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_11 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_12
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_12 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_13
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_13 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_21
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_21 (6 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_22
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_22 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_23
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_23 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_24
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_24 (5 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_25
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_25 (1 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_31
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_31 (59 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_32
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_32 (59 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_33
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_33 (54 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_34
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_34 (59 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_41
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_41 (10810 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_42
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_42 (11017 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_43
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_43 (13164 ms)
+[ RUN      ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_44
+[       OK ] ReminderSet_MethodTest.EditEntry_WithInvalidIndex_44 (14547 ms)
+[----------] 98 tests from ReminderSet_MethodTest (86625 ms total)
+
+[----------] 83 tests from ReminderSet_SortAndFilterTest
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_1
+1 : 04/03/2030 03:04:05
+2 : 06/04/2030 04:06:07
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_2
+1 : 04/03/2030 03:04:05
+2 : 06/04/2030 04:06:07
+3 : 08/05/2030 05:08:09
+4 : 10/06/2030 06:10:11
+5 : 12/07/2030 07:12:13
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_3
+1 : 04/03/2030 03:04:05
+2 : 06/04/2030 04:06:07
+3 : 08/05/2030 05:08:09
+4 : 10/06/2030 06:10:11
+5 : 12/07/2030 07:12:13
+6 : 14/08/2030 08:14:15
+7 : 16/09/2030 09:16:17
+8 : 18/10/2030 10:18:19
+9 : 20/11/2030 11:20:21
+10 : 22/12/2030 12:22:23
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_3 (6 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_4
+1 : 12/01/2030 03:37:38
+2 : 16/01/2030 14:13:14
+3 : 20/01/2030 02:48:49
+4 : 24/01/2030 13:24:25
+5 : 14/02/2030 04:39:40
+6 : 18/02/2030 15:15:16
+7 : 22/02/2030 03:50:51
+8 : 26/02/2030 14:26:27
+9 : 04/03/2030 03:04:05
+10 : 16/03/2030 05:41:42
+11 : 20/03/2030 16:17:18
+12 : 24/03/2030 04:52:53
+13 : 28/03/2030 15:28:29
+14 : 02/04/2030 16:30:31
+15 : 06/04/2030 04:06:07
+16 : 18/04/2030 06:43:44
+17 : 22/04/2030 17:19:20
+18 : 26/04/2030 05:54:55
+19 : 04/05/2030 17:32:33
+20 : 08/05/2030 05:08:09
+21 : 24/05/2030 18:21:22
+22 : 28/05/2030 06:56:57
+23 : 02/06/2030 07:58:59
+24 : 06/06/2030 18:34:35
+25 : 10/06/2030 06:10:11
+26 : 26/06/2030 19:23:24
+27 : 04/07/2030 08:01:02
+28 : 08/07/2030 19:36:37
+29 : 12/07/2030 07:12:13
+30 : 28/07/2030 20:25:26
+31 : 02/08/2030 21:27:28
+32 : 06/08/2030 09:03:04
+33 : 10/08/2030 20:38:39
+34 : 14/08/2030 08:14:15
+35 : 04/09/2030 22:29:30
+36 : 08/09/2030 10:05:06
+37 : 12/09/2030 21:40:41
+38 : 16/09/2030 09:16:17
+39 : 06/10/2030 23:31:32
+40 : 10/10/2030 11:07:08
+41 : 14/10/2030 22:42:43
+42 : 18/10/2030 10:18:19
+43 : 08/11/2030 01:33:34
+44 : 12/11/2030 12:09:10
+45 : 16/11/2030 23:44:45
+46 : 20/11/2030 11:20:21
+47 : 10/12/2030 02:35:36
+48 : 14/12/2030 13:11:12
+49 : 18/12/2030 01:46:47
+50 : 22/12/2030 12:22:23
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_4 (29 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_1
+1 : 06/04/2030 04:06:07
+2 : 04/03/2030 03:04:05
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_2
+1 : 12/07/2030 07:12:13
+2 : 10/06/2030 06:10:11
+3 : 08/05/2030 05:08:09
+4 : 06/04/2030 04:06:07
+5 : 04/03/2030 03:04:05
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_3
+1 : 22/12/2030 12:22:23
+2 : 20/11/2030 11:20:21
+3 : 18/10/2030 10:18:19
+4 : 16/09/2030 09:16:17
+5 : 14/08/2030 08:14:15
+6 : 12/07/2030 07:12:13
+7 : 10/06/2030 06:10:11
+8 : 08/05/2030 05:08:09
+9 : 06/04/2030 04:06:07
+10 : 04/03/2030 03:04:05
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_3 (5 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_4
+1 : 22/12/2030 12:22:23
+2 : 18/12/2030 01:46:47
+3 : 14/12/2030 13:11:12
+4 : 10/12/2030 02:35:36
+5 : 20/11/2030 11:20:21
+6 : 16/11/2030 23:44:45
+7 : 12/11/2030 12:09:10
+8 : 08/11/2030 01:33:34
+9 : 18/10/2030 10:18:19
+10 : 14/10/2030 22:42:43
+11 : 10/10/2030 11:07:08
+12 : 06/10/2030 23:31:32
+13 : 16/09/2030 09:16:17
+14 : 12/09/2030 21:40:41
+15 : 08/09/2030 10:05:06
+16 : 04/09/2030 22:29:30
+17 : 14/08/2030 08:14:15
+18 : 10/08/2030 20:38:39
+19 : 06/08/2030 09:03:04
+20 : 02/08/2030 21:27:28
+21 : 28/07/2030 20:25:26
+22 : 12/07/2030 07:12:13
+23 : 08/07/2030 19:36:37
+24 : 04/07/2030 08:01:02
+25 : 26/06/2030 19:23:24
+26 : 10/06/2030 06:10:11
+27 : 06/06/2030 18:34:35
+28 : 02/06/2030 07:58:59
+29 : 28/05/2030 06:56:57
+30 : 24/05/2030 18:21:22
+31 : 08/05/2030 05:08:09
+32 : 04/05/2030 17:32:33
+33 : 26/04/2030 05:54:55
+34 : 22/04/2030 17:19:20
+35 : 18/04/2030 06:43:44
+36 : 06/04/2030 04:06:07
+37 : 02/04/2030 16:30:31
+38 : 28/03/2030 15:28:29
+39 : 24/03/2030 04:52:53
+40 : 20/03/2030 16:17:18
+41 : 16/03/2030 05:41:42
+42 : 04/03/2030 03:04:05
+43 : 26/02/2030 14:26:27
+44 : 22/02/2030 03:50:51
+45 : 18/02/2030 15:15:16
+46 : 14/02/2030 04:39:40
+47 : 24/01/2030 13:24:25
+48 : 20/01/2030 02:48:49
+49 : 16/01/2030 14:13:14
+50 : 12/01/2030 03:37:38
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_ascending_4 (29 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithOneEntry
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithOneEntry (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithOneEntry_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithOneEntry_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithZeroEntries
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithZeroEntries (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithZeroEntries_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByDateCreated_WithZeroEntries_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_1
+1 : 04/03/2030 03:04:05
+2 : 06/04/2030 04:06:07
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_2
+1 : 04/03/2030 03:04:05
+2 : 06/04/2030 04:06:07
+3 : 08/05/2030 05:08:09
+4 : 10/06/2030 06:10:11
+5 : 12/07/2030 07:12:13
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_3
+1 : 04/03/2030 03:04:05
+2 : 06/04/2030 04:06:07
+3 : 08/05/2030 05:08:09
+4 : 10/06/2030 06:10:11
+5 : 12/07/2030 07:12:13
+6 : 14/08/2030 08:14:15
+7 : 16/09/2030 09:16:17
+8 : 18/10/2030 10:18:19
+9 : 20/11/2030 11:20:21
+10 : 22/12/2030 12:22:23
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_3 (5 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_4
+1 : 12/01/2030 03:37:38
+2 : 16/01/2030 14:13:14
+3 : 20/01/2030 02:48:49
+4 : 24/01/2030 13:24:25
+5 : 14/02/2030 04:39:40
+6 : 18/02/2030 15:15:16
+7 : 22/02/2030 03:50:51
+8 : 26/02/2030 14:26:27
+9 : 04/03/2030 03:04:05
+10 : 16/03/2030 05:41:42
+11 : 20/03/2030 16:17:18
+12 : 24/03/2030 04:52:53
+13 : 28/03/2030 15:28:29
+14 : 02/04/2030 16:30:31
+15 : 06/04/2030 04:06:07
+16 : 18/04/2030 06:43:44
+17 : 22/04/2030 17:19:20
+18 : 26/04/2030 05:54:55
+19 : 04/05/2030 17:32:33
+20 : 08/05/2030 05:08:09
+21 : 24/05/2030 18:21:22
+22 : 28/05/2030 06:56:57
+23 : 02/06/2030 07:58:59
+24 : 06/06/2030 18:34:35
+25 : 10/06/2030 06:10:11
+26 : 26/06/2030 19:23:24
+27 : 04/07/2030 08:01:02
+28 : 08/07/2030 19:36:37
+29 : 12/07/2030 07:12:13
+30 : 28/07/2030 20:25:26
+31 : 02/08/2030 21:27:28
+32 : 06/08/2030 09:03:04
+33 : 10/08/2030 20:38:39
+34 : 14/08/2030 08:14:15
+35 : 04/09/2030 22:29:30
+36 : 08/09/2030 10:05:06
+37 : 12/09/2030 21:40:41
+38 : 16/09/2030 09:16:17
+39 : 06/10/2030 23:31:32
+40 : 10/10/2030 11:07:08
+41 : 14/10/2030 22:42:43
+42 : 18/10/2030 10:18:19
+43 : 08/11/2030 01:33:34
+44 : 12/11/2030 12:09:10
+45 : 16/11/2030 23:44:45
+46 : 20/11/2030 11:20:21
+47 : 10/12/2030 02:35:36
+48 : 14/12/2030 13:11:12
+49 : 18/12/2030 01:46:47
+50 : 22/12/2030 12:22:23
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_4 (29 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_5
+499 : 14/07/2030 15:32:33
+500 : 14/07/2030 16:59:01
+501 : 14/07/2030 21:46:47
+502 : 14/07/2030 22:14:15
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_5 (2253 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_asc_1
+1 : 06/04/2030 04:06:07
+2 : 04/03/2030 03:04:05
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_asc_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_asc_2
+1 : 12/07/2030 07:12:13
+2 : 10/06/2030 06:10:11
+3 : 08/05/2030 05:08:09
+4 : 06/04/2030 04:06:07
+5 : 04/03/2030 03:04:05
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_asc_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_asc_3
+1 : 22/12/2030 12:22:23
+2 : 20/11/2030 11:20:21
+3 : 18/10/2030 10:18:19
+4 : 16/09/2030 09:16:17
+5 : 14/08/2030 08:14:15
+6 : 12/07/2030 07:12:13
+7 : 10/06/2030 06:10:11
+8 : 08/05/2030 05:08:09
+9 : 06/04/2030 04:06:07
+10 : 04/03/2030 03:04:05
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_asc_3 (5 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_withOneEntry
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_withOneEntry (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_withOneEntry_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_withOneEntry_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_withZeroEntries
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_withZeroEntries (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByExecDate_withZeroEntries_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByExecDate_withZeroEntries_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_finishedFirst_1
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_finishedFirst_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_finishedFirst_2
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_finishedFirst_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_finishedFirst_3
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_finishedFirst_3 (5 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_notFinishedFirst_1
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_notFinishedFirst_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_notFinishedFirst_2
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_notFinishedFirst_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_notFinishedFirst_3
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_notFinishedFirst_3 (4 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_withZeroEntries_finishedFirst
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_withZeroEntries_finishedFirst (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_withZeroEntries_notFinishedFirst
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_withZeroEntries_notFinishedFirst (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_withOneEntry_finishedFirst
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_withOneEntry_finishedFirst (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByStatus_withOneEntry_notFinishedFirst
+[       OK ] ReminderSet_SortAndFilterTest.SortByStatus_withOneEntry_notFinishedFirst (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_1
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_2
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_3
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_3 (5 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_asc_1
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_asc_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_asc_2
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_asc_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_asc_3
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_asc_3 (4 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_withOneEntry
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_withOneEntry (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_withOneEntry_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_withOneEntry_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_withZeroEntries
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_withZeroEntries (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByTitle_withZeroEntries_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByTitle_withZeroEntries_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_1
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_2
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_3
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_3 (4 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_asc_1
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_asc_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_asc_2
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_asc_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_asc_3
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_asc_3 (4 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_withOneEntry
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_withOneEntry (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_withOneEntry_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_withOneEntry_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_withZeroEntries
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_withZeroEntries (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.SortByDescription_withZeroEntries_asc
+[       OK ] ReminderSet_SortAndFilterTest.SortByDescription_withZeroEntries_asc (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_2
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_3
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_3 (4 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_4
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_4 (71 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_5
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_notFinished_5 (11890 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_2
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_2 (2 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_3
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_3 (3 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_4
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_finished_4 (2050 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_withOneEntry_finished
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_withOneEntry_finished (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_withOneEntry_notFinished
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_withOneEntry_notFinished (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_withZeroEntries
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_withZeroEntries (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByStatus_withZeroEntries_notFinished
+[       OK ] ReminderSet_SortAndFilterTest.FilterByStatus_withZeroEntries_notFinished (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_0
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_0 (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_1 (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_2_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_2_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_2_2
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_2_2 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_2_3
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_2_3 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_3_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_3_1 (5 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_4
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_4 (2521 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByDateCreated_5
+[       OK ] ReminderSet_SortAndFilterTest.FilterByDateCreated_5 (53 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_0
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_0 (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_1 (0 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_2_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_2_1 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_2_2
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_2_2 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_2_3
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_2_3 (1 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_3_1
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_3_1 (6 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_4
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_4 (2529 ms)
+[ RUN      ] ReminderSet_SortAndFilterTest.FilterByExecDate_5
+[       OK ] ReminderSet_SortAndFilterTest.FilterByExecDate_5 (48 ms)
+[----------] 83 tests from ReminderSet_SortAndFilterTest (21647 ms total)
+
+[----------] 1 test from TestFixture
+[ RUN      ] TestFixture.CorrectFormat
+[       OK ] TestFixture.CorrectFormat (0 ms)
+[----------] 1 test from TestFixture (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 252 tests from 15 test suites ran. (111063 ms total)
+[  PASSED  ] 252 tests.
