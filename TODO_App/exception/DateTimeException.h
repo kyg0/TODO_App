@@ -14,11 +14,11 @@ class DateTimeException : public std::exception {
 
 public:
 	DateTimeException(char* err_msg) {
-		this->err_msg = std::string(err_msg);
+		this->err_msg = "DateTime Exception => " + std::string(err_msg);
 	}
 
 	DateTimeException(std::string err_msg) {
-		this->err_msg = err_msg;
+		this->err_msg = "DateTime Exception => " + err_msg;
 	}
 
 	std::string what() {

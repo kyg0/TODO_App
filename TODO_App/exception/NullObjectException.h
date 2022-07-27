@@ -11,11 +11,11 @@ class NullObjectException : public std::exception {
 
 public:
 	NullObjectException(char* msg) {
-		this->err_msg = std::string(msg);
+		this->err_msg = "NullObject Exception => " + std::string(msg);
 	}
 
 	NullObjectException(std::string msg) {
-		this->err_msg = msg;
+		this->err_msg = "NullObject Exception => " + msg;
 	}
 
 	std::string what() {

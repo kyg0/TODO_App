@@ -1,6 +1,7 @@
 #pragma once
 #include <../ReminderSet.h>
 #include "../exception/InvalidCommandException.h"
+#include <Windows.h>
 
 class MainApp
 {
@@ -31,6 +32,7 @@ private:
 	void execCommand_Filter(std::string, FilterMode, DateTime*, bool descending = true);
 	void execCommand_Filter(EntryStatus);
 	void execCommand_Edit(int);
+	void execCommand_Exit();
 
 	void deriveAndExecCommand_Filter(StringVector);
 

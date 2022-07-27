@@ -65,59 +65,65 @@ TEST(FileWorkerTest, NullCheckForFileWorker) {
 	try {
 		adapter.InvokeDeleteFile(path);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
+		FAIL() << "Expected: File Exception => " + std::string(ERR_MSG_FW_NULL);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FW_NULL);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 
 	try {
 		adapter.InvokeGetAllFromDir(path);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
+		FAIL() << "Expected: File Exception => " + std::string(ERR_MSG_FW_NULL);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FW_NULL);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 
 	try {
 		adapter.InvokeReadFromFile(path);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
+		FAIL() << "Expected: File Exception => " + std::string(ERR_MSG_FW_NULL);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FW_NULL);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 
 	try {
 		adapter.InvokeReadFromFileInLines(path);
 
-		"Expected: " + std::string(ERR_MSG_FW_NULL);
+		"Expected: File Exception => " + std::string(ERR_MSG_FW_NULL);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FW_NULL);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 
 	try {
 		adapter.InvokeReadFromFileInLines(path);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_FW_NULL);
+		FAIL() << "Expected: FileException => " + std::string(ERR_MSG_FW_NULL);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FW_NULL);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		adapter.InvokeWriteInFile(path, output);
 
-		"Expected: " + std::string(ERR_MSG_FW_NULL);
+		FAIL() << "Expected: File Exception => " + std::string(ERR_MSG_FW_NULL);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FW_NULL));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FW_NULL);
+		EXPECT_EQ(err.what(), msg);
 	}
 }
 
@@ -171,10 +177,11 @@ TEST(FileWorkerTest, InvalidWriteAndReadFromFile) {
 	try {
 		reading = adapter.InvokeReadFromFile(path);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
+		FAIL() << "Expected: File Exception => " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FILE_FAILED_TO_OPEN));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	Mock::AllowLeak(mock);
@@ -225,10 +232,11 @@ TEST(FileWorkerTest, InvalidWriteAndReadInLines) {
 	try {
 		reading = adapter.InvokeReadFromFileInLines(path);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
+		FAIL() << "Expected: File Exception => " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
 	}
 	catch (FileException err) {
-		EXPECT_EQ(err.what(), std::string(ERR_MSG_FILE_FAILED_TO_OPEN));
+		std::string msg = "File Exception => " + std::string(ERR_MSG_FILE_FAILED_TO_OPEN);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	Mock::AllowLeak(mock);

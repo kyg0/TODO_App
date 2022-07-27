@@ -230,7 +230,7 @@ public:
 
 		entry->setDescription(description);
 
-		if (description.size() > MAX_TITLE_LEN) {
+		if (description.size() > MAX_DESCRIPTION_LEN) {
 			EXPECT_NE(entry->getDescription(), description);
 			EXPECT_EQ(entry->getDescription(), description.substr(0,MAX_DESCRIPTION_LEN));
 		}
@@ -491,55 +491,61 @@ TEST_F(ReminderEntryTest_Constructor, InvalidValues_ForExecDate) {
 	try {
 		SetUp(new DateTime(15, 6, 2029, 12, 30, 30), _title, _description);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(new DateTime(15, 5, 2030, 12, 30, 30), _title, _description);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(new DateTime(14, 6, 2030, 12, 30, 30), _title, _description);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(new DateTime(15, 6, 2030, 11, 30, 30), _title, _description);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(new DateTime(15, 6, 2030, 12, 29, 30), _title, _description);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(new DateTime(15, 6, 2030, 12, 30, 29), _title, _description);
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 }
 
@@ -550,21 +556,24 @@ TEST_F(ReminderEntryTest_Setter, InvalidValues_ForExecDate) {
 		testConstructor(nullptr, "", "");
 		setAndTestExecDate(new DateTime(15, 6, 2029, 12, 30, 30));
 		
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
+	
 
 	try {
 		SetUp();
 		testConstructor(nullptr, "", "");
 		setAndTestExecDate(new DateTime(15, 5, 2030, 12, 30, 30));
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
@@ -572,10 +581,11 @@ TEST_F(ReminderEntryTest_Setter, InvalidValues_ForExecDate) {
 		testConstructor(nullptr, "", "");
 		setAndTestExecDate(new DateTime(14, 6, 2030, 12, 30, 30));
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
@@ -583,10 +593,11 @@ TEST_F(ReminderEntryTest_Setter, InvalidValues_ForExecDate) {
 		testConstructor(nullptr, "", "");
 		setAndTestExecDate(new DateTime(15, 6, 2030, 11, 30, 30));
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
@@ -594,10 +605,11 @@ TEST_F(ReminderEntryTest_Setter, InvalidValues_ForExecDate) {
 		testConstructor(nullptr, "", "");
 		setAndTestExecDate(new DateTime(15, 6, 2030, 12, 29, 30));
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
@@ -605,10 +617,11 @@ TEST_F(ReminderEntryTest_Setter, InvalidValues_ForExecDate) {
 		testConstructor(nullptr, "", "");
 		setAndTestExecDate(new DateTime(15, 6, 2030, 12, 30, 29));
 
-		FAIL() << "Expected: " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		FAIL() << "Expected: InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
 	}
 	catch (InvalidExecutionDate err) {
-		EXPECT_EQ(err.what(), ERR_MSG_INVALID_EXEC_DATE);
+		std::string msg = "InvalidExecutionDate Exception => " + std::string(ERR_MSG_INVALID_EXEC_DATE);
+		EXPECT_EQ(err.what(), msg);
 	}
 }
 
@@ -645,6 +658,16 @@ TEST_F(ReminderEntryTest_Setter, CorrectValues_ForExecDate) {
 	setAndTestExecDate(new DateTime(15, 6, 2030, 12, 30, 31));
 	TearDown();
 	
+}
+
+TEST_F(ReminderEntryTest_Setter, CorrectValues_ForTitle) {
+	std::string title = "This is some random title";
+	std::string description = "This is some random description";
+
+	SetUp();
+	testConstructor(nullptr, "", "");
+	setAndTestTitle(title);
+	setAndTestDescription(description);
 }
 
 TEST_F(ReminderEntryTest_Setter, CorrectValues_ForLong_TitleAndDescription) {

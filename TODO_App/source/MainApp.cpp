@@ -58,19 +58,29 @@ void MainApp::execCommand(std::string command)
 		}
 	}
 	else if (cmd == "get") {
-		if (cmd_split.size() > 2) {
-			std::cout << std::endl << "  Too many arguments" << std::endl;
-			return;
+		try {
+			if (cmd_split.size() > 2) {
+				throw InvalidCommandException(TOO_MANY_ARGS);
+			}
+			else if (cmd_split.size() == 1) {
+				execCommand_Get();
+			}
+			else if (cmd_split.size() == 2) {
+				execCommand_Get(cmd_split[1]);
+			}
 		}
-		else if (cmd_split.size() == 1) {
-			execCommand_Get();
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		}
+		catch (InvalidIndexException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "delete") {
-		if (cmd_split.size() > 2) {
-			std::cout << std::endl << "  Too many arguments." << std::endl;
-		}
 		try {
+			if (cmd_split.size() > 2) {
+				throw InvalidCommandException(TOO_MANY_ARGS);
+			}
 			execCommand_Delete(std::stoi(cmd_split[1]));
 		}
 		catch (InvalidIndexException err) {
@@ -82,7 +92,7 @@ void MainApp::execCommand(std::string command)
 	}
 	else if (cmd == "sort") {
 		if (cmd_split.size() > 3) {
-			std::cout << std::endl << "Too many arguments" << std::endl;
+			std::cout << "  Something went wrong: " << InvalidCommandException(TOO_MANY_ARGS).what() << std::endl;
 			return;
 		}
 		bool descending = true;
@@ -108,7 +118,7 @@ void MainApp::execCommand(std::string command)
 					execCommand_Sort(cmd_split[1], descending);
 				}
 				else {
-					std::cout << std::endl << "  Wrong set of arguments" << std::endl;
+					throw InvalidCommandException(WRONG_ARGS);
 				}
 			}
 		}
@@ -131,11 +141,10 @@ void MainApp::execCommand(std::string command)
 		}
 	}
 	else if (cmd == "edit") {
-		if (cmd_split.size() != 2) {
-			std::cout << "  Something went wrong: " << TOO_FEW_ARGS << std::endl;
-			return;
-		}
 		try {
+			if (cmd_split.size() != 2) {
+				throw InvalidCommandException(TOO_FEW_ARGS);
+			}
 			execCommand_Edit(std::stoi(cmd_split[1]));
 		}
 		catch (DateTimeException err) {
@@ -152,49 +161,56 @@ void MainApp::execCommand(std::string command)
 		}
 	}
 	else if (cmd == "help") {
-		if (cmd_split.size() == 1) {
-			execCommand_Help();
+		try {
+			if (cmd_split.size() == 1) {
+				execCommand_Help();
+			}
+			else if (cmd_split.size() == 2) {
+				execCommand_Help(cmd_split[1]);
+			}
+			else {
+				std::string msg = "  Wrong usage of command <help>. Try 'help' or 'help -[command]'";
+				throw InvalidCommandException(msg);
+			}
 		}
-		else if (cmd_split.size() == 2) {
-			execCommand_Help(cmd_split[1]);
-		}
-		else {
-			std::cout << "  Wrong usage of command <help>." << std::endl;
-			std::cout << "  Try  'help' or 'help -[command]'" << std::endl;
-			std::cout << std::endl;
-			return;
+		catch (InvalidCommandException err) {
+			std::cout << "Something went wrong: " << err.what() << std::endl;
 		}
 	}
-	else if (cmd == "close" || cmd == "end" || cmd == "exit" || cmd == "quit" || cmd == "close") {
-		system("cls");
-
-		std::cout << "Program closed...";
-		for (int i = 0; i < 5; i++) {
-			std::cout << std::endl;
-		}
-
-		exit(0);
+	else if (cmd == "close" || cmd == "end" || cmd == "exit" || cmd == "quit") {
+		execCommand_Exit();
 	}
 	else if (cmd == "cls" || cmd == "clear") {
-		if (cmd_split.size() > 1) {
-			std::cout << std::endl << "Too many arguments for this command" << std::endl;
-			return;
+		try {
+			if (cmd_split.size() > 1) {
+				throw InvalidCommandException(TOO_MANY_ARGS);
+			}
+		}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
 		}
 		system("cls");
 	}
 	else
 	{
-		if (cmd_split[0][0] != '-') {
-			std::cout << std::endl << "  <" << cmd_split[0] << "> is invalid command" << std::endl;
-		}
-		else {
-			std::string str = "";
-			for (std::string x : cmd_split) {
-				str += " " + x;
+		try {
+			if (cmd_split[0][0] != '-') {
+				std::string msg = "<" + cmd_split[0] + "> is invalid command";
+				throw InvalidCommandException(msg);
 			}
+			else {
+				std::string str = "";
+				for (std::string x : cmd_split) {
+					str += " " + x;
+				}
+				std::string msg = str + " is invalid set of commands";
 
-			std::cout << std::endl << "  " << str << " invalid set of commands" << std::endl;
-			
+				throw InvalidCommandException(msg);
+
+			}
+		}
+		catch (InvalidCommandException err) {
+			std::cout << "  Something went wrong: " << err.what() << std::endl;
 		}
 	}
 }
@@ -223,7 +239,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 			else if (command[i] == "-1" || command[i] == "-0") {
 				if (command[i] == "-1")
 					finished = true;
-				else
+				else if(command[i] == "-0")
 					finished = false;
 			}
 		}
@@ -369,6 +385,12 @@ void MainApp::printSet(SetMap printSet)
 {
 	SetMap::iterator it;
 
+	if ((it = printSet.begin()) == printSet.end()) {
+		std::cout << "  Set is empty." << std::endl;
+		std::cout << "  Use command <new> to create new reminders." << std::endl;
+		
+		return;
+	}
 
 	std::cout << "========================================================================================" << std::endl;
 	std::cout << "=====                                 YOUR REMINDERS                               =====" << std::endl;
@@ -509,8 +531,13 @@ void MainApp::printEnterCommandScreen() {
 	std::string command;
 
 	getline(std::cin, command);
-	execCommand(command);
-	printEnterCommandScreen();
+	if (GetKeyState(VK_RETURN) & 0x8000)
+	{
+		if (command.length() > 0) {
+			execCommand(command);
+		}
+		printEnterCommandScreen();
+	}
 }
 
 void MainApp::execCommand_Help(std::string flag) {
@@ -522,6 +549,8 @@ void MainApp::execCommand_Help(std::string flag) {
 		std::cout << "  new     -   Make new reminder" << std::endl;
 		std::cout << "  delete  -   Delete reminder" << std::endl;
 		std::cout << "  edit    -   Edit reminder" << std::endl;
+		std::cout << "  cls     -   Cleares out the screen" << std::endl;
+		std::cout << "  exit    -   Closes the program" << std::endl;
 		std::cout << std::endl << "To see detailed description of one command type \"help -[command]\" " << std::endl;
 	}
 	else {
@@ -535,15 +564,19 @@ void MainApp::execCommand_Help(std::string flag) {
 			std::cout << "  Use this command as following" << std::endl;
 			std::cout << "  'sort -[arg] -[ord]" << std::endl;
 			std::cout << "      [arg] is by what argument you wish to sort reminders by" << std::endl;
-			std::cout << "      Available arguments are: -[t|d|ed|dc]" << std::endl;
+			std::cout << "      Available arguments are: -[t|d|ed|dc|s] which stand for title, description, execution " << std::endl;
+		    std::cout << "      and creation dates respectively" << std::endl;
 			std::cout << "      Second argument displays sorted set in descending(1 or -des) or ascending order(0 or -asc)" << std::endl;
+			std::cout << "      but if you use if to sort by status 1 means first will be displayed that are finished" << std::endl;
 			std::cout << "          Descending order is default value" << std::endl;
 		}
 		else if (flag == "-filter") {
 			std::cout << std::endl << "  Displays sorted set of reminders with applied filter" << std::endl << std::endl;
 			std::cout << "  Type 'filter' to filter and sort reminder set in desired way" << std::endl;
 			std::cout << "  Use this command as following" << std::endl;
-			std::cout << "  'filter -mode [after|before|0|1] <date> <time> -[asc|des]" << std::endl;
+			std::cout << "  'filter -[f|dc|ed] -mode [after|before|0|1] -date <date> <time> -[asc|des]" << std::endl;
+			std::cout << "      First argument -s|dc|ed defines by what parameter you want to filter the set" << std::endl;
+			std::cout << "      (status, date created or execution date)" << std::endl;
 			std::cout << "      Argument 0(1) means before(after) entered date and time" << std::endl;
 			std::cout << "      Last argument displays sorted set in descending or ascending order" << std::endl;
 			std::cout << "          Descending order is default value" << std::endl;
@@ -561,7 +594,7 @@ void MainApp::execCommand_Help(std::string flag) {
 		else if (flag == "-delete") {
 			std::cout << std::endl << "  Deletes one reminder from the set" << std::endl;
 
-			std::cout << "  Type 'delete n' to delete reminder with the index n" << std::endl;
+			std::cout << std::endl << "  Type 'delete n' to delete reminder with the index n" << std::endl;
 			std::cout << "  TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
 			std::cout << "  which will help you to know what reminder to delete" << std::endl;
 		}
@@ -571,13 +604,20 @@ void MainApp::execCommand_Help(std::string flag) {
 			std::cout << "  TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
 			std::cout << "  which will help you to know what reminder to delete" << std::endl;
 		}
-		else if (flag == "delete" || flag == "new" || flag == "sort" || flag == "filter" || "get" || "edit") {
-			std::cout << std::endl << "  You can't use two commands at the same time" << std::endl;
+		else if (flag == "-exit" || flag == "-close" || flag == "-quit" || flag == "-end") {
+			std::cout << std::endl << "  Type exit (close or quit or end) to stop the application" << std::endl;
 		}
-		
+		else if (flag == "-cls" || flag == "-clear") {
+			std::cout << std::endl << "  Type 'cls' or 'clear' to clear out the screen." << std::endl;
+		}
+		else if (flag == "delete" || flag == "new" || flag == "sort" || flag == "filter" || flag == "get" || flag == "edit" || flag == "cls" || 
+			flag == "clear" || flag == "exit" || flag == "quit" || flag == "close" || flag == "end") {
+			std::string msg = "You can't use two command at the same time";
+			throw InvalidCommandException(msg);
+		}
 		else {
-			std::cout << "'" << flag << "'" << " is invalid command" << std::endl;
-			//printEnterCommandScreen();
+			std::string msg = "'" + flag + "' is invalid command";
+			throw InvalidCommandException(msg);
 		}
 	}
 }
@@ -588,14 +628,18 @@ void MainApp::execCommand_Get() {
 
 void MainApp::execCommand_Get(std::string index) {
 	int n = std::stoi(index);
-
-	SetMap::const_iterator elem = set->getAll().find(n);
-	if (elem == set->getAll().end()) {
-		std::cout << "  Reminder with index < " << n << " > doesnt exist" << std::endl;
+	SetMap tmp = set->getAll();
+	SetMap m;
+	MapIterator it;
+	
+	if ((it = tmp.find(n)) != tmp.end()) {
+		m.insert(MapPair(1, it->second));
+		printSet(m);
 	}
 	else {
-		//TODO
+		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
+	
 }
 
 void MainApp::execCommand_Delete(int index) {
@@ -808,6 +852,17 @@ void MainApp::execCommand_Edit(int index) {
 	}
 }
 
+void MainApp::execCommand_Exit() {
+	system("cls");
+
+	std::cout << "Program closed...";
+	for (int i = 0; i < 5; i++) {
+		std::cout << std::endl;
+	}
+
+	exit(0);
+}
+
 void MainApp::makeNewEntry(std::string execDate, std::string title, std::string description) {
 	if (execDate == "" && title == "" && description == "") {
 		try {
@@ -898,6 +953,9 @@ void MainApp::printMakeNewEntry() {
 		throw err;
 	}
 	catch (DateTimeException err) {
+		throw err;
+	}
+	catch (InvalidExecutionDate err) {
 		throw err;
 	}
 	catch (...) {

@@ -8,11 +8,11 @@ class InvalidExecutionDate : public std::exception {
 
 public:
 	InvalidExecutionDate(char* msg) {
-		this->err_msg = std::string(msg);
+		this->err_msg = "InvalidExecutionDate Exception => " + std::string(msg);
 	}
 
 	InvalidExecutionDate(std::string msg) {
-		this->err_msg = msg;
+		this->err_msg = "InvalidExecutionDate Exception => " + msg;
 	}
 
 	std::string what() {

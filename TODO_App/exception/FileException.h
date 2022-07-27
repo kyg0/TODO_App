@@ -8,11 +8,11 @@ class FileException : public std::exception {
 
 public:
 	FileException(char* err_msg) {
-		this->err_msg = std::string(err_msg);
+		this->err_msg = "File Exception => " + std::string(err_msg);
 	}
 
 	FileException(std::string err_msg) {
-		this->err_msg = err_msg;
+		this->err_msg = "File Exception => "  + err_msg;
 	}
 
 	std::string what() {

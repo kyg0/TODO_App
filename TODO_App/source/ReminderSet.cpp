@@ -14,25 +14,29 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 	StringVector fileReading;
 	StringVector files = fileWorker->getAllFromDirectory(path);
 
-	try {
-
-		for (auto& filePath : files) {
-			if (fileWorker->fileExists(filePath)) {
+	for (auto& filePath : files) {
+		if (fileWorker->fileExists(filePath)) {
+			try{
 				fileReading = fileWorker->readFromFileInLines(filePath);
 				entries.insert(MapPair(i, new ReminderEntry(fileReading, dtWorker, fileWorker)));
 				i++;
 			}
+			catch (DateTimeException err) {
+				std::cout << "Problem with file  : \"" << filePath << "\" : " << err.what()  <<std::endl;
+			}
+			catch (InvalidExecutionDate err) {
+				std::cout << "Problem with file : \"" << filePath << "\"  : " << err.what() << std::endl;
+			}
+			catch (InvalidIndexException err) {
+				std::cout << "Problem with file : \"" << filePath << "\"  : " << err.what() << std::endl;
+			}
+			catch (NullObjectException err) {
+				std::cout << "Problem with file : \"" << filePath << "\"  : " << err.what() << std::endl;
+				std::cout << err.what() << std::endl;
+			}
 		}
 	}
-	catch (DateTimeException err) {
-		throw err;
-	}
-	catch (InvalidIndexException err) {
-		throw err;
-	}
-	catch (NullObjectException err) {
-		throw err;
-	}
+	
 	
 }
 
@@ -146,7 +150,7 @@ SetMap ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDa
 	switch (filterMode) {
 	case FilterMode::BeforeDate:
 		for (it = entries.begin(); it != entries.end(); it++) {
-			if (( * it->second->getDateCreated() > *filterDate) || (*it->second->getDateCreated() == *filterDate)) {
+			if (( *it->second->getDateCreated() > *filterDate) || (*it->second->getDateCreated() == *filterDate)) {
 				vector.push_back(it->second);
 			}
 		}

@@ -12,11 +12,11 @@ class InvalidIndexException : public std::exception {
 
 public:
 	InvalidIndexException(char* msg) {
-		this->err_msg = std::string(msg);
+		this->err_msg = "InvalidIndex Exception => " + std::string(msg);
 	}
 
 	InvalidIndexException(std::string msg) {
-		this->err_msg = msg;
+		this->err_msg = "InvalidIndex Exception => " + msg;
 	}
 
 	std::string what() {

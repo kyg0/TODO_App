@@ -47,7 +47,7 @@ StringVector FileWorker::readFromFileInLines(std::string path)
 }
 
 bool FileWorker::deleteFile(std::string path) {
-	if (std::remove(path.c_str()) == 0) { // nice!
+	if (std::remove(path.c_str()) == 0) { 
 		return true;
 	}
 	else
