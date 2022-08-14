@@ -8,6 +8,7 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 	if (fw != nullptr) {
 		this->fileWorker = std::move(fw);
 	}
+	// what happens if pointers above are null? Is it covered with tests?
 
 	int i = 1;
 	std::string path = "out/";
@@ -36,8 +37,7 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 			}
 		}
 	}
-	
-	
+
 }
 
 ReminderEntry* ReminderSet::readFromFile(std::string path)
@@ -46,8 +46,10 @@ ReminderEntry* ReminderSet::readFromFile(std::string path)
 	return new ReminderEntry(StringVector(), fileWorker);
 }
 
-ReminderSet::~ReminderSet() 
-{}
+ReminderSet::~ReminderSet()
+{
+	// Empty
+}
 
 void ReminderSet::makeNewEntry(ReminderEntry* newEntry)
 {
@@ -114,7 +116,7 @@ void ReminderSet::editEntry(ReminderEntry* old, ReminderEntry* edit)
 	if (edit == nullptr) {
 		throw NullObjectException(ERR_MSG_NULL_NEW_OBJ);
 	}
-	
+
 	MapIterator it;
 	for (it = entries.begin(); it != entries.end(); it++) {
 		if (*old == *it->second) {
@@ -163,7 +165,7 @@ SetMap ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDa
 		}
 		break;
 	}
-	
+
 	if (vector.size() == 0) {
 		return SetMap();
 	}
@@ -171,8 +173,6 @@ SetMap ReminderSet::filterByDateCreated(FilterMode filterMode,DateTime* filterDa
 		filtered.insert(MapPair(1, vector[0]));
 		return filtered;
 	}
-
-	
 
 	for (int i = 0; i < vector.size() - 1; i++) {
 		int toSwapId= i;
@@ -225,8 +225,6 @@ SetMap ReminderSet::filterByExecDate(FilterMode filterMode, DateTime* filterDate
 		filtered.insert(MapPair(1, vector[0]));
 		return filtered;
 	}
-
-
 
 	for (int i = 0; i < vector.size() - 1; i++) {
 		int toSwapId = i;

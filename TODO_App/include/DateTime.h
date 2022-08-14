@@ -91,6 +91,7 @@ private:
 	// example: If date is 6/6/2022 => for dt_value=6 it will return 06
 	//			correct format would be 06/06/2022
 	std::string getCorrectFormat(int dt_value);
-	void InitDate(int day, int month, int year);
+	void InitDate(int day, int month, int year); // Just minor comment about naming functions across the files: Noticed inconsistency
+												// Mix of UpperCamelCase and lowerCamelCase used
 	void InitTime(int hours, int minutes, int seconds);
 };

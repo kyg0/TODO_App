@@ -1,11 +1,11 @@
-#include "../include/DateTime.h" // Just remark: Usualy you can avoid specifying full path through 
+#include "../include/DateTime.h" // Just remark: Usualy you can avoid specifying full path through
                                  // build system, but it is ok to leave it here as it is
 
 
 DateTime::DateTime(DateTimeWorkerInterface* worker)
 {
 	if (worker != nullptr) {
-		this->dtWorker = worker; // Q: What happens if worker is null? You intentionaly added this logic for optionally changing worker? If dtWorker is null, program will crash 
+		this->dtWorker = worker; // Q: What happens if worker is null? You intentionaly added this logic for optionally changing worker? If dtWorker is null, program will crash
 								 // IMPORTANT: it should be also covered with tests
 	}
 
@@ -33,7 +33,7 @@ DateTime::DateTime(int day, int month, int year)
 	}
 }
 
-DateTime::DateTime(int day, int month, int year, int hours, int minutes) 
+DateTime::DateTime(int day, int month, int year, int hours, int minutes)
 {
 	try {
 		InitDate(day, month, year);
@@ -44,7 +44,7 @@ DateTime::DateTime(int day, int month, int year, int hours, int minutes)
 	}
 }
 
-DateTime::DateTime(int day, int month, int year, int hours, int minutes, int seconds) 
+DateTime::DateTime(int day, int month, int year, int hours, int minutes, int seconds)
 {
 	try {
 		InitDate(day, month, year);
@@ -57,15 +57,15 @@ DateTime::DateTime(int day, int month, int year, int hours, int minutes, int sec
 
 DateTime::DateTime(std::string& dt_format)
 {
-	if (dt_format.size() != FULL_DATE_TIME_FORMAT_SIZE 
-		&& dt_format.size() != DATE_TIME_FORMAT_SIZE_NOSEC 
+	if (dt_format.size() != FULL_DATE_TIME_FORMAT_SIZE
+		&& dt_format.size() != DATE_TIME_FORMAT_SIZE_NOSEC
 		&& dt_format.size() != DATE_FORMAT_SIZE) {
 		throw DateTimeException(ERR_MSG_FOR_FORMAT);
 	}
 	std::string tmp;
 	std::regex reg_pattern("[0-9]{2}.[0-9]{2}.[0-9]{4}( [0-9]{2}.[0-9]{2}.[0-9]{2}| [0-9]{2}.[0-9]{2}|)$");
 	std::smatch match;
-	
+
 	if (!regex_search(dt_format, match, reg_pattern)) {
 		throw DateTimeException(ERR_MSG_FOR_FORMAT);
 	}
@@ -100,7 +100,7 @@ DateTime::DateTime(std::string& dt_format)
 		_minute = std::to_string(DEFAULT_TIME_VALUE);
 		_second = std::to_string(DEFAULT_TIME_VALUE);
 	}
-	
+
 
 	try {
 		InitDate(std::stoi(_day), std::stoi(_month), std::stoi(_year));
@@ -141,8 +141,9 @@ DateTime& DateTime::operator=(const DateTime& other)
 
 DateTime& DateTime::operator=(DateTime&& other)
 {
-	if (&other == this)
+	if (&other == this) {
 		return *this;
+	}
 
 	std::swap(this->day, other.day);
 	std::swap(this->month, other.month);
@@ -158,8 +159,9 @@ bool DateTime::operator>(DateTime& other)
 		return false;
 	}
 
-	if (this->getYear() < other.getYear())
+	if (this->getYear() < other.getYear()) {
 		return true;
+	}
 	else if (this->getYear() == other.getYear() && this->getMonth() < other.getMonth()) {
 		return true;
 	}
@@ -186,8 +188,9 @@ bool DateTime::operator<(DateTime& other)
 		return false;
 	}
 
-	if (other.getYear() < this->getYear())
+	if (other.getYear() < this->getYear()) {
 		return true;
+	}
 	else if (this->getYear() == other.getYear() && other.getMonth() < this->getMonth()) {
 		return true;
 	}
@@ -245,23 +248,26 @@ void DateTime::setYear(int year) {
 }
 
 void DateTime::setHours(int hours) {
-	if (hours < MIN_HOURS_VALUE || hours > MAX_HOURS_VALUE)
+	if (hours < MIN_HOURS_VALUE || hours > MAX_HOURS_VALUE) {
 		throw DateTimeException(ERR_MSG_FOR_HOURS);
+	}
 
 	this->hours = hours;
 }
 
 void DateTime::setMinutes(int minutes) {
-	if (minutes < MIN_MINUTES_VALUE || minutes > MAX_MINUTES_VALUE)
+	if (minutes < MIN_MINUTES_VALUE || minutes > MAX_MINUTES_VALUE) {
 		throw DateTimeException(ERR_MSG_FOR_MINUTES);
-	
+	}
+
 	this->minutes = minutes;
 }
 
 void DateTime::setSeconds(int seconds) {
-	if (seconds < MIN_SECONDS_VALUE || seconds > MAX_SECONDS_VALUE)
+	if (seconds < MIN_SECONDS_VALUE || seconds > MAX_SECONDS_VALUE) {
 		throw DateTimeException(ERR_MSG_FOR_SECONDS);
-	
+	}
+
 	this->seconds = seconds;
 }
 
@@ -297,7 +303,7 @@ int DateTime::getSeconds()
 
 std::string DateTime::getFormat(bool withSeconds)
 {
-	std::string format = getCorrectFormat(day) + "/" + getCorrectFormat(month) + "/" + getCorrectFormat(year) + " " 
+	std::string format = getCorrectFormat(day) + "/" + getCorrectFormat(month) + "/" + getCorrectFormat(year) + " "
 		+ getCorrectFormat(hours) + ":" + getCorrectFormat(minutes);
 
 	if (withSeconds) {

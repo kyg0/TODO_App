@@ -7,6 +7,7 @@ class InvalidExecutionDate : public std::exception {
 	std::string err_msg;
 
 public:
+	// Same as for DateTimeException. Move definitions into a separate file
 	InvalidExecutionDate(char* msg) {
 		this->err_msg = "InvalidExecutionDate Exception => " + std::string(msg);
 	}

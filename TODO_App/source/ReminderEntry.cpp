@@ -40,7 +40,7 @@ ReminderEntry::ReminderEntry(std::string title, std::string description, DateTim
 	else {
 		this->title = title;
 	}
-		
+
 
 	if (description.length() > MAX_DESCRIPTION_LEN) {
 		this->description = description.substr(0, MAX_DESCRIPTION_LEN);
@@ -52,7 +52,7 @@ ReminderEntry::ReminderEntry(std::string title, std::string description, DateTim
 	filePath = "out/" + this->title + "_" + getFileNameFormatFromDate(*dateCreated) + "_";
 
 	std::string execDatePath = NULL_DATETIME_FORMAT_FILENAME;
-	
+
 	filePath += execDatePath;
 	writeInFile();
 }
@@ -68,7 +68,7 @@ ReminderEntry::ReminderEntry(StringVector readingFromFile, DateTimeWorkerInterfa
 	if (readingFromFile.size() != numOfLines) {
 		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
-	
+
 	if (readingFromFile[0].substr(0, 7) != "Title: ") {
 		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
@@ -85,12 +85,9 @@ ReminderEntry::ReminderEntry(StringVector readingFromFile, DateTimeWorkerInterfa
 		throw NullObjectException(ERR_MSG_FOR_FORMAT);
 	}
 
-	
 	this->title = readingFromFile[0].substr(7, readingFromFile[0].size() - 7).substr(0, MAX_TITLE_LEN);
 	this->description = readingFromFile[1].substr(13, readingFromFile[1].size() - 13).substr(0,MAX_DESCRIPTION_LEN);
-	
-	
-	
+
 	try {
 		std::string dt = readingFromFile[2].substr(14, readingFromFile[2].size() - 14);
 		this->dateCreated = new DateTime(dt);
@@ -147,7 +144,7 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 		throw err;
 	}
 
-	
+
 	if (title.length() > MAX_TITLE_LEN)
 		this->title = title.substr(0, MAX_TITLE_LEN);
 	else
@@ -163,7 +160,7 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 	filePath = "out/" + this->title + "_" + getFileNameFormatFromDate(*dateCreated) + "_";
 
 	std::string execDatePath = getFileNameFormatFromDate(*executionDate);
-	
+
 	filePath += execDatePath;
 	writeInFile();
 }
@@ -215,7 +212,15 @@ DateTime* ReminderEntry::getExecutionDate()
 
 bool ReminderEntry::operator==(ReminderEntry& other)
 {
-	
+	// Can be refactored following something like:
+	// bool title_equal = (this->title == other.getTitle());
+	// bool description_equal = (this->description == other.getDescription());
+	// ...
+	// if (title_equal &&
+	// 	   description_equal && ...) {
+	//	   return true;
+	// }
+	// to avoid having high level of if statements
 	if (this->title == other.getTitle()) {
 		if (this->description == other.getDescription()) {
 			if (*this->dateCreated == *other.getDateCreated()) {
@@ -226,7 +231,7 @@ bool ReminderEntry::operator==(ReminderEntry& other)
 						}
 					}
 				}
-				
+
 			}
 		}
 	}
@@ -355,7 +360,7 @@ std::string ReminderEntry::getFileOutput()
 		execDate_tmp = NULL_DATETIME_FORMAT_OUTPUT;
 	}
 
-	std::string fileOutput = "Title: " + title + "\nDescription: " + description + "\nDate created: " + dateCreated->getFormat(true) + "\nExecution date: " 
+	std::string fileOutput = "Title: " + title + "\nDescription: " + description + "\nDate created: " + dateCreated->getFormat(true) + "\nExecution date: "
 		+ execDate_tmp + "\nStatus: ";
 	std::string str_status = "NOT FINISHED";
 	if (status == EntryStatus::FINISHED) {

@@ -19,8 +19,8 @@ public:
 
 	void runApp();
 private:
-	void printEntry(int, ReminderEntry&); //ostaje
-	void printSet(SetMap); // prepraviti => bice printSet()
+	void printEntry(int, ReminderEntry&); // TODO: remove comment //ostaje
+	void printSet(SetMap); // TODO: remove comment // prepraviti => bice printSet()
 
 	void execCommand(std::string command); //
 	void execCommand_Help(std::string flag = std::string());
@@ -42,7 +42,7 @@ private:
 	void printWelcomeMessage();
 	void printMakeNewEntry();
 	void printEditEntry(int, ReminderEntry*);
-	
+
 	void clearScreen();
 
 	StringVector deriveCommand(std::string command);

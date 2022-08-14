@@ -4,8 +4,6 @@
 
 using namespace ::testing;
 
-// Check if framework supports test suits (test set up and tear ups, to remove dependencies between tests)
-
 TEST(DateTimeTests_Constructor, DefaultConstructor_withMock) {
 	DateTimeWorkerMock* mock = new DateTimeWorkerMock();
 
@@ -30,7 +28,7 @@ TEST(DateTimeTests_Constructor, DefaultConstructor_withNullMock) {
 	DateTimeWorkerMock* mock = nullptr;
 
 	std::vector<int> date{ 20,5,2022,13,30,0 };
-	
+
 
 	try {
 		DateTime* dt = new DateTime(mock);
@@ -45,14 +43,6 @@ TEST(DateTimeTests_Constructor, DefaultConstructor_withNullMock) {
 	//Mock::AllowLeak(mock);
 	//Mock::VerifyAndClear(mock);
 }
-
-// It should be split into smaller parts. Each of those should be a separate test that covers some test case.
-// A lot better that have one massive test. Also in that way easier to isolate tests and remove possibility that
-// previous checks will affect following steps.
-// Yes, at the end it will give you a lot of tests, but making it atomic, it will help you to easier locate problem later on
-//
-// In general, I like the range of tests that you provided. I can see that you have invested effort for thinking about corner cases. Good work!
-
 
 class DateTimeTest_Constructor : public Test {
 protected:
@@ -940,7 +930,7 @@ TEST_F(DateTimeTest_Setter, CorrectValues_ForDays_31DaysMonth) {
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForMonth) {
 	std::vector<int> date{ 26,9,2022,5, 5, 5 };
-	
+
 	SetUp(date);
 	setAndTestMonth(MIN_MONTH_VALUE);
 	TearDown();
@@ -956,7 +946,7 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForMonth) {
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForYear) {
 	std::vector<int> date{ 26,9,2022,5, 5,5 };
-	
+
 	SetUp(date);
 	setAndTestYear(MIN_YEAR_VALUE);
 	TearDown();
@@ -972,7 +962,7 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForYear) {
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForHours) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
-	
+
 	SetUp(date);
 	setAndTestHours(MAX_HOURS_VALUE);
 	TearDown();
@@ -988,7 +978,7 @@ TEST_F(DateTimeTest_Setter, CorrectValue_ForHours) {
 
 TEST_F(DateTimeTest_Setter, CorrectValue_ForMinutes) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
-	
+
 	SetUp(date);
 	setAndTestMinutes(MAX_MINUTES_VALUE);
 	TearDown();
@@ -1242,7 +1232,7 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays_31DayMonth) {
 		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
-	
+
 	try {
 		SetUp(26, Month::JANUARY, 2040);
 		setAndTestDay(-1);
@@ -1934,12 +1924,12 @@ TEST(DateTime_ComparisonTest, EqualsOperator_Case1) {
 	DateTime dt2(mock);
 	EXPECT_TRUE(dt1 == dt2);
 
-	
+
 	DateTime* dt3 = new DateTime(mock);
 	DateTime dt4(mock);
 	EXPECT_TRUE(*dt3 == dt4);
 
-	
+
 	DateTime* dt5 = new DateTime(mock);
 	DateTime* dt6 = new DateTime(mock);
 	EXPECT_TRUE(*dt5 == *dt6);

@@ -11,6 +11,7 @@ class InvalidIndexException : public std::exception {
 	std::string err_msg;
 
 public:
+	// Same as for DateTimeException. Move definitions into a separate file
 	InvalidIndexException(char* msg) {
 		this->err_msg = "InvalidIndex Exception => " + std::string(msg);
 	}

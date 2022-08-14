@@ -1,5 +1,3 @@
-// Implementation seems to get complex :) But that is how it is. Good work there
-
 #include "../include/MainApp.h"
 
 MainApp::MainApp()
@@ -34,7 +32,7 @@ void MainApp::updateSet() {
 void MainApp::execCommand(std::string command)
 {
 	StringVector cmd_split = deriveCommand(command);
-	
+
 	std::string cmd = cmd_split[0];
 	for (int i = 0; i < cmd.size(); i++) {
 		cmd[i] = ::tolower(cmd[i]);
@@ -388,7 +386,7 @@ void MainApp::printSet(SetMap printSet)
 	if ((it = printSet.begin()) == printSet.end()) {
 		std::cout << "  Set is empty." << std::endl;
 		std::cout << "  Use command <new> to create new reminders." << std::endl;
-		
+
 		return;
 	}
 
@@ -397,7 +395,7 @@ void MainApp::printSet(SetMap printSet)
 	std::cout << "========================================================================================" << std::endl;
 	std::cout << "= No. |             Title                |    Date created      |    Reminder date     =" << std::endl;
 	std::cout << "========================================================================================" << std::endl;
-	
+
 	for (it = printSet.begin(); it != printSet.end(); it++) {
 		printEntry(it->first, *it->second);
 		std::cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==" << std::endl;
@@ -465,7 +463,7 @@ void MainApp::printEntry(int index, ReminderEntry& entry)
 				std::cout << _row << std::endl;
 				rowIndex = 2;
 				_row = emptyRow;
-				//_row[rowIndex++] = _description[i]; 
+				//_row[rowIndex++] = _description[i];
 			}
 			else if(_description[i+1] != ' ' && _description[i]!=' ') {
 				_row[rowIndex++] = '-';
@@ -610,7 +608,7 @@ void MainApp::execCommand_Help(std::string flag) {
 		else if (flag == "-cls" || flag == "-clear") {
 			std::cout << std::endl << "  Type 'cls' or 'clear' to clear out the screen." << std::endl;
 		}
-		else if (flag == "delete" || flag == "new" || flag == "sort" || flag == "filter" || flag == "get" || flag == "edit" || flag == "cls" || 
+		else if (flag == "delete" || flag == "new" || flag == "sort" || flag == "filter" || flag == "get" || flag == "edit" || flag == "cls" ||
 			flag == "clear" || flag == "exit" || flag == "quit" || flag == "close" || flag == "end") {
 			std::string msg = "You can't use two command at the same time";
 			throw InvalidCommandException(msg);
@@ -631,7 +629,7 @@ void MainApp::execCommand_Get(std::string index) {
 	SetMap tmp = set->getAll();
 	SetMap m;
 	MapIterator it;
-	
+
 	if ((it = tmp.find(n)) != tmp.end()) {
 		m.insert(MapPair(1, it->second));
 		printSet(m);
@@ -639,7 +637,7 @@ void MainApp::execCommand_Get(std::string index) {
 	else {
 		throw InvalidIndexException(ERR_MSG_INVALID_INDEX);
 	}
-	
+
 }
 
 void MainApp::execCommand_Delete(int index) {
@@ -787,7 +785,7 @@ void MainApp::execCommand_New(StringVector cmd) {
 void MainApp::execCommand_Sort(std::string attSort, bool descending) {
 	if (attSort != "-t" && attSort != "-d" && attSort != "-ed" && attSort != "-dc" && attSort != "-s") {
 		std::cout << "Type 'help sort' to see what are available arguments for this command" << std::endl;
-		
+
 		throw InvalidCommandException(WRONG_ARGUMENT);
 	}
 
@@ -882,12 +880,12 @@ void MainApp::makeNewEntry(std::string execDate, std::string title, std::string 
 			if (description.size() > MAX_DESCRIPTION_LEN) {
 				std::cout << "   Description was to long and it was shortened to " << MAX_DESCRIPTION_LEN << " characters" << std::endl;
 				std::cout << "   Type 'get' to see what the reminder looks like" << std::endl;
-			} 
+			}
 		}
 		catch (...) {
 			throw InvalidCommandException(UNKNOWN_ERROR);
 		}
-		
+
 	}
 	else if (execDate != "") {
 		try {
@@ -1049,8 +1047,8 @@ void MainApp::printEditEntry(int index, ReminderEntry* oldEntry) {
 
 		std::cout << " (unchanged)" << std::endl << std::endl;
 	}
-	
-	
+
+
 
 	std::string save;
 	flag = true;
