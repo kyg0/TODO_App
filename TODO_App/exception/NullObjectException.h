@@ -10,6 +10,7 @@ class NullObjectException : public std::exception {
 	std::string err_msg;
 
 public:
+	// Same as for DateTimeException. Move definitions into a separate file
 	NullObjectException(char* msg) {
 		this->err_msg = "NullObject Exception => " + std::string(msg);
 	}

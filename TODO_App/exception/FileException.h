@@ -7,6 +7,7 @@ class FileException : public std::exception {
 	std::string err_msg;
 
 public:
+	// Same as for DateTimeException. Move definitions into a separate file
 	FileException(char* err_msg) {
 		this->err_msg = "File Exception => " + std::string(err_msg);
 	}
