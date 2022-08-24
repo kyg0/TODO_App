@@ -3,12 +3,10 @@
 #include "../include/FileWorker.h"
 #include "DateTime.h"
 #include "DateTimeWorker.h"
-#include "../exception/InvalidExecutionDate.h"
-#include "../exception/NullObjectException.h"
-
+#include "../exception/include/InvalidExecutionDateException.h"
+#include "../exception/include/NullObjectException.h"
 
 #define ERR_DEFAULT_MSG "Something went wrong"
-
 
 #define NULL_DATETIME_FORMAT_FILENAME "00000000_000000"
 #define NULL_DATETIME_FORMAT_OUTPUT "00/00/0000 00:00:00"
@@ -23,7 +21,6 @@ enum EntryStatus {
 
 class ReminderEntry
 {
-	
 private:
 	DateTime* dateCreated;
 	DateTime* executionDate;
@@ -40,10 +37,10 @@ public:
 	ReminderEntry(DateTime* execDate, std::string title, std::string description, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
 	ReminderEntry(StringVector readingFromFile, DateTimeWorkerInterface* dtw = new DateTimeWorker(), FileWorkerInterface* fw = nullptr);
 	ReminderEntry(const ReminderEntry& other, FileWorkerInterface* fw = nullptr);
+	~ReminderEntry();
+
 	ReminderEntry& operator=(const ReminderEntry& other);
 	bool operator==(ReminderEntry& other);
-
-	~ReminderEntry();
 	
 	DateTime* getDateCreated();
 	DateTime* getExecutionDate();
@@ -67,7 +64,5 @@ private:
 	std::string addLeadingZeroToDate(int n);
 public:
 	std::string getFileOutput();
-
 	void setFilePath();
 };
-

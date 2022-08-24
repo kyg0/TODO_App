@@ -21,4 +21,3 @@ std::vector<int> DateTimeWorker::GetCurrentDateAndTime() {
 
 		return date;
 }
-

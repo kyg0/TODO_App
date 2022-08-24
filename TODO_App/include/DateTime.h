@@ -1,11 +1,12 @@
-#pragma once /// be careful with this. It is not always reliable or supported by all complilers. Usually #ifdef is used. It can stay like this, just a reminder
-#include "DateTimeWorker.h"
-#include <regex>
-#include "../exception/DateTimeException.h"
+#pragma once
 
-#define FULL_DATE_TIME_FORMAT_SIZE 19	// dd.mm.yyyy hh:mm:ss
-#define DATE_TIME_FORMAT_SIZE_NOSEC 16	// dd.mm.yyyy hh:mm
-#define DATE_FORMAT_SIZE 10				// dd.mm.yyyy
+#include <regex>
+#include "DateTimeWorker.h"
+#include "../exception/include/DateTimeException.h"
+
+#define FULL_DATE_TIME_FORMAT_SIZE 19			// dd.mm.yyyy hh:mm:ss
+#define DATE_TIME_FORMAT_SIZE_NOSEC 16			// dd.mm.yyyy hh:mm
+#define DATE_FORMAT_SIZE 10						// dd.mm.yyyy
 
 #define MIN_DAY_VALUE 1
 #define MIN_MONTH_VALUE 1
@@ -26,7 +27,6 @@
 #define MAX_DAY_VALUE_31DAY_MONTH 31
 
 #define DEFAULT_TIME_VALUE 0
-
 
 enum Month {
 	JANUARY = 1,
@@ -54,7 +54,7 @@ private:
 	int seconds;
 
 public:
-	DateTimeWorkerInterface* dtWorker = new DateTimeWorker(); // Why this initialization is done here and not in constructor? And why is it public?
+	DateTimeWorkerInterface* dtWorker = new DateTimeWorker();
 
 	DateTime(DateTimeWorkerInterface* worker = nullptr);
 	DateTime(int day, int month, int year);
@@ -67,7 +67,7 @@ public:
 
 	DateTime& operator=(const DateTime& other);
 	DateTime& operator=(DateTime&& other);
-	bool operator>(DateTime& other); // A>B means A is earlier than B; example: 06/06/2022 > 07/06/2022
+	bool operator>(DateTime& other);			// A>B means A is earlier than B; example: 06/06/2022 > 07/06/2022
 	bool operator<(DateTime& other);
 	bool operator==(DateTime& other);
 
@@ -89,9 +89,8 @@ public:
 private:
 	// Returns the value for value in date or time in correct format
 	// example: If date is 6/6/2022 => for dt_value=6 it will return 06
-	//			correct format would be 06/06/2022
+	// correct format would be 06/06/2022
 	std::string getCorrectFormat(int dt_value);
-	void InitDate(int day, int month, int year); // Just minor comment about naming functions across the files: Noticed inconsistency
-												// Mix of UpperCamelCase and lowerCamelCase used
+	void InitDate(int day, int month, int year);
 	void InitTime(int hours, int minutes, int seconds);
 };

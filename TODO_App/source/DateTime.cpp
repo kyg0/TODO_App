@@ -1,12 +1,9 @@
-#include "../include/DateTime.h" // Just remark: Usualy you can avoid specifying full path through
-                                 // build system, but it is ok to leave it here as it is
-
+#include "../include/DateTime.h"
 
 DateTime::DateTime(DateTimeWorkerInterface* worker)
 {
 	if (worker != nullptr) {
-		this->dtWorker = worker; // Q: What happens if worker is null? You intentionaly added this logic for optionally changing worker? If dtWorker is null, program will crash
-								 // IMPORTANT: it should be also covered with tests
+		this->dtWorker = worker;
 	}
 
 	try {
@@ -39,7 +36,7 @@ DateTime::DateTime(int day, int month, int year, int hours, int minutes)
 		InitDate(day, month, year);
 		InitTime(hours, minutes, DEFAULT_TIME_VALUE);
 	}
-	catch(DateTimeException err) {
+	catch (DateTimeException err) {
 		throw err;
 	}
 }
@@ -88,11 +85,11 @@ DateTime::DateTime(std::string& dt_format)
 		_day = dt_format.substr(0, 2);
 		_month = dt_format.substr(3, 2);
 		_year = dt_format.substr(6, 4);
-		_hour= dt_format.substr(11, 2);
+		_hour = dt_format.substr(11, 2);
 		_minute = dt_format.substr(14, 2);
 		_second = std::to_string(DEFAULT_TIME_VALUE);
 	}
-	else{
+	else {
 		_day = dt_format.substr(0, 2);
 		_month = dt_format.substr(3, 2);
 		_year = dt_format.substr(6, 4);
@@ -213,7 +210,7 @@ bool DateTime::operator<(DateTime& other)
 
 bool DateTime::operator==(DateTime& other)
 {
-	if (!(* this > other) && !(*this < other)) {
+	if (!(*this > other) && !(*this < other)) {
 		return true;
 	}
 	return false;
@@ -385,7 +382,3 @@ void DateTime::InitTime(int hours, int minutes, int seconds) {
 	this->minutes = minutes;
 	this->seconds = seconds;
 }
-
-
-
-

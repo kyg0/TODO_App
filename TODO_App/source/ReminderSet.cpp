@@ -8,7 +8,6 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 	if (fw != nullptr) {
 		this->fileWorker = std::move(fw);
 	}
-	// what happens if pointers above are null? Is it covered with tests?
 
 	int i = 1;
 	std::string path = "out/";
@@ -25,7 +24,7 @@ ReminderSet::ReminderSet(FileWorkerInterface* fw, DateTimeWorkerInterface* dtw)
 			catch (DateTimeException err) {
 				std::cout << "Problem with file  : \"" << filePath << "\" : " << err.what()  <<std::endl;
 			}
-			catch (InvalidExecutionDate err) {
+			catch (InvalidExecutionDateException err) {
 				std::cout << "Problem with file : \"" << filePath << "\"  : " << err.what() << std::endl;
 			}
 			catch (InvalidIndexException err) {
@@ -70,7 +69,7 @@ void ReminderSet::makeNewEntry(ReminderEntry* newEntry)
 	catch (DateTimeException err) {
 		throw err;
 	}
-	catch (InvalidExecutionDate err) {
+	catch (InvalidExecutionDateException err) {
 		throw err;
 	}
 

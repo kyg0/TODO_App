@@ -6,4 +6,3 @@ class DateTimeWorker : public DateTimeWorkerInterface
 public:
 	std::vector<int> GetCurrentDateAndTime();
 };
-

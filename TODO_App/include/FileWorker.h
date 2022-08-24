@@ -2,7 +2,7 @@
 #include "../interface/FileWorkerInterface.h"
 
 class FileWorker :
-    public FileWorkerInterface
+	public FileWorkerInterface
 {
 public:
 	void writeInFile(std::string path, std::string output);
@@ -12,4 +12,3 @@ public:
 	StringVector getAllFromDirectory(std::string dir_path);
 	bool fileExists(std::string path);
 };
-

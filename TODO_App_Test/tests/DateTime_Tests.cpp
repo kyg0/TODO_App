@@ -331,64 +331,64 @@ TEST_F(DateTimeTest_Constructor, CorrectFormat) {
 TEST_F(DateTimeTest_Constructor, InvalidFormat) {
 	try {
 		SetUp("9/9/2022 9:30:32");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("09/09/2022 9:9:9");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("29/09/2o22 13:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("29/09/2022 13/0/0");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("29/09/999 13:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/11/10000 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/o3/2019 12:00:00");
-		FAIL() << "Expected: DateTimeException => " + std::string(ERR_MSG_FOR_FORMAT);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_FORMAT);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_FORMAT);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -396,181 +396,181 @@ TEST_F(DateTimeTest_Constructor, InvalidFormat) {
 TEST_F(DateTimeTest_Constructor, WrongValues) {
 	try {
 		SetUp("32/01/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("00/01/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("29/02/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/02/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("32/03/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("31/04/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("31/06/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("31/09/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("31/11/2022 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/11/2019 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/11/0223 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/00/2023 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/13/2023 12:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 24:00:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 25:00:00");
-			FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 23:60:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 23:99:00");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 23:00:60");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 23:00:61");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp("30/03/2023 23:00:99");
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -667,37 +667,37 @@ TEST_F(DateTimeTest_Constructor, CorrectValues_BoundaryValuesForFebruary) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForDays_30DaysMonth) {
 	try {
 		SetUp(MAX_DAY_VALUE_30DAY_MONTH + 1, Month::APRIL, 2100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch(DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG)+ std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(MAX_DAY_VALUE_30DAY_MONTH + 1, Month::JUNE, 2100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(MAX_DAY_VALUE_30DAY_MONTH + 1, Month::SEPTEMBER, 2100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(MAX_DAY_VALUE_30DAY_MONTH + 1, Month::NOVEMBER, 2100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -705,19 +705,19 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForDays_30DaysMonth) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForDays_AnyMonth) {
 	try {
 		SetUp(MAX_DAY_VALUE_31DAY_MONTH + 1, Month::NOVEMBER, 2100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		DateTime dt(MIN_DAY_VALUE - 1, Month::APRIL, 2100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -725,19 +725,19 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForDays_AnyMonth) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForMonth) {
 	try {
 		SetUp(15, MIN_MONTH_VALUE - 1, 2025);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(15, MAX_MONTH_VALUE + 1, 2025);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -745,37 +745,37 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForMonth) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForYear) {
 	try {
 		SetUp(30, 4, MIN_YEAR_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(30, 4, 0);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(30, 4, -1);
-		FAIL() << "Exptected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		DateTime dt3(30, 4, MAX_YEAR_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch(DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -783,28 +783,28 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForYear) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForFebruary) {
 	try {
 		SetUp(MAX_DAY_VALUE_FEBRUATY_LEAP, Month::FEBRUARY, 2101);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(MAX_DAY_VALUE_30DAY_MONTH, Month::FEBRUARY, 2028);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(MIN_DAY_VALUE - 1, Month::FEBRUARY, 2028);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -812,19 +812,19 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForFebruary) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForHours) {
 	try {
 		SetUp(30, 4, 2100, MIN_HOURS_VALUE - 1, 0);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(30, 4, 2100, MAX_HOURS_VALUE + 1, 0);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -832,19 +832,19 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForHours) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForMinutes) {
 	try {
 		SetUp(30, 4, 2100, 10, MIN_MINUTES_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(30, 4, 2100, 10, MAX_MINUTES_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -852,19 +852,19 @@ TEST_F(DateTimeTest_Constructor, InvalidValues_ForMinutes) {
 TEST_F(DateTimeTest_Constructor, InvalidValues_ForSeconds) {
 	try {
 		SetUp(30, 4, 2100, 0, 0, MIN_SECONDS_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(30, 4, 2100, 0, 0, MAX_SECONDS_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected:" + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -1013,10 +1013,10 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
 	try {
 		SetUp(date);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1024,10 +1024,10 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
 	try {
 		SetUp(date);
 		setAndTestDay(-5);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(),msg);
 		TearDown();
 	}
@@ -1035,10 +1035,10 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays) {
 	try {
 		SetUp(date);
 		setAndTestDay(40);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1048,64 +1048,60 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays_30DaysMonth) {
 	try {
 		SetUp(26, Month::APRIL, 2040);
 		setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::APRIL, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::APRIL, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::APRIL, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JUNE, 2040);
 		setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JUNE, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
@@ -1115,97 +1111,97 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays_30DaysMonth) {
 		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JUNE, 2040);
 		setAndTestDay(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::SEPTEMBER, 2040);
 		setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::SEPTEMBER, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::SEPTEMBER, 2040);
 		setAndTestDay(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::SEPTEMBER, 2040);
 		setAndTestDay(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::NOVEMBER, 2040);
 		setAndTestDay(MAX_DAY_VALUE_30DAY_MONTH + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::NOVEMBER, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::NOVEMBER, 2040);
 		setAndTestDay(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::NOVEMBER, 2040);
 		setAndTestDay(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -1214,308 +1210,280 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays_31DayMonth) {
 	try {
 		SetUp(26, Month::JANUARY, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JANUARY, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JANUARY, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JANUARY, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MARCH, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MARCH, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MARCH, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MARCH, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MAY, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ( err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MAY, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MAY, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::MAY, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JULY, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JULY, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JULY, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::JULY, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::AUGUST, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::AUGUST, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::AUGUST, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::AUGUST, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::OCTOBER, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::OCTOBER, 2040);
 		setAndTestDay(MIN_DAY_VALUE -1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::OCTOBER, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::OCTOBER, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::DECEMBER, 2040);
 		setAndTestDay(MAX_DAY_VALUE_31DAY_MONTH + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::DECEMBER, 2040);
 		setAndTestDay(MIN_DAY_VALUE - 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::DECEMBER, 2040);
 		setAndTestDay(-1);
-
-		FAIL() << "Expected: DateTime Exception =>" + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::DECEMBER, 2040);
 		setAndTestDay(100);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -1524,88 +1492,80 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForDays_February) {
 	try {
 		SetUp(26, Month::FEBRUARY, 2100);
 		setAndTestDay(MAX_DAY_VALUE_FEBRUATY_LEAP + 1);
-
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2100);
-
 		setAndTestDay(50);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2100);
-
 		setAndTestDay(MIN_DAY_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2100);
-
 		setAndTestDay(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2099);
-
 		setAndTestDay(MAX_DAY_VALUE_FEBRUARY_NOLEAP + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2099);
-
 		setAndTestDay(MIN_DAY_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2099);
-
 		setAndTestDay(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 
 	try {
 		SetUp(26, Month::FEBRUARY, 2099);
-
 		setAndTestDay(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_DAYS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_DAYS);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
@@ -1614,48 +1574,44 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForMonth) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
 	try {
 		SetUp(date);
-
 		setAndTestMonth(MIN_MONTH_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestMonth(MAX_MONTH_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestMonth(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestMonth(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MONTH);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MONTH);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1665,60 +1621,55 @@ TEST_F(DateTimeTest_Setter, InvalidValues_ForYear) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
 	try {
 		SetUp(date);
-
 		setAndTestYear(MIN_YEAR_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestYear(MAX_YEAR_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestYear(0);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestYear(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestYear(100000);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_YEAR);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_YEAR);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1728,48 +1679,44 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForHours) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
 	try {
 		SetUp(date);
-
 		setAndTestHours(MIN_HOURS_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestHours(MAX_HOURS_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestHours(60);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestHours(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_HOURS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_HOURS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1779,48 +1726,44 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForMinutes) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
 	try {
 		SetUp(date);
-
 		setAndTestMinutes(MIN_MINUTES_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestMinutes(MAX_MINUTES_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestMinutes(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestMinutes(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_MINUTES);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_MINUTES);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1830,36 +1773,33 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForSeconds) {
 	std::vector<int> date{ 26, 9, 2022, 5, 5, 5 };
 	try {
 		SetUp(date);
-
 		setAndTestSeconds(MIN_SECONDS_VALUE - 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestSeconds(MAX_SECONDS_VALUE + 1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
 
 	try {
 		SetUp(date);
-
 		setAndTestSeconds(100);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1868,10 +1808,10 @@ TEST_F(DateTimeTest_Setter, InvalidValue_ForSeconds) {
 		SetUp(date);
 
 		setAndTestSeconds(-1);
-		FAIL() << "Expected: DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		FAIL() << "Expected: " + std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 	}
 	catch (DateTimeException err) {
-		std::string msg = "DateTime Exception => " + std::string(ERR_MSG_FOR_SECONDS);
+		std::string msg = std::string(TYPE_DATETIME_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_FOR_SECONDS);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}

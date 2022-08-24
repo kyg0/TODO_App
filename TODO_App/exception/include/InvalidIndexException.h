@@ -1,5 +1,7 @@
 #pragma once
-#include <string>
+#include "../include/ReportException.h"
+
+#define TYPE_INV_INDEX_EXCEPTION "InvalidIndex"
 
 #define ERR_MSG_INVALID_INDEX "Invalid index"
 #define ERR_MSG_INVALID_OBJECT "Invalid object"
@@ -7,20 +9,8 @@
 #define ERR_MSG_INVALID_DESCRIPTION_ARGUMENT "Index out of bounds. You haven't define description but you have used argument -d"
 #define ERR_MSG_INVALID_DATE_ARGUMENT "Index out of bounds. You didn't define date and time argument correctly."
 
-class InvalidIndexException : public std::exception {
-	std::string err_msg;
-
+class InvalidIndexException : public ReportException{
 public:
-	// Same as for DateTimeException. Move definitions into a separate file
-	InvalidIndexException(char* msg) {
-		this->err_msg = "InvalidIndex Exception => " + std::string(msg);
-	}
-
-	InvalidIndexException(std::string msg) {
-		this->err_msg = "InvalidIndex Exception => " + msg;
-	}
-
-	std::string what() {
-		return err_msg;
-	}
+	InvalidIndexException(char* msg, std::string type = "");
+	InvalidIndexException(std::string msg, std::string type = "");
 };

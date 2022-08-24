@@ -1,8 +1,8 @@
 #pragma once
 #include <map>
 #include "ReminderEntry.h"
-#include "../exception/InvalidIndexException.h"
-#include "../exception/NullObjectException.h"
+#include "../exception/include/InvalidIndexException.h"
+#include "../exception/include/NullObjectException.h"
 
 namespace fs = std::filesystem;
 using SetMap = std::map<int, ReminderEntry*>;
@@ -45,7 +45,3 @@ public:
 
 	ReminderEntry* readFromFile(std::string path);
 };
-
-
-
-

@@ -140,7 +140,7 @@ ReminderEntry::ReminderEntry(DateTime* execDate, std::string title, std::string 
 	catch (DateTimeException err) {
 		throw err;
 	}
-	catch (InvalidExecutionDate err) {
+	catch (InvalidExecutionDateException err) {
 		throw err;
 	}
 
@@ -192,7 +192,6 @@ ReminderEntry& ReminderEntry::operator=(const ReminderEntry& other) {
 		this->status = other.status;
 		this->filePath = other.filePath;
 	}
-
 	return *this;
 }
 
@@ -212,28 +211,15 @@ DateTime* ReminderEntry::getExecutionDate()
 
 bool ReminderEntry::operator==(ReminderEntry& other)
 {
-	// Can be refactored following something like:
-	// bool title_equal = (this->title == other.getTitle());
-	// bool description_equal = (this->description == other.getDescription());
-	// ...
-	// if (title_equal &&
-	// 	   description_equal && ...) {
-	//	   return true;
-	// }
-	// to avoid having high level of if statements
-	if (this->title == other.getTitle()) {
-		if (this->description == other.getDescription()) {
-			if (*this->dateCreated == *other.getDateCreated()) {
-				if (*this->executionDate == *other.getExecutionDate()) {
-					if (this->status == other.getEntryStatus()) {
-						if (this->filePath == other.getFilePath()) {
-							return true;
-						}
-					}
-				}
+	bool isTitleEqual = this->title == other.getTitle();
+	bool isDescriptionEqual = this->description == other.getDescription();
+	bool isDateCreatedEqual = *this->dateCreated == *other.getDateCreated();
+	bool isExecDateEqual = *this->executionDate == *other.getExecutionDate();
+	bool isStatusEqual = this->status == other.getEntryStatus();
+	bool isFilePathEqual = this->filePath == other.getFilePath();
 
-			}
-		}
+	if (isTitleEqual && isDescriptionEqual && isDateCreatedEqual && isExecDateEqual && isStatusEqual && isFilePathEqual) {
+		return true;
 	}
 	return false;
 }
@@ -266,7 +252,7 @@ void ReminderEntry::setExecutionDate(DateTime& execDate)
 	catch (DateTimeException err) {
 		throw err;
 	}
-	catch (InvalidExecutionDate err) {
+	catch (InvalidExecutionDateException err) {
 		throw err;
 	}
 
@@ -324,7 +310,7 @@ void ReminderEntry::setStatus(EntryStatus status)
 void ReminderEntry::checkExecDateValidity(DateTime& execDate)
 {
 	if (execDate > *dateCreated) {
-		throw InvalidExecutionDate(ERR_MSG_INVALID_EXEC_DATE);
+		throw InvalidExecutionDateException(ERR_MSG_INVALID_EXEC_DATE);
 	}
 }
 

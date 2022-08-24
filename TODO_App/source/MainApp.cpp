@@ -25,10 +25,6 @@ ReminderSet* MainApp::getSet()
 	return set;
 }
 
-void MainApp::updateSet() {
-	//TODO
-}
-
 void MainApp::execCommand(std::string command)
 {
 	StringVector cmd_split = deriveCommand(command);
@@ -43,16 +39,16 @@ void MainApp::execCommand(std::string command)
 			execCommand_New(cmd_split);
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (InvalidIndexException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (DateTimeException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
-		catch (InvalidExecutionDate err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		catch (InvalidExecutionDateException err) {
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "get") {
@@ -64,14 +60,14 @@ void MainApp::execCommand(std::string command)
 				execCommand_Get();
 			}
 			else if (cmd_split.size() == 2) {
-				execCommand_Get(cmd_split[1]);
+					execCommand_Get(cmd_split[1]);
 			}
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (InvalidIndexException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "delete") {
@@ -82,15 +78,15 @@ void MainApp::execCommand(std::string command)
 			execCommand_Delete(std::stoi(cmd_split[1]));
 		}
 		catch (InvalidIndexException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "sort") {
 		if (cmd_split.size() > 3) {
-			std::cout << "  Something went wrong: " << InvalidCommandException(TOO_MANY_ARGS).what() << std::endl;
+			std::cout << " Something went wrong: " << InvalidCommandException(TOO_MANY_ARGS).what() << std::endl;
 			return;
 		}
 		bool descending = true;
@@ -121,7 +117,7 @@ void MainApp::execCommand(std::string command)
 			}
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "filter") {
@@ -129,13 +125,13 @@ void MainApp::execCommand(std::string command)
 			deriveAndExecCommand_Filter(cmd_split);
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (DateTimeException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (InvalidIndexException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "edit") {
@@ -146,16 +142,16 @@ void MainApp::execCommand(std::string command)
 			execCommand_Edit(std::stoi(cmd_split[1]));
 		}
 		catch (DateTimeException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
-		catch (InvalidExecutionDate err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+		catch (InvalidExecutionDateException err) {
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (InvalidIndexException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 	else if (cmd == "help") {
@@ -167,7 +163,7 @@ void MainApp::execCommand(std::string command)
 				execCommand_Help(cmd_split[1]);
 			}
 			else {
-				std::string msg = "  Wrong usage of command <help>. Try 'help' or 'help -[command]'";
+				std::string msg = " Wrong usage of command <help>. Try 'help' or 'help -[command]'";
 				throw InvalidCommandException(msg);
 			}
 		}
@@ -185,7 +181,7 @@ void MainApp::execCommand(std::string command)
 			}
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 		system("cls");
 	}
@@ -208,7 +204,7 @@ void MainApp::execCommand(std::string command)
 			}
 		}
 		catch (InvalidCommandException err) {
-			std::cout << "  Something went wrong: " << err.what() << std::endl;
+			std::cout << " Something went wrong: " << err.what() << std::endl;
 		}
 	}
 }
@@ -237,7 +233,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 			else if (command[i] == "-1" || command[i] == "-0") {
 				if (command[i] == "-1")
 					finished = true;
-				else if(command[i] == "-0")
+				else if (command[i] == "-0")
 					finished = false;
 			}
 		}
@@ -258,8 +254,8 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 		}
 		else if (command[i] == "-mode") {
 			if (i + 1 >= command.size()) {
-				std::cout << std::endl << "  You have to define argument for -mode" << std::endl;
-				std::cout << "  '-mode [1|0]' or '-mode [after|before]" << std::endl;
+				std::cout << std::endl << " You have to define argument for -mode" << std::endl;
+				std::cout << " '-mode [1|0]' or '-mode [after|before]" << std::endl;
 				throw InvalidCommandException(WRONG_USE);
 			}
 			else if (command[i + 1] == "before" || command[i + 1] == "0") {
@@ -271,8 +267,8 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 				i++;
 			}
 			else {
-				std::cout << std::endl << "  You have to define argument for -mode" << std::endl;
-				std::cout << "  '-mode [1|0]' or '-mode [after|before]" << std::endl;
+				std::cout << std::endl << " You have to define argument for -mode" << std::endl;
+				std::cout << " '-mode [1|0]' or '-mode [after|before]" << std::endl;
 				throw InvalidCommandException(WRONG_USE);
 			}
 		}
@@ -281,8 +277,8 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 				tmp_date = command[i + 1];
 			}
 			else {
-				std::cout << std::endl << "  You have to define date and time for -date" << std::endl;
-				std::cout << "  'Format: -date <date> <time>' or '-date \"date and time\"'" << std::endl;
+				std::cout << std::endl << " You have to define date and time for -date" << std::endl;
+				std::cout << " 'Format: -date <date> <time>' or '-date \"date and time\"'" << std::endl;
 				throw InvalidCommandException(NO_DATE);
 			}
 			if (i + 2 < command.size()) {
@@ -317,7 +313,7 @@ void MainApp::deriveAndExecCommand_Filter(StringVector command) {
 				}
 			}
 		}
-		else if (command[i] == "-asc" || command[i] == "-des" || command[i] == "-0"  || command[i] == "-1") {
+		else if (command[i] == "-asc" || command[i] == "-des" || command[i] == "-0" || command[i] == "-1") {
 			if (command[i] == "-asc" || command[i] == "-0")
 				descending = false;
 			else
@@ -354,8 +350,8 @@ StringVector MainApp::deriveCommand(std::string command) {
 			}
 			std::cout << std::endl;
 			cmd_split.push_back(tmp_arg);
-			if (i + 1 < command.size() && command[i+1] == ' ') {
-				while (command[i+1] == ' ') {
+			if (i + 1 < command.size() && command[i + 1] == ' ') {
+				while (command[i + 1] == ' ') {
 					i++;
 					pos = i + 1;
 				}
@@ -384,16 +380,16 @@ void MainApp::printSet(SetMap printSet)
 	SetMap::iterator it;
 
 	if ((it = printSet.begin()) == printSet.end()) {
-		std::cout << "  Set is empty." << std::endl;
-		std::cout << "  Use command <new> to create new reminders." << std::endl;
+		std::cout << " Set is empty." << std::endl;
+		std::cout << " Use command <new> to create new reminders." << std::endl;
 
 		return;
 	}
 
 	std::cout << "========================================================================================" << std::endl;
-	std::cout << "=====                                 YOUR REMINDERS                               =====" << std::endl;
+	std::cout << "===== YOUR REMINDERS =====" << std::endl;
 	std::cout << "========================================================================================" << std::endl;
-	std::cout << "= No. |             Title                |    Date created      |    Reminder date     =" << std::endl;
+	std::cout << "= No. | Title | Date created | Reminder date =" << std::endl;
 	std::cout << "========================================================================================" << std::endl;
 
 	for (it = printSet.begin(); it != printSet.end(); it++) {
@@ -409,7 +405,7 @@ void MainApp::printEntry(int index, ReminderEntry& entry)
 
 	std::string _number;
 	if (index < 10) {
-		_number = "  " + std::to_string(index);
+		_number = " " + std::to_string(index);
 	}
 	else if (index < 100) {
 		_number = " " + std::to_string(index);
@@ -427,18 +423,18 @@ void MainApp::printEntry(int index, ReminderEntry& entry)
 		_title += " ";
 	}
 
-	std::string _dateCreated = " 00/00/0000 00:00:00  ";
+	std::string _dateCreated = " 00/00/0000 00:00:00 ";
 	if (entry.getDateCreated() != nullptr) {
-		_dateCreated = " " + entry.getDateCreated()->getFormat(true) + "  ";
+		_dateCreated = " " + entry.getDateCreated()->getFormat(true) + " ";
 	}
-	//std::string _dateCreated = " " + entry.getDateCreated()->getFormat(true) + "  ";
-	std::string _execDate = "   00/00/0000 00:00   ";
+	//std::string _dateCreated = " " + entry.getDateCreated()->getFormat(true) + " ";
+	std::string _execDate = " 00/00/0000 00:00 ";
 	if (entry.getExecutionDate() != nullptr) {
-		_execDate = "   " + entry.getExecutionDate()->getFormat(false) + "   ";
+		_execDate = " " + entry.getExecutionDate()->getFormat(false) + " ";
 	}
 
-	std::cout << "= " << _number << "   " << _title << "  " << _dateCreated << " " << _execDate << " =" << std::endl;
-	std::cout << "=                                                                                      =" << std::endl;
+	std::cout << "= " << _number << " " << _title << " " << _dateCreated << " " << _execDate << " =" << std::endl;
+	std::cout << "= =" << std::endl;
 
 	std::string _description = entry.getDescription();
 	std::string emptyRow;
@@ -451,7 +447,7 @@ void MainApp::printEntry(int index, ReminderEntry& entry)
 	}
 	_row = emptyRow;
 
-	int rowIndex = 2; // row = "=_ ... _="   _ is space
+	int rowIndex = 2; // row = "=_ ... _=" _ is space
 	//max{rowIndex} = _row.size() - 2 - 1 = 85
 	for (int i = 0; i < _description.size(); i++) {
 		if (rowIndex != 2 && rowIndex % 85 == 0) {
@@ -465,7 +461,7 @@ void MainApp::printEntry(int index, ReminderEntry& entry)
 				_row = emptyRow;
 				//_row[rowIndex++] = _description[i];
 			}
-			else if(_description[i+1] != ' ' && _description[i]!=' ') {
+			else if (_description[i + 1] != ' ' && _description[i] != ' ') {
 				_row[rowIndex++] = '-';
 				std::cout << _row << std::endl;
 				_row = emptyRow;
@@ -512,12 +508,12 @@ void MainApp::printEntry(int index, ReminderEntry& entry)
 
 	std::cout << "= Status : ";
 	if (entry.getEntryStatus() == EntryStatus::FINISHED) {
-		std::cout << "finished                                                                    =" << std::endl;
+		std::cout << "finished =" << std::endl;
 	}
 	else {
-		std::cout << "not finished                                                                =" << std::endl;
+		std::cout << "not finished =" << std::endl;
 	}
- }
+}
 
 void MainApp::printStartScreen() {
 	printWelcomeMessage();
@@ -540,73 +536,73 @@ void MainApp::printEnterCommandScreen() {
 
 void MainApp::execCommand_Help(std::string flag) {
 	if (flag == "") {
-		std::cout << "  Available commands: " << std::endl;
-		std::cout << "  get     -   Display all existing reminders" << std::endl;
-		std::cout << "  sort    -   Sort reminders" << std::endl;
-		std::cout << "  filter  -   Filter reminders" << std::endl;
-		std::cout << "  new     -   Make new reminder" << std::endl;
-		std::cout << "  delete  -   Delete reminder" << std::endl;
-		std::cout << "  edit    -   Edit reminder" << std::endl;
-		std::cout << "  cls     -   Cleares out the screen" << std::endl;
-		std::cout << "  exit    -   Closes the program" << std::endl;
+		std::cout << " Available commands: " << std::endl;
+		std::cout << " get - Display all existing reminders" << std::endl;
+		std::cout << " sort - Sort reminders" << std::endl;
+		std::cout << " filter - Filter reminders" << std::endl;
+		std::cout << " new - Make new reminder" << std::endl;
+		std::cout << " delete - Delete reminder" << std::endl;
+		std::cout << " edit - Edit reminder" << std::endl;
+		std::cout << " cls - Cleares out the screen" << std::endl;
+		std::cout << " exit - Closes the program" << std::endl;
 		std::cout << std::endl << "To see detailed description of one command type \"help -[command]\" " << std::endl;
 	}
 	else {
 		if (flag == "-get") {
-			std::cout << std::endl << "  Displays all existing reminders" << std::endl << std::endl;
-			std::cout << "  Type 'get' with no arguments to display all existing reminders" << std::endl;
+			std::cout << std::endl << " Displays all existing reminders" << std::endl << std::endl;
+			std::cout << " Type 'get' with no arguments to display all existing reminders" << std::endl;
 		}
-		else if(flag == "-sort") {
-			std::cout << std::endl << "  Displays sorted set of reminders" << std::endl << std::endl;
-			std::cout << "  Type 'sort' to sort reminder the reminder set" << std::endl;
-			std::cout << "  Use this command as following" << std::endl;
-			std::cout << "  'sort -[arg] -[ord]" << std::endl;
-			std::cout << "      [arg] is by what argument you wish to sort reminders by" << std::endl;
-			std::cout << "      Available arguments are: -[t|d|ed|dc|s] which stand for title, description, execution " << std::endl;
-		    std::cout << "      and creation dates respectively" << std::endl;
-			std::cout << "      Second argument displays sorted set in descending(1 or -des) or ascending order(0 or -asc)" << std::endl;
-			std::cout << "      but if you use if to sort by status 1 means first will be displayed that are finished" << std::endl;
-			std::cout << "          Descending order is default value" << std::endl;
+		else if (flag == "-sort") {
+			std::cout << std::endl << " Displays sorted set of reminders" << std::endl << std::endl;
+			std::cout << " Type 'sort' to sort reminder the reminder set" << std::endl;
+			std::cout << " Use this command as following" << std::endl;
+			std::cout << " 'sort -[arg] -[ord]" << std::endl;
+			std::cout << " [arg] is by what argument you wish to sort reminders by" << std::endl;
+			std::cout << " Available arguments are: -[t|d|ed|dc|s] which stand for title, description, execution " << std::endl;
+			std::cout << " and creation dates respectively" << std::endl;
+			std::cout << " Second argument displays sorted set in descending(1 or -des) or ascending order(0 or -asc)" << std::endl;
+			std::cout << " but if you use if to sort by status 1 means first will be displayed that are finished" << std::endl;
+			std::cout << " Descending order is default value" << std::endl;
 		}
 		else if (flag == "-filter") {
-			std::cout << std::endl << "  Displays sorted set of reminders with applied filter" << std::endl << std::endl;
-			std::cout << "  Type 'filter' to filter and sort reminder set in desired way" << std::endl;
-			std::cout << "  Use this command as following" << std::endl;
-			std::cout << "  'filter -[f|dc|ed] -mode [after|before|0|1] -date <date> <time> -[asc|des]" << std::endl;
-			std::cout << "      First argument -s|dc|ed defines by what parameter you want to filter the set" << std::endl;
-			std::cout << "      (status, date created or execution date)" << std::endl;
-			std::cout << "      Argument 0(1) means before(after) entered date and time" << std::endl;
-			std::cout << "      Last argument displays sorted set in descending or ascending order" << std::endl;
-			std::cout << "          Descending order is default value" << std::endl;
+			std::cout << std::endl << " Displays sorted set of reminders with applied filter" << std::endl << std::endl;
+			std::cout << " Type 'filter' to filter and sort reminder set in desired way" << std::endl;
+			std::cout << " Use this command as following" << std::endl;
+			std::cout << " 'filter -[f|dc|ed] -mode [after|before|0|1] -date <date> <time> -[asc|des]" << std::endl;
+			std::cout << " First argument -s|dc|ed defines by what parameter you want to filter the set" << std::endl;
+			std::cout << " (status, date created or execution date)" << std::endl;
+			std::cout << " Argument 0(1) means before(after) entered date and time" << std::endl;
+			std::cout << " Last argument displays sorted set in descending or ascending order" << std::endl;
+			std::cout << " Descending order is default value" << std::endl;
 		}
 		else if (flag == "-new") {
-			std::cout << std::endl << "  Makes new reminder" << std::endl;
-			std::cout << "  Type 'new' to make new reminder" << std::endl;
-			std::cout << std::endl << "  Use this command as following" << std::endl;
-			std::cout << "  'new -t <title> -d <description> -ed <exec_date> " << std::endl;
-			std::cout << "      Arguments are optional, but if you enter just 'new' you will be" << std::endl;
-			std::cout << "      able to enter arguments of reminder one by one" << std::endl << std::endl;
-			std::cout << "  DISCLAIMER: If you wish to format description with typing text in multiple" << std::endl;
-			std::cout << "              lines. Type ';' and everything after that will be in new line" << std::endl;
+			std::cout << std::endl << " Makes new reminder" << std::endl;
+			std::cout << " Type 'new' to make new reminder" << std::endl;
+			std::cout << std::endl << " Use this command as following" << std::endl;
+			std::cout << " 'new -t <title> -d <description> -ed <exec_date> " << std::endl;
+			std::cout << " Arguments are optional, but if you enter just 'new' you will be" << std::endl;
+			std::cout << " able to enter arguments of reminder one by one" << std::endl << std::endl;
+			std::cout << " DISCLAIMER: If you wish to format description with typing text in multiple" << std::endl;
+			std::cout << " lines. Type ';' and everything after that will be in new line" << std::endl;
 		}
 		else if (flag == "-delete") {
-			std::cout << std::endl << "  Deletes one reminder from the set" << std::endl;
+			std::cout << std::endl << " Deletes one reminder from the set" << std::endl;
 
-			std::cout << std::endl << "  Type 'delete n' to delete reminder with the index n" << std::endl;
-			std::cout << "  TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
-			std::cout << "  which will help you to know what reminder to delete" << std::endl;
+			std::cout << std::endl << " Type 'delete n' to delete reminder with the index n" << std::endl;
+			std::cout << " TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
+			std::cout << " which will help you to know what reminder to delete" << std::endl;
 		}
 		else if (flag == "-edit") {
-			std::cout << std::endl << "  Type 'edit n to edit reminder with the index n and you will be" << std::endl;
-			std::cout << "  presented with options to enter information and edit." << std::endl << std::endl;
-			std::cout << "  TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
-			std::cout << "  which will help you to know what reminder to delete" << std::endl;
+			std::cout << std::endl << " Type 'edit n to edit reminder with the index n and you will be" << std::endl;
+			std::cout << " presented with options to enter information and edit." << std::endl << std::endl;
+			std::cout << " TIP: Use this command along side command 'get' to see all the reminders" << std::endl;
+			std::cout << " which will help you to know what reminder to delete" << std::endl;
 		}
 		else if (flag == "-exit" || flag == "-close" || flag == "-quit" || flag == "-end") {
-			std::cout << std::endl << "  Type exit (close or quit or end) to stop the application" << std::endl;
+			std::cout << std::endl << " Type exit (close or quit or end) to stop the application" << std::endl;
 		}
 		else if (flag == "-cls" || flag == "-clear") {
-			std::cout << std::endl << "  Type 'cls' or 'clear' to clear out the screen." << std::endl;
+			std::cout << std::endl << " Type 'cls' or 'clear' to clear out the screen." << std::endl;
 		}
 		else if (flag == "delete" || flag == "new" || flag == "sort" || flag == "filter" || flag == "get" || flag == "edit" || flag == "cls" ||
 			flag == "clear" || flag == "exit" || flag == "quit" || flag == "close" || flag == "end") {
@@ -625,7 +621,13 @@ void MainApp::execCommand_Get() {
 }
 
 void MainApp::execCommand_Get(std::string index) {
-	int n = std::stoi(index);
+	int n;
+	try {
+		n = std::stoi(index);
+	}
+	catch (std::invalid_argument err) {
+		throw InvalidCommandException(err.what());
+	}
 	SetMap tmp = set->getAll();
 	SetMap m;
 	MapIterator it;
@@ -663,7 +665,7 @@ void MainApp::execCommand_New(StringVector cmd) {
 		catch (DateTimeException err) {
 			throw err;
 		}
-		catch (InvalidExecutionDate err) {
+		catch (InvalidExecutionDateException err) {
 			throw err;
 		}
 	}
@@ -777,7 +779,7 @@ void MainApp::execCommand_New(StringVector cmd) {
 	catch (DateTimeException err) {
 		throw err;
 	}
-	catch (InvalidExecutionDate err) {
+	catch (InvalidExecutionDateException err) {
 		throw err;
 	}
 }
@@ -839,7 +841,7 @@ void MainApp::execCommand_Edit(int index) {
 	catch (DateTimeException err) {
 		throw err;
 	}
-	catch (InvalidExecutionDate err) {
+	catch (InvalidExecutionDateException err) {
 		throw err;
 	}
 	catch (InvalidIndexException err) {
@@ -874,12 +876,12 @@ void MainApp::makeNewEntry(std::string execDate, std::string title, std::string 
 		try {
 			set->makeNewEntry(new ReminderEntry(title, description));
 			if (title.size() > MAX_TITLE_LEN) {
-				std::cout << "   Title was too long." << " Title was set to: " << title.substr(0, MAX_TITLE_LEN) << std::endl;
-				std::cout << "   Instead of : " << title << std::endl;
+				std::cout << " Title was too long." << " Title was set to: " << title.substr(0, MAX_TITLE_LEN) << std::endl;
+				std::cout << " Instead of : " << title << std::endl;
 			}
 			if (description.size() > MAX_DESCRIPTION_LEN) {
-				std::cout << "   Description was to long and it was shortened to " << MAX_DESCRIPTION_LEN << " characters" << std::endl;
-				std::cout << "   Type 'get' to see what the reminder looks like" << std::endl;
+				std::cout << " Description was to long and it was shortened to " << MAX_DESCRIPTION_LEN << " characters" << std::endl;
+				std::cout << " Type 'get' to see what the reminder looks like" << std::endl;
 			}
 		}
 		catch (...) {
@@ -891,18 +893,18 @@ void MainApp::makeNewEntry(std::string execDate, std::string title, std::string 
 		try {
 			set->makeNewEntry(new ReminderEntry(new DateTime(execDate), title, description));
 			if (title.size() > MAX_TITLE_LEN) {
-				std::cout << "   Title was too long." << " Title was set to: " << title.substr(0, MAX_TITLE_LEN) << std::endl;
-				std::cout << "   Instead of : " << title << std::endl;
+				std::cout << " Title was too long." << " Title was set to: " << title.substr(0, MAX_TITLE_LEN) << std::endl;
+				std::cout << " Instead of : " << title << std::endl;
 			}
 			if (description.size() > MAX_DESCRIPTION_LEN) {
-				std::cout << "   Description was to long and it was shortened to " << MAX_DESCRIPTION_LEN << " characters" << std::endl;
-				std::cout << "   Type 'get' to see what the reminder looks like" << std::endl;
+				std::cout << " Description was to long and it was shortened to " << MAX_DESCRIPTION_LEN << " characters" << std::endl;
+				std::cout << " Type 'get' to see what the reminder looks like" << std::endl;
 			}
 		}
 		catch (DateTimeException err) {
 			throw err;
 		}
-		catch (InvalidExecutionDate err) {
+		catch (InvalidExecutionDateException err) {
 			throw err;
 		}
 		catch (...) {
@@ -915,8 +917,8 @@ void MainApp::makeNewEntry(std::string execDate, std::string title, std::string 
 }
 
 void MainApp::printWelcomeMessage() {
-	std::cout << "> TODO APP  started" << std::endl << std::endl;
-	std::cout << "  Type <help> to see available commands" << std::endl;
+	std::cout << "> TODO APP started" << std::endl << std::endl;
+	std::cout << " Type <help> to see available commands" << std::endl;
 }
 
 void MainApp::printMakeNewEntry() {
@@ -953,7 +955,7 @@ void MainApp::printMakeNewEntry() {
 	catch (DateTimeException err) {
 		throw err;
 	}
-	catch (InvalidExecutionDate err) {
+	catch (InvalidExecutionDateException err) {
 		throw err;
 	}
 	catch (...) {
@@ -1079,7 +1081,7 @@ void MainApp::printEditEntry(int index, ReminderEntry* oldEntry) {
 			}
 			set->editEntry(index, newEntry);
 
-			std::cout << "  Successfully edited!" << std::endl;
+			std::cout << " Successfully edited!" << std::endl;
 		}
 		catch (DateTimeException err) {
 			throw err;
@@ -1087,7 +1089,7 @@ void MainApp::printEditEntry(int index, ReminderEntry* oldEntry) {
 		catch (InvalidIndexException err) {
 			throw err;
 		}
-		catch (InvalidExecutionDate err) {
+		catch (InvalidExecutionDateException err) {
 			throw err;
 		}
 		catch (...) {

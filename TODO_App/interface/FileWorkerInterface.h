@@ -1,11 +1,11 @@
 #pragma once
-#include <fstream> // doesn't seem that you need all those includes here. Move unnecessary ones to .c files
+#include <fstream>
 #include <string>
 #include <iostream>
 #include <filesystem>
 #include <vector>
 
-#include "../exception/FileException.h"
+#include "../exception/include/FileException.h"
 
 #define ERR_MSG_FILE_FAILED_TO_OPEN "File failed to open"
 

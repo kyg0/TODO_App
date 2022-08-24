@@ -932,11 +932,9 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_01) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_02) {
 	SetUp(0);
-
 	for (int i = 0; i < 50; i++) {
 		makeNewEntryAndTest();
 	}
-
 	TearDown();
 }
 
@@ -948,7 +946,6 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_1) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_11) {
 	SetUp(2);
-	
 	makeNewEntryAndTest();
 	makeNewEntryAndTest();
 	TearDown();
@@ -956,26 +953,21 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_11) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_12) {
 	SetUp(2);
-	
-
 	for (int i = 0; i < 50; i++)
 	{
 		makeNewEntryAndTest();
 	}
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_2) {
 	SetUp(5);
-	
 	makeNewEntryAndTest();
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_21) {
 	SetUp(5);
-	
 	makeNewEntryAndTest();
 	makeNewEntryAndTest();
 	TearDown();
@@ -983,8 +975,6 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_21) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_22) {
 	SetUp(5);
-	
-
 	for (int i = 0; i < 100;i++) {
 		makeNewEntryAndTest();
 	}
@@ -993,14 +983,12 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_22) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_3) {
 	SetUp(10);
-	
 	makeNewEntryAndTest();
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_4) {
 	SetUp(50);
-	
 	makeNewEntryAndTest();
 	TearDown();
 }
@@ -1013,7 +1001,6 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_5) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_51) {
 	SetUp(1000);
-	
 	makeNewEntryAndTest();
 	makeNewEntryAndTest();
 	TearDown();
@@ -1021,108 +1008,80 @@ TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_51) {
 
 TEST_F(ReminderSet_MethodTest, MakeNewEntryCase_52) {
 	SetUp(1000);
-	
-
 	for (int i = 0; i < 2000; i++) {
 		makeNewEntryAndTest();
 	}
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_1) {
 	SetUp(2);
-	
 	deleteEntryAndTest(1);
 	deleteEntryAndTest(2);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_2) {
 	SetUp(5);
-	
 	deleteEntryAndTest(1);
 	deleteEntryAndTest(5);
 	deleteEntryAndTest(3);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_22) {
 	SetUp(5);
-	
-
 	for(int i=1;i<=5;i++){
 		deleteEntryAndTest(i);
 	}
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_3) {
 	SetUp(10);
-	
-
 	deleteEntryAndTest(1);
 	deleteEntryAndTest(10);
 	deleteEntryAndTest(5);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_33) {
 	SetUp(10);
-	
-
 	for (int i = 1; i <= 10; i++) {
 		deleteEntryAndTest(i);
 	}
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_4) {
 	SetUp(50);
-	
-
 	deleteEntryAndTest(1);
 	deleteEntryAndTest(50);
 	deleteEntryAndTest(25);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_44) {
 	SetUp(50);
-	
-
 	for (int i = 1; i <= 50; i++) {
 		deleteEntryAndTest(i);
 	}
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_5) {
 	SetUp(1000);
-	
-
 	deleteEntryAndTest(1);
 	deleteEntryAndTest(1000);
 	deleteEntryAndTest(500);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_ValidIndex_55) {
 	SetUp(1000);
-	
-
 	for (int i = 1; i <= 10; i++) {
 		deleteEntryAndTest(i);
 	}
-
 	TearDown();
 }
 
@@ -1130,11 +1089,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_01) {
 	try {
 		SetUp(0);
 		deleteEntryAndTest(0);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1144,11 +1102,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_02) {
 	try {
 		SetUp(0);
 		deleteEntryAndTest(1);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1158,11 +1115,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_03) {
 	try {
 		SetUp(0);
 		deleteEntryAndTest(7);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1172,11 +1128,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_04) {
 	try {
 		SetUp(0);
 		deleteEntryAndTest(-1);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1186,11 +1141,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_11) {
 	try {
 		SetUp(2);
 		deleteEntryAndTest(0);
-		
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1200,11 +1154,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_12) {
 	try {
 		SetUp(2);
 		deleteEntryAndTest(3);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1215,11 +1168,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_13) {
 		SetUp(2);
 		deleteEntryAndTest(1);
 		deleteEntryAndTest(1);									// it should throw exception here because we're trying to delete the same entry twice
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1229,11 +1181,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_14) {
 	try {
 		SetUp(2);
 		deleteEntryAndTest(10);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1243,11 +1194,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_15) {
 	try {
 		SetUp(2);
 		deleteEntryAndTest(-1);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1257,11 +1207,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_21) {
 	try {
 		SetUp(10);
 		deleteEntryAndTest(0);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1271,11 +1220,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_22) {
 	try {
 		SetUp(10);
 		deleteEntryAndTest(11);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1286,11 +1234,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_23) {
 		SetUp(10);
 		deleteEntryAndTest(1);
 		deleteEntryAndTest(1);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1300,11 +1247,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_24) {
 	try {
 		SetUp(10);
 		deleteEntryAndTest(50);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1314,11 +1260,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_31) {
 	try {
 		SetUp(50);
 		deleteEntryAndTest(0);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1328,11 +1273,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_32) {
 	try {
 		SetUp(50);
 		deleteEntryAndTest(51);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1342,11 +1286,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_33) {
 	try {
 		SetUp(50);
 		deleteEntryAndTest(100);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1357,11 +1300,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_34) {
 		SetUp(50);
 		deleteEntryAndTest(5);
 		deleteEntryAndTest(5);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1371,11 +1313,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_35) {
 	try {
 		SetUp(50);
 		deleteEntryAndTest(-1);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1385,11 +1326,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_41) {
 	try {
 		SetUp(1000);
 		deleteEntryAndTest(0);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1399,11 +1339,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_42) {
 	try {
 		SetUp(1000);
 		deleteEntryAndTest(1001);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1414,11 +1353,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_43) {
 		SetUp(1000);
 		deleteEntryAndTest(150);
 		deleteEntryAndTest(150);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1428,11 +1366,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_44) {
 	try {
 		SetUp(1000);
 		deleteEntryAndTest(1150);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1442,11 +1379,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_InvalidIndex_45) {
 	try {
 		SetUp(1000);
 		deleteEntryAndTest(-1);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected:" + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1457,11 +1393,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithNullObject_0) {
 	
 	try {
 		deleteEntryAndTest(nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 	TearDown();
@@ -1472,11 +1407,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithNullObject_1) {
 	
 	try {
 		deleteEntryAndTest(nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 	TearDown();
@@ -1487,11 +1421,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithNullObject_2) {
 	
 	try {
 		deleteEntryAndTest(nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 	TearDown();
@@ -1502,11 +1435,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithNullObject_3) {
 	
 	try {
 		deleteEntryAndTest(nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 	TearDown();
@@ -1528,17 +1460,15 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithInvalidObject_0) {
 		
 		EXPECT_CALL(*dtMock, GetCurrentDateAndTime()).WillOnce(Return(newEntry_date));
 		EXPECT_CALL(*fwMock, writeInFile(newEntry_path, newEntry_output)).Times(1);
-		
 
 		ReminderEntry* newEntry = new ReminderEntry("title", "description", dtMock, fwMock);
 
 		try {
 			deleteEntryAndTest(newEntry);
-
-			FAIL() << "Expected: InvalidIndexException => " + std::string(ERR_MSG_INVALID_OBJECT);
+			FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 		}
 		catch (InvalidIndexException err) {
-			std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+			std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 			EXPECT_EQ(err.what(), msg);
 		}
 
@@ -1564,11 +1494,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithInvalidObject_1) {
 
 	try {
 		deleteEntryAndTest(newEntry);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
@@ -1592,14 +1521,12 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithInvalidObject_2) {
 	EXPECT_CALL(*fwMock, writeInFile(newEntry_path, newEntry_output)).Times(1);
 	ReminderEntry* newEntry = new ReminderEntry("title", "description", dtMock, fwMock);
 
-
 	try {
 		deleteEntryAndTest(newEntry);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
@@ -1626,11 +1553,10 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithInvalidObject_3) {
 
 	try {
 		deleteEntryAndTest(newEntry);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_OBJECT);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_OBJECT);
 		EXPECT_EQ(err.what(), msg);
 	}
 
@@ -1639,7 +1565,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithInvalidObject_3) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_1) {
 	SetUp(2);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1653,7 +1578,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_1) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_2) {
 	SetUp(10);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1667,7 +1591,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_2) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_22) {
 	SetUp(10);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1680,7 +1603,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_22) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_3) {
 	SetUp(100);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1694,7 +1616,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_3) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_33) {
 	SetUp(100);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1707,7 +1628,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_33) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_4) {
 	SetUp(1000);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1721,7 +1641,6 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_4) {
 
 TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_44) {
 	SetUp(1000);
-	
 
 	SetMap map = set->getAll();
 	SetMap::iterator it;
@@ -1734,19 +1653,16 @@ TEST_F(ReminderSet_MethodTest, DeleteEntry_WithConcreteObject_44) {
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_1){
 	SetUp(1);
-	
 
 	SetMap map = set->getAll();
 	int size = map.size();
-
 	
 	try {
 		editEntryAndTest(1, nullptr);
-		
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 	
@@ -1755,37 +1671,32 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_1){
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_21) {
 	SetUp(10);
-	
 
 	try {
 		editEntryAndTest(1, nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_22) {
 	SetUp(10);
-	
 
 	try {
 		editEntryAndTest(10, nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_23) {
 	SetUp(10);
-	
 
 	SetMap map = set->getAll();
 	int size = map.size();
@@ -1793,11 +1704,10 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_23) {
 	for (int i = 1; i <= 10; i++) {
 		try {
 			editEntryAndTest(i, nullptr);
-
-			FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+			FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		}
 		catch (NullObjectException err) {
-			std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+			std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 			EXPECT_EQ(err.what(), msg);
 		}
 	}
@@ -1806,37 +1716,32 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_23) {
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_31) {
 	SetUp(500);
-	
 
 	try {
 		editEntryAndTest(1, nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_32) {
 	SetUp(500);
-	
 
 	try {
 		editEntryAndTest(500, nullptr);
-
-		FAIL() << "Expected: NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 	}
 	catch (NullObjectException err) {
-		std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+		std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		EXPECT_EQ(err.what(), msg);
 	}
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_33) {
 	SetUp(500);
-	
 
 	SetMap map = set->getAll();
 	int size = map.size();
@@ -1844,11 +1749,10 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithNullObject_33) {
 	for (int i = 1; i <= 500; i++) {
 		try {
 			editEntryAndTest(i, nullptr);
-
-			FAIL() << "Expected: NullObjectException => " + std::string(ERR_MSG_NULL_OBJ);
+			FAIL() << "Expected: " + std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 		}
 		catch (NullObjectException err) {
-			std::string msg = "NullObject Exception => " + std::string(ERR_MSG_NULL_OBJ);
+			std::string msg = std::string(TYPE_NULL_OBJ_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_NULL_OBJ);
 			EXPECT_EQ(err.what(), msg);
 		}
 	}
@@ -1893,51 +1797,38 @@ ReminderEntry* getReminderEntry(int nameExtension, DateTimeWorkerMock* dtMock, F
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_1) {
 	SetUp(1);
-	
-
 	editEntryAndTest(1, getReminderEntry(setSize + 1, this->dtMock, this->fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_11) {
 	SetUp(1);
-	
-
 	for (int i = 1; i < 10; i++) {
 		editEntryAndTest(1, getReminderEntry(setSize + i, dtMock, fwMock));
 	}
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_21) {
 	SetUp(10);
-	
-
 	editEntryAndTest(1, getReminderEntry(setSize + 1, dtMock, fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_22) {
 	SetUp(10);
-	
-
 	editEntryAndTest(10, getReminderEntry(setSize + 1, dtMock, fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_23) {
 	SetUp(10);
-	
-
 	editEntryAndTest(5, getReminderEntry(setSize + 1, dtMock, fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_24) {
 	SetUp(10);
-	
-
 	for (int i = 1; i <= 100; i++) {
 		editEntryAndTest( i%10 +1, getReminderEntry(setSize + i, dtMock, fwMock)); //edit every entry 10 times
 	}
@@ -1946,29 +1837,24 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_24) {
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_31) {
 	SetUp(500);
-	
 	editEntryAndTest(1, getReminderEntry(setSize + 1, dtMock, fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_32) {
 	SetUp(500);
-	
 	editEntryAndTest(500, getReminderEntry(setSize + 1, dtMock, fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_33) {
 	SetUp(500);
-	
 	editEntryAndTest(250, getReminderEntry(setSize + 1, dtMock, fwMock));
 	TearDown();
 }
 
 TEST_F(ReminderSet_MethodTest, EditEntry_WithValidIndex_34) {
 	SetUp(500);
-	
-
 	for (int i = 1; i <= 2500; i++) {
 		editEntryAndTest(i%500 +1, getReminderEntry(setSize + i, dtMock, fwMock)); //edit every entry 5 times
 	}
@@ -1980,13 +1866,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_01) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(0, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -1997,13 +1881,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_02) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(1, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2014,13 +1896,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_03) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(-1, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2031,13 +1911,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_04) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(2, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2048,13 +1926,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_11) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(-1, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2065,13 +1941,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_12) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(2, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2082,13 +1956,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_13) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(10, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2099,13 +1971,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_21) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(-1, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2116,13 +1986,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_22) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(0, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2133,13 +2001,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_23) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(11, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2150,13 +2016,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_24) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(12, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2167,13 +2031,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_25) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(50, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2184,13 +2046,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_31) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(-1, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2201,13 +2061,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_32) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(0, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2218,13 +2076,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_33) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(101, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2235,13 +2091,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_34) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(200, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2252,13 +2106,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_41) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(-1, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2269,13 +2121,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_42) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(0, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2286,13 +2136,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_43) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(5001, r);
-
-		FAIL() << "Expected: InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2303,13 +2151,11 @@ TEST_F(ReminderSet_MethodTest, EditEntry_WithInvalidIndex_44) {
 
 	try {
 		ReminderEntry* r = getReminderEntry(0, dtMock, fwMock);
-
 		editEntryAndTest(5002, r);
-
-		FAIL() << "Expected: InvalidINdex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		FAIL() << "Expected: " + std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 	}
 	catch (InvalidIndexException err) {
-		std::string msg = "InvalidIndex Exception => " + std::string(ERR_MSG_INVALID_INDEX);
+		std::string msg = std::string(TYPE_INV_INDEX_EXCEPTION) + std::string(AUX_MSG) + std::string(ERR_MSG_INVALID_INDEX);
 		EXPECT_EQ(err.what(), msg);
 		TearDown();
 	}
@@ -2340,9 +2186,7 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_4) {
 	SetUp(50);
 	initialTest();
 	sortAndTestByDateCreated(true);
-	
 	TearDown();
-
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDateCreated_ascending_1) {
@@ -2489,91 +2333,78 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByExecDate_withZeroEntries_asc) {
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_finishedFirst_1) {
 	SetUp(2);
 	sortAndTestByStatus(true);
-	
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_finishedFirst_2) {
 	SetUp(5);
 	sortAndTestByStatus(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_finishedFirst_3) {
 	SetUp(10);
 	sortAndTestByStatus(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_notFinishedFirst_1) {
 	SetUp(2);
 	sortAndTestByStatus(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_notFinishedFirst_2) {
 	SetUp(5);
 	sortAndTestByStatus(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_notFinishedFirst_3) {
 	SetUp(10);
 	sortAndTestByStatus(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_withZeroEntries_finishedFirst) {
 	SetUp(0);
 	sortAndTestByStatus(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_withZeroEntries_notFinishedFirst) {
 	SetUp(0);
 	sortAndTestByStatus(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_withOneEntry_finishedFirst) {
 	SetUp(1);
 	sortAndTestByStatus(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByStatus_withOneEntry_notFinishedFirst) {
 	SetUp(1);
 	sortAndTestByStatus(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_1) {
 	SetUp(2);
 	sortAndTestByTitle(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_2) {
 	SetUp(5);
 	sortAndTestByTitle(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_3) {
 	SetUp(10);
 	sortAndTestByTitle(true);
-
 	TearDown();
 }
 
@@ -2586,21 +2417,18 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_4) {
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_1) {
 	SetUp(2);
 	sortAndTestByTitle(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_2) {
 	SetUp(5);
 	sortAndTestByTitle(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_3) {
 	SetUp(10);
 	sortAndTestByTitle(false);
-
 	TearDown();
 }
 
@@ -2613,42 +2441,36 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_asc_4) {
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_withOneEntry) {
 	SetUp(1);
 	sortAndTestByTitle(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_withOneEntry_asc) {
 	SetUp(1);
 	sortAndTestByTitle(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_withZeroEntries) {
 	SetUp(0);
 	sortAndTestByTitle(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByTitle_withZeroEntries_asc) {
 	SetUp(0);
 	sortAndTestByTitle(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_1) {
 	SetUp(2);
 	sortAndTestByDescription(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_2) {
 	SetUp(5);
 	sortAndTestByDescription(true);
-
 	TearDown();
 }
 
@@ -2667,21 +2489,18 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_4) {
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_asc_1) {
 	SetUp(2);
 	sortAndTestByDescription(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_asc_2) {
 	SetUp(5);
 	sortAndTestByDescription(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_asc_3) {
 	SetUp(10);
 	sortAndTestByDescription(false);
-
 	TearDown();
 }
 
@@ -2694,28 +2513,24 @@ TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_asc_4) {
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_withOneEntry) {
 	SetUp(1);
 	sortAndTestByDescription(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_withOneEntry_asc) {
 	SetUp(1);
 	sortAndTestByDescription(false);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_withZeroEntries) {
 	SetUp(0);
 	sortAndTestByDescription(true);
-
 	TearDown();
 }
 
 TEST_F(ReminderSet_SortAndFilterTest, SortByDescription_withZeroEntries_asc) {
 	SetUp(0);
 	sortAndTestByDescription(false);
-
 	TearDown();
 }
 
